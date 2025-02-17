@@ -76,8 +76,11 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton.small(
         backgroundColor: Theme.of(context).primaryColor,
         shape: const CircleBorder(),
-        onPressed: () async {},
-        child: Image.asset('assets/setting.png'),
+        onPressed: () async {
+          AppLatLong location = await LocationService().getCurrentLocation();
+          _moveToCurrentLocation(location);
+        },
+        child: const Icon(Icons.map),
       ),
       body: YandexMap(
         onMapCreated: (controller) async {
@@ -91,11 +94,11 @@ class _HomePageState extends State<HomePage> {
 
 /// Метод для генерации точек на карте
 List<MapPoint> _getMapPoints() {
-  return [
-    const MapPoint(name: '1', latitude: 41.326680, longitude: 69.327475),
-    const MapPoint(name: '2', latitude: 41.327567, longitude: 69.326915),
-    const MapPoint(name: '3', latitude: 41.326836, longitude: 69.326400),
-    const MapPoint(name: '4', latitude: 41.327110, longitude: 69.328197),
+  return const [
+    MapPoint(name: 'jalgas1', latitude: 41.326680, longitude: 69.327475),
+    MapPoint(name: 'jalgas2', latitude: 41.327567, longitude: 69.326915),
+    MapPoint(name: 'jalgas3', latitude: 41.326836, longitude: 69.326400),
+    MapPoint(name: 'jalgas4', latitude: 41.327110, longitude: 69.328197),
   ];
 }
 
