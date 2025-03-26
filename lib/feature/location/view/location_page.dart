@@ -2,18 +2,21 @@ import 'dart:async';
 
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
-import 'package:charge_me/core/helpers/app_colors.dart';
+import 'package:charge_me/feature/location/utils/utils_location.dart';
+import 'package:charge_me/feature/location/widget/filter/filters.dart';
 import 'package:flutter/material.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
+import '../../../core/styles/app_colors_dark.dart';
 import '../../../share/utils/charge_bottom_sheet.dart';
 import '../../../share/utils/location_service.dart';
+import '../../../share/widgets/item_app_bar.dart';
 import '../../dashboard/utils/utils_dashboard.dart';
 import '../../home/model/app_lat_long.dart';
 import '../../home/model/map_point.dart';
-import '../../home/widget/station.dart';
-import '../../home/widget/station_other.dart';
+import '../widget/station.dart';
 import '../widget/search_form_field.dart';
+import '../widget/station_other.dart';
 
 class LocationPage extends StatefulWidget {
   const LocationPage({super.key});
@@ -58,8 +61,8 @@ class _LocationPageState extends State<LocationPage> {
   }
 
   Future<void> _moveToCurrentLocation(
-      AppLatLong appLatLong,
-      ) async {
+    AppLatLong appLatLong,
+  ) async {
     (await mapControllerCompleter.future).moveCamera(
       animation: const MapAnimation(type: MapAnimationType.linear, duration: 1),
       CameraUpdate.newCameraPosition(
@@ -73,114 +76,89 @@ class _LocationPageState extends State<LocationPage> {
       ),
     );
   }
+
+  List<String> list = [
+    'CHAdeMo',
+    'CCS 1',
+    'CCS 2',
+    'Combo 1',
+    'Combo 2',
+    'GB/T',
+    'Type 1',
+    'Type 2',
+    'J1772 Type 1',
+    'Tesla'
+  ];
+  List<int> list2 = [
+    150,
+    200,
+    250,
+    300,
+    350,
+    400,
+    450,
+    500,
+    550,
+    600,
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-/*      floatingActionButton: FloatingActionButton.small(
-        backgroundColor: Theme.of(context).primaryColor,
-        shape: const CircleBorder(),
-        onPressed: () async {
-          AppLatLong location = await LocationService().getCurrentLocation();
-          _moveToCurrentLocation(location);
-        },
-        child: const Icon(Icons.map),
-      ),*/
-      body: LayoutBuilder(
-        builder: (context,constraints){
-          return Stack(
-            children: [
-              YandexMap(
-                onMapCreated: (controller) async {
-                  mapControllerCompleter.complete(controller);
-                },
-                mapObjects: _getPlacemarkObjects(context),
-              ),
-              Positioned(
-                top: 32,
-                right: 16,
-                left: 16,
-                  child: SearchFormField(
-                    controller: controller,
-                  )),
-              Positioned(
-                  top: context.screenSize.height/3,
-                  right: 16,
-                  child: Column(
-                    children: [
-                      Container(
-                        height: context.screenSize.width / 7,
-                        width: context.screenSize.width / 7,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.secondaryColor),
-                        child: IconButton(
-                          onPressed: (){},
-                          icon: Image.asset('assets/setting.png'),
-                        ),
-                      ),
-                      16.height,
-                      Container(
-                        height: context.screenSize.width / 7,
-                        width: context.screenSize.width / 7,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.secondaryColor),
-                        child: IconButton(
-                          onPressed: (){},
-                          icon: Image.asset('assets/setting.png'),
-                        ),
-                      ),
-                      32.height,
-                      Container(
-                        height: context.screenSize.width / 7,
-                        width: context.screenSize.width / 7,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.secondaryColor),
-                        child: IconButton(
-                          onPressed: (){},
-                          icon: Image.asset('assets/setting.png'),
-                        ),
-                      )
-                    ],
-                  )),
-              Positioned(
-                  bottom: 16,
-                  right: 16,
-                  left: 16,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        height: context.screenSize.width / 7,
-                        width: context.screenSize.width / 7,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.black),
-                        child: IconButton(
-                          onPressed: (){},
-                          icon: Image.asset('assets/setting.png'),
-                        ),
-                      ),
-                      Container(
-                        height: context.screenSize.width / 7,
-                        width: context.screenSize.width / 7,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.black),
-                        child: IconButton(
-                          onPressed: (){},
-                          icon: Image.asset('assets/setting.png'),
-                        ),
-                      )
-                    ],
-                  )),
-            ],
-          );
-        },
+      body: Stack(
+        children: [
+          YandexMap(
+            onMapCreated: (controller) async {
+              mapControllerCompleter.complete(controller);
+            },
+            mapObjects: _getPlacemarkObjects(context),
+          ),
+          Positioned(
+              top: 32,
+              left: 16,
+              right: 16,
+              child: SearchFormField(
+                controller: controller,
+              )),
+          Positioned(
+              bottom: 16,
+              right: 16,
+              left: 16,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ItemAppBar(
+                    icon: 'assets/filter.png',
+                    color: AppColorsDark.black,
+                    colorIcon: AppColorsDark.white,
+                    onPressed: () async {
+                      await ChargeBottomSheet.draggableScrollableSheet(
+                          context: context,
+                          children: [
+                            Filters(
+                              list: list,
+                              list2: list2,
+                            )
+                          ]);
+                    },
+                  ),
+                  ItemAppBar(
+                    icon: 'assets/gps.png',
+                    color: AppColorsDark.black,
+                    colorIcon: AppColorsDark.white,
+                    onPressed: () async {
+                      AppLatLong location =
+                          await LocationService().getCurrentLocation();
+                      _moveToCurrentLocation(location);
+                    },
+                  ),
+                ],
+              )),
+        ],
       ),
     );
   }
+
   /// Метод для генерации точек на карте
   List<MapPoint> _getMapPoints() {
     return const [
@@ -190,47 +168,37 @@ class _LocationPageState extends State<LocationPage> {
       MapPoint(name: 'jalgas4', latitude: 41.327110, longitude: 69.328197),
     ];
   }
-/*
-  Container(
-                          height: context.screenSize.width / 7,
-                          width: context.screenSize.width / 7,
-                          decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: AppColors.secondaryColor),
-                          child: IconButton(
-                            onPressed: (){},
-                            icon: Image.asset('assets/setting.png'),
-                          ),
-                        )
- */
+
   /// Метод для генерации объектов маркеров для отображения на карте
   List<PlacemarkMapObject> _getPlacemarkObjects(BuildContext context) {
     return _getMapPoints()
         .map(
           (point) => PlacemarkMapObject(
-          mapId: MapObjectId('MapObject $point'),
-          point: Point(latitude: point.latitude, longitude: point.longitude),
-          opacity: 1,
-          icon: PlacemarkIcon.single(
-            PlacemarkIconStyle(
-              image: BitmapDescriptor.fromAssetImage(
-                'assets/item_location.png'
+              mapId: MapObjectId('MapObject $point'),
+              point:
+                  Point(latitude: point.latitude, longitude: point.longitude),
+              opacity: 1,
+              icon: PlacemarkIcon.single(
+                PlacemarkIconStyle(
+                  image: BitmapDescriptor.fromAssetImage(
+                      'assets/energy_station_2.png'),
+                  scale: 2,
+                ),
               ),
-              scale: 2,
-            ),
-          ),
-          onTap: (_, __) async {
-            await ChargeBottomSheet.draggableScrollableSheet(
-                context: context,
-                children: [
-                  ValueListenableBuilder(
-                      valueListenable: UtilsDashboard.change,
-                      builder: (context, value, child) {
-                        return value ? const StationOther() : const Station();
-                      })
-                ]);
-          }),
-    )
+              onTap: (_, __) async {
+                await ChargeBottomSheet.draggableScrollableSheet(
+                    context: context,
+                    children: [
+                      ValueListenableBuilder(
+                          valueListenable: UtilsDashboard.change,
+                          builder: (context, value, child) {
+                            return value
+                                ? const StationOther()
+                                : Station(listConnectors: list);
+                          })
+                    ]);
+              }),
+        )
         .toList();
   }
 }

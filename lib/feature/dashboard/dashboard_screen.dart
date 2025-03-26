@@ -2,8 +2,7 @@ import 'package:auto_route/annotations.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/feature/dashboard/utils/utils_dashboard.dart';
 import 'package:flutter/material.dart';
-import '../../core/helpers/app_colors.dart';
-import '../history/view/history_page.dart';
+import '../../core/styles/app_colors_dark.dart';
 import '../home/view/home_page.dart';
 import '../location/view/location_page.dart';
 import '../profile/view/profile_page.dart';
@@ -103,7 +102,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           width: context.screenSize.width / 7,
                           decoration: const BoxDecoration(
                               shape: BoxShape.circle,
-                              color: AppColors.colorGreen),
+                              color: AppColorsDark.green1),
                           child: IconButton(
                             onPressed: (){},
                             icon: Image.asset('assets/energy.png'),

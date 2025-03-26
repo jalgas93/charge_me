@@ -1,36 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../app_colors.dart';
-import '../app_text_style.dart';
+import '../app_colors_dark.dart';
+import '../app_fonts.dart';
 
 class DarkTheme {
   static ThemeData darkThemeData(BuildContext context) {
     return ThemeData(
       brightness: Brightness.dark,
       fontFamily: 'Inter',
-      scaffoldBackgroundColor: AppColors.primaryDarkColor,
-      primaryColor: AppColors.primaryDarkColor,
+      scaffoldBackgroundColor: AppColorsDark.primary,
 
       colorScheme: ColorScheme.fromSeed(
-          brightness: Brightness.dark,
-          background: const Color(0xFF455A64),
-          seedColor: const Color(0xFF37474F),
-          primary: AppColors.focusColor,
-          secondary: Colors.tealAccent,
-          surface: AppColors.primaryDarkColor,
-          onBackground: AppColors.primaryDarkColor,
-          onSurface: Colors.white,
-          onError: Colors.white,
-          onPrimary: Colors.black,
-          onSecondary: Colors.yellow,
-          error: Colors.red.shade400),
-
-      hoverColor: const Color(0xFF00ACC1),
+        brightness: Brightness.dark,
+        seedColor: AppColorsDark.yellow1,
+        primary: AppColorsDark.black,
+        onPrimary: AppColorsDark.onPrimary,
+        primaryContainer: AppColorsDark.primaryContainer,
+        secondary: AppColorsDark.secondary,
+        onSecondary: AppColorsDark.onSecondary,
+        surface: AppColorsDark.surface,
+        onSurface: AppColorsDark.onSurface,
+        background: AppColorsDark.background,
+        onBackground: AppColorsDark.onBackground,
+        error: AppColorsDark.error,
+        onError: AppColorsDark.onError,
+        tertiary: AppColorsDark.tertiary,
+        outline: AppColorsDark.green2,
+        outlineVariant: AppColorsDark.green1
+      ),
 
       drawerTheme: const DrawerThemeData(),
-      focusColor: AppColors.focusColor,
-      unselectedWidgetColor: AppColors.unselectColor,
+
+      dividerTheme: DividerThemeData(
+        color:  AppColorsDark.divider.withOpacity(0.2)
+      ),
+
+      focusColor: AppColorsDark.green1,
 
       ///SwitchTheme
       switchTheme: SwitchThemeData(
@@ -41,90 +47,76 @@ class DarkTheme {
       ),
 
       sliderTheme: const SliderThemeData(
-        inactiveTrackColor: Colors.white,
+        inactiveTrackColor: AppColorsDark.white,
       ),
 
       /// Card Theme
       cardTheme: const CardTheme(
-          color: Color(0xFF1F2E35),
+          color: AppColorsDark.white5,
           margin: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
-          shadowColor: Colors.greenAccent,
           elevation: 5,
           surfaceTintColor: Colors.white),
-      bottomAppBarTheme: const BottomAppBarTheme(
-        color: AppColors.primaryDarkColor,
+
+      bottomAppBarTheme: BottomAppBarTheme(
+        color: AppColorsDark.transparent,
       ),
 
       ///AppBar theme
       appBarTheme: const AppBarTheme(
-          //color: Colors.black,
-          shadowColor: Colors.black,
-          elevation: 5,
+          color: AppColorsDark.primary,
+          shadowColor: Colors.transparent,
+          //elevation: 5,
           iconTheme: IconThemeData(),
+          surfaceTintColor: Colors.transparent,
           systemOverlayStyle: SystemUiOverlayStyle(
               statusBarColor: Colors.transparent,
               statusBarIconBrightness: Brightness.light,
               systemNavigationBarIconBrightness: Brightness.light,
-              systemNavigationBarColor: Colors.black),
+              systemNavigationBarColor: AppColorsDark.black),
           foregroundColor: Colors.black),
 
       /// Icon theme
       iconTheme: const IconThemeData(
-          color: Colors.white,
-          /*       shadows: [
-            BoxShadow(
-                color: Colors.green,
-                blurRadius: 2.0,
-                offset: Offset(1, 1),
-                blurStyle: BlurStyle.outer
-            ),
-          ],*/
+          color: AppColorsDark.yellow1,
           fill: 0.0,
           opacity: 1.0,
-          // size: 40,
           weight: 100,
           opticalSize: 20,
-
-          /// Optical sizes range from 20dp to 48dp. we can maintain
-          /// the stroke width common while resizing or on increase of the icon size
           grade:
               0 // (For light and dart themes) To make strokes heavier and more emphasized, use positive value grade, such as when representing an active icon state.
           ),
 
-      ///SnackBar theme
-      snackBarTheme: SnackBarThemeData(
-          backgroundColor: Colors.white,
-          contentTextStyle: Theme.of(context)
-              .textTheme
-              .titleMedium
-              ?.apply(color: Theme.of(context).cardColor)),
-      // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       textTheme: TextTheme(
         displayLarge:
-            AppTextStyle.displayLarge.copyWith(color: AppColors.white),
+            AppTextStyle.displayLarge.copyWith(color: AppColorsDark.white),
         displayMedium:
-            AppTextStyle.displayMedium.copyWith(color: AppColors.white),
+            AppTextStyle.displayMedium.copyWith(color: AppColorsDark.white),
         displaySmall:
-            AppTextStyle.displaySmall.copyWith(color: AppColors.white),
+            AppTextStyle.displaySmall.copyWith(color: AppColorsDark.white),
         headlineLarge:
-            AppTextStyle.headlineLarge.copyWith(color: AppColors.white),
+            AppTextStyle.headlineLarge.copyWith(color: AppColorsDark.white),
         headlineMedium:
-            AppTextStyle.headlineMedium.copyWith(color: AppColors.white),
+            AppTextStyle.headlineMedium.copyWith(color: AppColorsDark.white),
         headlineSmall:
-            AppTextStyle.headlineSmall.copyWith(color: AppColors.white),
-        titleLarge: AppTextStyle.titleLarge.copyWith(color: AppColors.white),
-        titleMedium: AppTextStyle.titleMedium.copyWith(color: AppColors.white),
-        titleSmall: AppTextStyle.titleMedium.copyWith(color: AppColors.white),
-        labelLarge: AppTextStyle.labelLarge.copyWith(color: AppColors.white),
-        labelMedium: AppTextStyle.labelMedium.copyWith(color: AppColors.white),
-        labelSmall: AppTextStyle.labelSmall.copyWith(color: AppColors.white),
-        bodyLarge: AppTextStyle.bodyLarge.copyWith(color: AppColors.white),
-        bodyMedium: AppTextStyle.bodyMedium.copyWith(color: AppColors.white),
-        bodySmall: AppTextStyle.bodySmall.copyWith(color: AppColors.white),
+            AppTextStyle.headlineSmall.copyWith(color: AppColorsDark.white),
+        titleLarge:
+            AppTextStyle.titleLarge.copyWith(color: AppColorsDark.white),
+        titleMedium:
+            AppTextStyle.titleMedium.copyWith(color: AppColorsDark.white),
+        titleSmall:
+            AppTextStyle.titleMedium.copyWith(color: AppColorsDark.white),
+        labelLarge:
+            AppTextStyle.labelLarge.copyWith(color: AppColorsDark.white),
+        labelMedium:
+            AppTextStyle.labelMedium.copyWith(color: AppColorsDark.white),
+        labelSmall:
+            AppTextStyle.labelSmall.copyWith(color: AppColorsDark.white),
+        bodyLarge: AppTextStyle.bodyLarge.copyWith(color: AppColorsDark.bodyText),
+        bodyMedium:
+            AppTextStyle.bodyMedium.copyWith(color: AppColorsDark.bodyText),
+        bodySmall: AppTextStyle.bodySmall.copyWith(color: AppColorsDark.bodyText),
       ),
 
-      dropdownMenuTheme: const DropdownMenuThemeData(
-          textStyle: TextStyle(fontWeight: FontWeight.w100)),
       useMaterial3: true,
     );
   }

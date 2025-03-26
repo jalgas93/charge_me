@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../app_colors.dart';
-import '../app_text_style.dart';
+import '../app_colors_dark.dart';
+import '../app_fonts.dart';
 
 class LightTheme{
   static ThemeData lightThemeData(BuildContext context) {
     return ThemeData(
       brightness: Brightness.light,
       fontFamily: 'Inter',
-      scaffoldBackgroundColor: AppColors.backgroundWhite,
-      primaryColor: AppColors.primaryLightColor,
+     // scaffoldBackgroundColor: AppColorsDark.white,
+     // primaryColor: AppColorsDark.primaryLightColor,
       colorScheme: ColorScheme(
           brightness: Brightness.light,
           primary: Colors.orange,
@@ -26,9 +26,9 @@ class LightTheme{
           onSecondary: Colors.white,
           error: Colors.red.shade400),
 
-      hoverColor: Colors.green.shade200,
+ /*     hoverColor: Colors.green.shade200,
 
-      dividerColor: AppColors.primaryDarkColor,
+      //dividerColor: AppColorsDark.primaryDarkColor,
 
       focusColor: Colors.green.shade800,
 
@@ -154,7 +154,7 @@ class LightTheme{
               ?.apply(color: Colors.white),
           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 8),
           leadingPadding: const EdgeInsets.all(0),
-          elevation: 5),
+          elevation: 5),*/
       textTheme: TextTheme(
         displayLarge: AppTextStyle.displayLarge,
         displayMedium: AppTextStyle.displayMedium,
@@ -173,7 +173,7 @@ class LightTheme{
         bodySmall: AppTextStyle.bodySmall,
       ),
 
-      ///SwitchTheme
+ /*     ///SwitchTheme
       switchTheme: SwitchThemeData(
         splashRadius: 15,
         trackOutlineColor: MaterialStateProperty.all(Colors.orange),
@@ -213,7 +213,7 @@ class LightTheme{
         ),
       ),
       dropdownMenuTheme: const DropdownMenuThemeData(
-          textStyle: TextStyle(fontWeight: FontWeight.w100)),
+          textStyle: TextStyle(fontWeight: FontWeight.w100)),*/
 
       useMaterial3: true,
     );

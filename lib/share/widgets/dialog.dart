@@ -1,10 +1,11 @@
+/*
 import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../../core/styles/app_colors.dart';
+import '../../../core/styles/app_colors_dark.dart';
 
 class HDialog {
   static Future<T?> show<T>(
@@ -53,13 +54,13 @@ enum ActionType { delete, positive, negative }
 Color _getActionColor(ActionType type) {
   switch (type) {
     case ActionType.delete:
-      return AppColors.secondaryColor1;
+      return AppColorsDark.secondaryColor1;
     case ActionType.negative:
       return Colors.grey;
     case ActionType.positive:
-      return AppColors.primaryDarkColor;
+      return AppColorsDark.primaryDarkColor;
     default:
-      return AppColors.primaryDarkColor;
+      return AppColorsDark.primaryDarkColor;
   }
 }
 
@@ -192,3 +193,4 @@ class HDialogWidget<T> extends StatelessWidget {
         cancelButton: cancelButton);
   }
 }
+*/

@@ -4,8 +4,11 @@ import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/router/router.gr.dart';
+import '../../../core/styles/app_colors_dark.dart';
+import '../../../core/utils/permission_until.dart';
 import '../../bloc/app_bloc/app_bloc.dart';
 import '../../utils/permission_until.dart';
 import '../../widgets/custom_button.dart';
@@ -26,96 +29,107 @@ class _SplashPageState extends State<SplashPage> {
     _bloc = BlocProvider.of<AppBloc>(context);
     super.initState();
   }
-
+  @override
+  void didChangeDependencies() {
+    precacheImage(const AssetImage("assets/car.png"), context);
+    super.didChangeDependencies();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          16.height,
-          Text(
-            'Tesla Model 3',
-            style: context.textTheme.headlineMedium,
-          ),
-          SizedBox(
-            height: context.screenSize.height / 2.2,
-            child: Stack(
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(left: 40, right: 40, top: 70),
-                  decoration: const BoxDecoration(
-                      image: DecorationImage(
-                    image: AssetImage("assets/ellipse.png"),
-                    fit: BoxFit.contain,
-                  )),
-                ),
-                Container(
-                  decoration: const BoxDecoration(
-                      image: DecorationImage(
-                    image: AssetImage("assets/car.png"),
-                    fit: BoxFit.contain,
-                  )),
-                ),
-                Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset('assets/charge.png'),
-                        8.width,
-                        Column(
-                          children: [
-                            Text(
-                              'SUPER',
-                              style: context.textTheme.headlineLarge?.copyWith(
-                                  fontSize: 16, height: 1, letterSpacing: 3),
-                            ),
-                            Text(
-                              'CHARGE',
-                              style: context.textTheme.bodyMedium?.copyWith(
-                                  fontSize: 14, height: 1, letterSpacing: 2),
-                            ),
-                          ],
-                        )
-                      ],
-                    ))
-              ],
+      body: AnnotatedRegion(
+        value: const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.light,
+            systemNavigationBarIconBrightness: Brightness.light,
+            systemNavigationBarColor: AppColorsDark.primary),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            16.height,
+            Text(
+              'Tesla Model 3',
+              style: context.textTheme.headlineMedium,
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 20, right: 20),
-            child: Text(
-              "It's a pleasure to meet you! How can i assist you today?",
-              style: context.textTheme.titleSmall,
-              textAlign: TextAlign.center,
+            SizedBox(
+              height: context.screenSize.height / 2.2,
+              child: Stack(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(left: 40, right: 40, top: 70),
+                    decoration: const BoxDecoration(
+                        image: DecorationImage(
+                      image: AssetImage("assets/ellipse.png"),
+                      fit: BoxFit.contain,
+                    )),
+                  ),
+                  Container(
+                    decoration: const BoxDecoration(
+                        image: DecorationImage(
+                      image: AssetImage("assets/car.png"),
+                      fit: BoxFit.contain,
+                    )),
+                  ),
+                  Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset('assets/charge.png'),
+                          8.width,
+                          Column(
+                            children: [
+                              Text(
+                                'SUPER',
+                                style: context.textTheme.headlineLarge?.copyWith(
+                                    fontSize: 16, height: 1, letterSpacing: 3),
+                              ),
+                              Text(
+                                'CHARGE',
+                                style: context.textTheme.bodyMedium?.copyWith(
+                                    fontSize: 14, height: 1, letterSpacing: 2),
+                              ),
+                            ],
+                          )
+                        ],
+                      ))
+                ],
+              ),
             ),
-          ),
-          BlocConsumer(
-            bloc: _bloc,
-            listener: (BuildContext context, AppState state) {
-              state.maybeWhen(
-                  success: () {
-                    context.router.push(const DashboardPageRoute());
-                  },
-                  orElse: () {});
-            },
-            builder: (BuildContext context, AppState state) {
-              return state.maybeWhen(orElse: () {
-                return CustomButton(
-                  width: context.screenSize.width / 1.2,
-                  onTap: () {
-                    _bloc.add(const AppEvent.started());
-                    PermissionUtil.requestAll();
-                  },
-                  text: 'Continued',
-                );
-              });
-            },
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20),
+              child: Text(
+                "It's a pleasure to meet you! How can i assist you today?",
+                style: context.textTheme.titleSmall,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            BlocConsumer(
+              bloc: _bloc,
+              listener: (BuildContext context, AppState state) {
+                state.maybeWhen(
+                    success: () {
+                      context.router.push(const LoginOptionRoutePage());
+                    },
+                    orElse: () {});
+              },
+              builder: (BuildContext context, AppState state) {
+                return state.maybeWhen(orElse: () {
+                  return CustomButton(
+                    width: context.screenSize.width / 1.2,
+                    onTap: () {
+                      _bloc.add(const AppEvent.started());
+                      PermissionUtil.requestAll();
+                    },
+                    text: 'Continued',
+                  );
+                });
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
