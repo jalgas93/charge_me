@@ -103,6 +103,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         padding: const EdgeInsets.only(left: 16,right: 16,top: 16),
         child: LayoutBuilder(
           builder: (context, constraints) {
+            switch('a'){
+              case 'a':
+                print('a');
+                break;
+              case 'b':
+                print('b');
+                break;
+              case 'c':
+                print('c');
+                break;
+            }
             return Column(
               children: [
                 Align(

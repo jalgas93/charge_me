@@ -4,10 +4,10 @@ import 'package:charge_me/share/widgets/circle_container.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/styles/app_colors_dark.dart';
-import '../../../../share/widgets/item_app_bar.dart';
+import 'item_rate.dart';
 
-class BookingContainer extends StatelessWidget {
-  const BookingContainer({super.key});
+class ItemSuccessBooking extends StatelessWidget {
+  const ItemSuccessBooking({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,24 +16,9 @@ class BookingContainer extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                ItemAppBar(
-                  icon: 'assets/battery_charging.png',
-                  color: AppColorsDark.green0,
-                  colorIcon: AppColorsDark.green3,
-                  colorBorder: AppColorsDark.green0,
-                  onPressed: () async {},
-                ),
-                8.width,
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Тариф', style: context.textTheme.titleSmall),
-                    Text(r'14 $ / кВТ*ч', style: context.textTheme.bodyMedium)
-                  ],
-                )
-              ],
+            const ItemRate(
+              title: 'Тариф',
+              description: r'14 $ / кВТ*ч',
             ),
             CircleContainer(
               padding:

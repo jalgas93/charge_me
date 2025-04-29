@@ -53,7 +53,7 @@ class DarkTheme {
       /// Card Theme
       cardTheme: const CardTheme(
           color: AppColorsDark.white5,
-          margin: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
+          margin: EdgeInsets.only(left: 16, right: 16, top: 8),
           elevation: 5,
           surfaceTintColor: Colors.white),
 

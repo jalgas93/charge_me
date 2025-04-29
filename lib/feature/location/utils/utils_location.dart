@@ -13,7 +13,12 @@ enum TypesConnector {
   combo1,
   combo2,
 }
-
+enum BookingStation{
+  initialBooking,
+  successBooking,
+  successChargingUp,
+  finishCharging,
+}
 class UtilsLocation {
   static final ValueNotifier<String> _typesConnector = ValueNotifier('CHAdeMo');
 
@@ -30,5 +35,13 @@ class UtilsLocation {
   }
 
   static ValueNotifier<int> get typesOfPower => _typesOfPower;
+
+  static final ValueNotifier<BookingStation> _processChargingUp = ValueNotifier(BookingStation.initialBooking);
+
+  static set setChargingUp(BookingStation value) {
+    _processChargingUp.value = value;
+  }
+
+  static ValueNotifier<BookingStation> get processChargingUp => _processChargingUp;
 
 }

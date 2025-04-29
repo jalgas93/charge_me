@@ -7,8 +7,8 @@ import 'package:yandex_mapkit/yandex_mapkit.dart';
 import '../../../feature/dashboard/utils/utils_dashboard.dart';
 import '../../../feature/home/model/app_lat_long.dart';
 import '../../../feature/home/model/map_point.dart';
-import '../../../feature/location/widget/station.dart';
-import '../../../feature/location/widget/station_other.dart';
+import '../../../feature/location/widget/initial_booking.dart';
+import '../../../feature/location/widget/success_booking.dart';
 import '../../utils/charge_bottom_sheet.dart';
 import '../../utils/location_service.dart';
 

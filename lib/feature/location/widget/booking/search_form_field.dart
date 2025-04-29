@@ -1,7 +1,7 @@
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 
-import '../../../core/styles/app_colors_dark.dart';
+import '../../../../core/styles/app_colors_dark.dart';
 
 class SearchFormField extends StatelessWidget {
   const SearchFormField({super.key, required this.controller});

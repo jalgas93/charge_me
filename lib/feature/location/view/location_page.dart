@@ -1,8 +1,6 @@
 import 'dart:async';
-
-import 'package:charge_me/core/extensions/context_extensions.dart';
-import 'package:charge_me/core/extensions/empty_space.dart';
 import 'package:charge_me/feature/location/utils/utils_location.dart';
+import 'package:charge_me/feature/location/widget/booking/success_booking.dart';
 import 'package:charge_me/feature/location/widget/filter/filters.dart';
 import 'package:flutter/material.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
@@ -14,9 +12,10 @@ import '../../../share/widgets/item_app_bar.dart';
 import '../../dashboard/utils/utils_dashboard.dart';
 import '../../home/model/app_lat_long.dart';
 import '../../home/model/map_point.dart';
-import '../widget/station.dart';
-import '../widget/search_form_field.dart';
-import '../widget/station_other.dart';
+import '../widget/booking/finish_charging.dart';
+import '../widget/booking/initial_booking.dart';
+import '../widget/booking/search_form_field.dart';
+import '../widget/booking/success_charging_up.dart';
 
 class LocationPage extends StatefulWidget {
   const LocationPage({super.key});
@@ -190,11 +189,18 @@ class _LocationPageState extends State<LocationPage> {
                     context: context,
                     children: [
                       ValueListenableBuilder(
-                          valueListenable: UtilsDashboard.change,
+                          valueListenable: UtilsLocation.processChargingUp,
                           builder: (context, value, child) {
-                            return value
-                                ? const StationOther()
-                                : Station(listConnectors: list);
+                            switch(value){
+                              case BookingStation.initialBooking:
+                                return InitialBooking(listConnectors: list);
+                              case BookingStation.successBooking:
+                                return const SuccessBooking();
+                              case BookingStation.successChargingUp:
+                                return const SuccessChargingUp();
+                              case BookingStation.finishCharging:
+                                return const FinishCharging();
+                            }
                           })
                     ]);
               }),

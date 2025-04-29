@@ -27,7 +27,6 @@ class _NotificationPageState extends State<NotificationPage> {
           automaticallyImplyLeading: false,
           leading: ItemAppBar(
             icon: 'assets/back.png',
-            color: AppColorsDark.black,
             colorIcon: AppColorsDark.white,
             onPressed: () async {
               context.router.popForced();
@@ -37,19 +36,17 @@ class _NotificationPageState extends State<NotificationPage> {
           actions: [
             ItemAppBar(
               icon: 'assets/basket.png',
-              color: AppColorsDark.black,
               colorIcon: AppColorsDark.white,
               onPressed: () async {},
             )
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 16),
+      body: const Padding(
+        padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            16.height,
-            const NotificationsList(
+            NotificationsList(
               itemCount: 10,
               child: ItemNotification(
                 title: 'Emmett Perry',

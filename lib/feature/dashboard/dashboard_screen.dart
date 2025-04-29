@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:auto_route/annotations.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/feature/dashboard/utils/utils_dashboard.dart';
@@ -62,7 +64,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 borderRadius: BorderRadius.circular(30),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFF30444E),
+                    color: AppColorsDark.onPrimary.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                   child: Row(

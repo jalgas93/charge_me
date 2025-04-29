@@ -15,60 +15,50 @@ class Filters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
+    return SizedBox(
+      height: context.screenSize.height/2.5,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    'Фильтры',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  8.width,
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    alignment: Alignment.center,
-                    decoration: const BoxDecoration(
-                        color: AppColorsDark.black, shape: BoxShape.circle),
-                    child: Text('5', style: context.textTheme.bodyMedium),
-                  )
-                ],
-              ),
-              GestureDetector(
-                onTap: () {
-                  ThrowError.showNotify(
-                      context: context, errMessage: 'Еще не реализовано');
-                },
-                child: Text(
-                  'Очистить',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium,
+          Padding(
+            padding: const EdgeInsets.only(left: 16,right: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'Фильтры',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                          color: AppColorsDark.black, shape: BoxShape.circle),
+                      child: Text('5', style: context.textTheme.bodyMedium),
+                    )
+                  ],
                 ),
-              ),
-            ],
+                GestureDetector(
+                  onTap: () {
+                    ThrowError.showNotify(
+                        context: context, errMessage: 'Еще не реализовано');
+                  },
+                  child: Text(
+                    'Очистить',
+                    style: context.textTheme.bodyMedium?.copyWith(color: Colors.green),
+                  ),
+                ),
+              ],
+            ),
           ),
           const Divider(),
-          Text(
-            'Тип коннектора',
-            style: context.textTheme.titleMedium,
-          ),
-          16.height,
           ItemConnector(list: list),
-          16.height,
           const Divider(),
-          Text(
-            'Мощности',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          16.height,
           ItemTypesOfPower(list: list2),
-          16.height,
+          16.height
         ],
       ),
     );
