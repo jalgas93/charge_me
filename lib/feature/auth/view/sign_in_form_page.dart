@@ -4,11 +4,14 @@ import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
 import 'package:charge_me/feature/auth/view/register_form_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/router/router.gr.dart';
 import '../../../core/styles/app_colors_dark.dart';
 import '../../../core/utils/permission_until.dart';
 import '../../../share/widgets/custom_button.dart';
+import '../auth_repository.dart';
+import '../bloc/auth_bloc.dart';
 import '../widget/text_form_container.dart';
 import '../widget/title_text.dart';
 
@@ -22,8 +25,35 @@ class SingInFormPage extends StatefulWidget {
 
 class _SingInFormPageState extends State<SingInFormPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  static final TextEditingController _controllerEmail = TextEditingController();
+  static final TextEditingController _controllerUsername =
+      TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
+  bool isObs = true;
+
+  late AuthBloc _bloc;
+  late AuthRepository _repository;
+
+  @override
+  void initState() {
+    _repository = AuthRepository();
+    _bloc = AuthBloc(repository: _repository);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _bloc.close();
+    super.dispose();
+  }
+
+  void submit() {
+    if (_formKey.currentState!.validate()) {
+      _bloc.add(AuthEvent.loginWithUsername(
+        username: _controllerUsername.text.trim(),
+        password: _controllerPassword.text.trim(),
+      ));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,15 +79,29 @@ class _SingInFormPageState extends State<SingInFormPage> {
                     child: Column(
                       children: [
                         TextFormContainer(
-                          controller: _controllerEmail,
-                          prefixIcon: 'assets/email.png',
-                          hintText: 'Email',
+                          controller: _controllerUsername,
+                          prefixIcon: 'assets/profile2.png',
+                          hintText: 'Username',
+                          onChanged: (event){
+                            _formKey.currentState!.validate();
+                          },
                         ),
                         TextFormContainer(
                           controller: _controllerPassword,
                           prefixIcon: 'assets/lock.png',
                           hintText: 'Password',
                           prefixColor: AppColorsDark.red2,
+                          isObs: isObs,
+                          isShow: true,
+                          onChanged: (event){
+                            _formKey.currentState!.validate();
+                          },
+                          actionsButton: () {
+                            setState(() {
+                              isObs = !isObs;
+                            });
+                          },
+                          inputFormatters: [],
                         ),
                       ],
                     ),
@@ -65,13 +109,25 @@ class _SingInFormPageState extends State<SingInFormPage> {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CustomButton(
-                          width: constraints.maxWidth / 1.2,
-                          onTap: () {
-                            context.router.push(const DashboardPageRoute());
-                            PermissionUtil.requestAll();
-                          },
-                          text: 'Login'),
+                      BlocConsumer<AuthBloc, AuthState>(
+                        bloc: _bloc,
+                        listener: (context, AuthState state) {
+                          state.maybeWhen(
+                              successLoginWithUsername: (result) {
+                                context.router.pushAndPopUntil(
+                                    const DashboardPageRoute(),
+                                    predicate: (Route<dynamic> route) => false);
+                                PermissionUtil.requestAll();
+                              },
+                              orElse: () {});
+                        },
+                        builder: (context, state) {
+                          return CustomButton(
+                              width: constraints.maxWidth / 1.2,
+                              onTap: () => submit(),
+                              text: 'Login');
+                        },
+                      ),
                       16.height,
                       TextButton(
                           onPressed: () {},

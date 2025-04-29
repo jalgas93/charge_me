@@ -2,12 +2,15 @@ import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
 import 'package:charge_me/core/styles/app_colors_dark.dart';
+import 'package:charge_me/feature/auth/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/router/router.gr.dart';
 import '../../../share/widgets/app_bar_container.dart';
 import '../../../share/widgets/custom_button.dart';
 import '../../../share/widgets/item_app_bar.dart';
+import '../auth_repository.dart';
 import '../widget/text_form_container.dart';
 import '../widget/title_text.dart';
 
@@ -21,12 +24,44 @@ class RegisterFormPage extends StatefulWidget {
 
 class _RegisterFormPageState extends State<RegisterFormPage> {
   final GlobalKey<FormState> _formRegister = GlobalKey<FormState>();
-  final TextEditingController _controllerName = TextEditingController();
-  final TextEditingController _controllerEmail = TextEditingController();
+  final TextEditingController _controllerFirstname = TextEditingController();
+  final TextEditingController _controllerUsername = TextEditingController();
+  final TextEditingController _controllerPhone = TextEditingController();
+  final TextEditingController _controllerAvatar = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
+  late AuthBloc _bloc;
+  late AuthRepository _repository;
+  bool _keyboardVisible = false;
+  bool isObs = true;
+
+  @override
+  void initState() {
+    _repository = AuthRepository();
+    _bloc = AuthBloc(repository: _repository);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _bloc.close();
+    super.dispose();
+  }
+
+  void submit() {
+    if (_formRegister.currentState!.validate()) {
+      _bloc.add(AuthEvent.registerWithUsername(
+        username: _controllerUsername.text.trim(),
+        phone: _controllerPhone.text.trim(),
+        password: _controllerPassword.text.trim(),
+        firstname: _controllerFirstname.text.trim(),
+        avatar: _controllerAvatar.text.trim(),
+      ));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    _keyboardVisible = MediaQuery.of(context).viewInsets.bottom != 0;
     return Scaffold(
       appBar: AppBarContainer(
         appBar: AppBar(
@@ -43,12 +78,13 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
         ),
       ),
       body: LayoutBuilder(
-        builder: (context,constraints){
+        builder: (context, constraints) {
           return SingleChildScrollView(
             child: ConstrainedBox(
               constraints: BoxConstraints(
-                  maxHeight: constraints.maxHeight
-              ),
+                  maxHeight: _keyboardVisible
+                      ? constraints.maxHeight + constraints.maxWidth / 2
+                      : constraints.maxHeight),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -62,31 +98,54 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                     child: Column(
                       children: [
                         TextFormContainer(
-                          controller: _controllerName,
+                          controller: _controllerFirstname,
                           prefixIcon: 'assets/profile2.png',
-                          hintText: 'Full name',
+                          hintText: 'First name',
                         ),
                         TextFormContainer(
-                          controller: _controllerEmail,
-                          prefixIcon: 'assets/email.png',
-                          hintText: 'Email',
+                          controller: _controllerUsername,
+                          prefixIcon: 'assets/profile2.png',
+                          hintText: 'Username',
                         ),
                         TextFormContainer(
                           controller: _controllerPassword,
                           prefixIcon: 'assets/lock.png',
                           hintText: 'Password',
                           prefixColor: AppColorsDark.red2,
+                          isObs: isObs,
+                          isShow: true,
+                          actionsButton: () {
+                            setState(() {
+                              isObs = !isObs;
+                            });
+                          },
+                        ),
+                        TextFormContainer(
+                          controller: _controllerAvatar,
+                          prefixIcon: 'assets/profile2.png',
+                          hintText: 'Avatar',
                         ),
                       ],
                     ),
                   ),
                   16.height,
-                  CustomButton(
-                    width: constraints.maxWidth/1.2,
-                      onTap: () {
-                        context.router.push(const RegisterFormOtpRoutePage());
-                      },
-                      text: 'Register'),
+                  BlocConsumer<AuthBloc, AuthState>(
+                    bloc: _bloc,
+                    listener: (context, AuthState state) {
+                      state.maybeWhen(
+                          successRegisterWithUsername: (result) {
+                            context.router
+                                .push(const RegisterFormOtpRoutePage());
+                          },
+                          orElse: () {});
+                    },
+                    builder: (context, state) {
+                      return CustomButton(
+                          width: constraints.maxWidth / 1.2,
+                          onTap: () => submit(),
+                          text: 'Register');
+                    },
+                  ),
                 ],
               ),
             ),

@@ -15,20 +15,22 @@ import 'core/service_locator.dart';
 final router = ServiceLocator.get<AppRouter>();
 
 Future<void> main() async {
-  FlutterError.onError = (FlutterErrorDetails details) async {
+/*  FlutterError.onError = (FlutterErrorDetails details) async {
     Log.i('GREY SCREEN', details);
     router.push(const SplashPageRoute());
-  };
-  runZoned<Future<void>>(() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
-    //debugRepaintRainbowEnabled = true;
-    await ServiceLocator.setup();
-    Log.initialize();
-    runApp(const CustomMaterialApp());
+  };*/
+/*  runZoned<Future<void>>(() async {
+
   }, onError: (error, stackTrace) {
     Log.i(error, stackTrace);
-  });
+  });*/
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
+  //debugRepaintRainbowEnabled = true;
+  await ServiceLocator.setup();
+  Log.initialize();
+  runApp(const CustomMaterialApp());
 }

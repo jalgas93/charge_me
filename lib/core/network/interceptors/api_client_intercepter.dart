@@ -1,6 +1,9 @@
 import 'package:dio/dio.dart';
 
+import '../../../share/utils/constant/config_app.dart';
 import '../../../share/utils/flutter_secure_storage.dart';
+import '../response/api_exception.dart';
+import '../response/api_response.dart';
 
 
 class ApiClientInterceptor extends Interceptor {
@@ -10,26 +13,18 @@ class ApiClientInterceptor extends Interceptor {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-/*    options.baseUrl = ConfigApp.apiUrlSnapEdit;
-    options.headers = {
-      'Accept': 'image/png,application/json',
-      'Content-Type': 'multipart/form-data',
-      'x-api-key': ConfigApp.apiKeySnapEdit
-    };
-    options.responseType = ResponseType.json;*/
-/*    if (SecureStorageService.getInstance.getValue('access_token') != null) {
-      options.headers['x-api-key'] = ConfigApp.apiKeyImageEditing;
-    }*/
+    options.baseUrl = ConfigApp.url;
+    options.responseType = ResponseType.json;
 
     return super.onRequest(options, handler);
   }
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-/*    final apiResponse = ApiResponse.fromJson(response.data);
+    final apiResponse = ApiResponse.fromJson(response.data);
     if (!apiResponse.isSuccess) {
       throw ApiException.fromJson(response.data);
-    }*/
+    }
     return super.onResponse(response, handler);
   }
 
@@ -52,11 +47,11 @@ class ApiClientInterceptor extends Interceptor {
 Future<String> refreshToken(Dio client) async {
   final refreshToken =
       await SecureStorageService.getInstance.getValue("refresh_token");
-  var response = await client.post('token/refresh', data: refreshToken);
+  var response = await client.post('auth/refresh', data: refreshToken);
   if (response.statusCode == 200) {
-    return response.data['data']['token']['access'];
+    return response.data['data']['token']['token'];
   }
-  return response.data['data']['token']['access'];
+  return response.data['data']['token']['token'];
 }
 
 Future<Response<dynamic>> _retry(
