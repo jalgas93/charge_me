@@ -12,46 +12,52 @@ class ItemContainer extends StatelessWidget {
       this.description,
       required this.image,
       this.colorText,
-      this.colorIcon});
+      this.colorIcon,
+      this.onTap,
+      });
 
   final String title;
   final String? description;
   final String image;
   final Color? colorText;
   final Color? colorIcon;
+  final Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 2, bottom: 2),
-      padding: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: AppColorsDark.white3,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              ItemIconContainer(
-                child: Image.asset(image, color: colorIcon),
-              ),
-              16.width,
-              Text(title,
-                  style:
-                      context.textTheme.titleSmall?.copyWith(color: colorText)),
-            ],
-          ),
-          if (description != null) ...[
-            Text(description!, style: context.textTheme.titleSmall)
-          ] else ...[
-            const Icon(
-              Icons.chevron_right,
-              color: AppColorsDark.white,
-            )
-          ]
-        ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(top: 2, bottom: 2),
+        padding: const EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: AppColorsDark.white3,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                ItemIconContainer(
+                  child: Image.asset(image, color: colorIcon),
+                ),
+                16.width,
+                Text(title,
+                    style:
+                        context.textTheme.titleSmall?.copyWith(color: colorText)),
+              ],
+            ),
+            if (description != null) ...[
+              Text(description!, style: context.textTheme.titleSmall)
+            ] else ...[
+              const Icon(
+                Icons.chevron_right,
+                color: AppColorsDark.white,
+              )
+            ]
+          ],
+        ),
       ),
     );
   }

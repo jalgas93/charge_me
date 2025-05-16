@@ -1,8 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/router/router.gr.dart';
 
-import '../../feature/auth/view/login_option_page.dart';
-import '../../feature/auth/view/register_form_page.dart';
 
 @AutoRouterConfig()
 class AppRouter extends RootStackRouter  {
@@ -37,6 +35,34 @@ class AppRouter extends RootStackRouter  {
     AutoRoute(
       path: '/register_form_otp_page',
       page: RegisterFormOtpRoutePage.page,
+    ),
+    AutoRoute(
+      path: '/language_page',
+      page: SelectLanguagePageRoute.page,
+    ),
+    AutoRoute(
+      path: '/setting_page',
+      page: SettingRoutePage.page,
+    ),
+    AutoRoute(
+      path: '/edit_profile_page',
+      page: EditProfilePageRoute.page,
+    ),
+    AutoRoute(
+      path: '/support_service_page',
+      page: SupportServicePage.page,
+    ),
+    AutoRoute(
+      path: '/term_of_use_page',
+      page: TermsOfUsePage.page,
+    ),
+    AutoRoute(
+      path: '/wallet_page',
+      page: WalletRoutePage.page,
+    ),
+    AutoRoute(
+      path: '/about_app_page',
+      page: AboutAppRoutePage.page,
     ),
   ];
 }

@@ -186,7 +186,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       ?.copyWith(color: const Color(0xFF00FFDA)),
                 ),
                 16.height,
-                Expanded(
+                Flexible(
                   child: DefaultTabController(
                     length: 3, // Number of tabs
                     child: Column(

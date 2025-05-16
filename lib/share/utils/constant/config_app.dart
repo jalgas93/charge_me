@@ -3,7 +3,8 @@ import 'package:flutter/foundation.dart';
 class ConfigApp {
   static const bool enableHttpDebugMessages = !kReleaseMode;
 
-  static const String _url = "http://localhost:8080/api/v1/";
+  static const String apiBaseUrl = 'https://prod.tazaquat.kz/';
+  static const String apiDevUrl = 'https://dev.tazaquat.kz/';
 
-  static String get url => _url;
+  static String get url => apiBaseUrl;
 }

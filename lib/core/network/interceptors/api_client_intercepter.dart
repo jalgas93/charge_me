@@ -47,11 +47,11 @@ class ApiClientInterceptor extends Interceptor {
 Future<String> refreshToken(Dio client) async {
   final refreshToken =
       await SecureStorageService.getInstance.getValue("refresh_token");
-  var response = await client.post('auth/refresh', data: refreshToken);
+  var response = await client.post('api/v1/auth/refresh', data: refreshToken);
   if (response.statusCode == 200) {
-    return response.data['data']['token']['token'];
+    return response.data['data']['token'];
   }
-  return response.data['data']['token']['token'];
+  return response.data['data']['token'];
 }
 
 Future<Response<dynamic>> _retry(

@@ -20,7 +20,7 @@ class AuthRepository extends BaseRepository {
       "createAt": "Today",
     };
     final response = await client.post(
-      'auth/registration',
+      'api/v1/auth/registration',
       data: data,
     );
     return response.data;
@@ -35,7 +35,7 @@ class AuthRepository extends BaseRepository {
       "password": password,
     };
     final response = await client.post(
-      'auth/sign-in',
+      'api/v1/auth/sign-in',
       data: data,
     );
     return response.data;

@@ -1,5 +1,6 @@
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:charge_me/core/application.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
 
@@ -8,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/router/router.gr.dart';
 import '../../../core/styles/app_colors_dark.dart';
+import '../../../core/utils/flutter_secure_storage.dart';
 import '../../../core/utils/permission_until.dart';
 import '../../bloc/app_bloc/app_bloc.dart';
 import '../../utils/permission_until.dart';
@@ -47,10 +49,6 @@ class _SplashPageState extends State<SplashPage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             16.height,
-            Text(
-              'Tesla Model 3',
-              style: context.textTheme.headlineMedium,
-            ),
             SizedBox(
               height: context.screenSize.height / 2.2,
               child: Stack(
@@ -101,7 +99,7 @@ class _SplashPageState extends State<SplashPage> {
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20),
               child: Text(
-                "It's a pleasure to meet you! How can i assist you today?",
+                "Добро пожаловать! Готов зарядить ваш автомобиль с энергией",
                 style: context.textTheme.titleSmall,
                 textAlign: TextAlign.center,
               ),
@@ -110,8 +108,21 @@ class _SplashPageState extends State<SplashPage> {
               bloc: _bloc,
               listener: (BuildContext context, AppState state) {
                 state.maybeWhen(
-                    success: () {
-                      context.router.push(const LoginOptionRoutePage());
+                    success: ()async {
+                      final token = await SecureStorageService.getInstance
+                          .getValue("access_token");
+                      if (context.mounted) {
+                        if (token != null) {
+                          context.router.push(const DashboardPageRoute());
+                        } else {
+                          if (Application.language != null) {
+                            context.router.push(const LoginOptionRoutePage());
+                          } else {
+                            context.router
+                                .push(const SelectLanguagePageRoute());
+                          }
+                        }
+                      }
                     },
                     orElse: () {});
               },
@@ -123,7 +134,7 @@ class _SplashPageState extends State<SplashPage> {
                       _bloc.add(const AppEvent.started());
                       PermissionUtil.requestAll();
                     },
-                    text: 'Continued',
+                    text: 'Продолжить',
                   );
                 });
               },
