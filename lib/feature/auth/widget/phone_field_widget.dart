@@ -1,39 +1,17 @@
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/phone_number.dart';
 
 import '../../../core/styles/app_colors_dark.dart';
 
-class TextFormContainer extends StatelessWidget {
-  const TextFormContainer(
-      {super.key,
-      required this.prefixIcon,
-      required this.hintText,
-      this.keyboardType,
-      required this.controller,
-      this.prefixColor,
-      this.isObs = false,
-      this.isShow = false,
-      this.actionsButton,
-      this.inputFormatters,
-      this.validator,
-      this.onChanged});
-
-  final String prefixIcon;
-  final String hintText;
-  final TextInputType? keyboardType;
-  final TextEditingController controller;
-  final Color? prefixColor;
-  final bool isObs;
-  final bool isShow;
-  final Function()? actionsButton;
-  final List<TextInputFormatter>? inputFormatters;
-  final String? Function(String?)? validator;
-  final ValueChanged<String>? onChanged;
-
+class PhoneFieldWidget extends StatelessWidget {
+  const PhoneFieldWidget({super.key, required this.controller, this.onChanged});
+final TextEditingController controller;
+  final Function(PhoneNumber)? onChanged;
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return  Padding(
       padding: const EdgeInsets.only(
         left: 16,
         right: 16,
@@ -45,20 +23,24 @@ class TextFormContainer extends StatelessWidget {
         decoration: BoxDecoration(
             color: AppColorsDark.white4,
             borderRadius: BorderRadius.circular(10)),
-        child: TextFormField(
+        child: IntlPhoneField(
             autofocus: false,
-            obscureText: isObs,
             controller: controller,
             cursorColor: context.textTheme.bodyLarge?.color,
-            keyboardType: keyboardType,
+            keyboardType: TextInputType.phone,
             style: context.textTheme.titleSmall,
-            validator: (String? value) {
+            validator: (value) {
               if (value == null || value == '') {
                 return 'Обязательное поле';
               }
               return null;
             },
             onChanged: onChanged,
+            languageCode: "KZ",
+            initialCountryCode: 'KZ',
+            onCountryChanged: (country) {
+              print('Country changed to: ' + country.name);
+            },
             decoration: InputDecoration(
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: AppColorsDark.transparent),
@@ -82,27 +64,14 @@ class TextFormContainer extends StatelessWidget {
                 ),
               ),
               errorMaxLines: 2,
-              prefixIcon: Image.asset(prefixIcon,
-                  color: prefixColor ?? context.theme.iconTheme.color),
-              suffixIcon: isShow
-                  ? SizedBox(
-                      width: context.screenSize.width / 10,
-                      child: TextButton(
-                          onPressed: actionsButton,
-                          child: isObs
-                              ? const Icon(
-                                  Icons.visibility,
-                                  color: AppColorsDark.green1,
-                                )
-                              : const Icon(
-                                  Icons.visibility_off,
-                                  color: AppColorsDark.red1,
-                                )))
-                  : const SizedBox.shrink(),
-              hintText: hintText,
+              hintText: "phone",
               hintStyle: context.textTheme.bodyLarge,
+              enabled: true,
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.cancel),
+                onPressed: () => controller.clear(),
+              ),
             ),
-            textCapitalization: TextCapitalization.none,
             textInputAction: TextInputAction.next,
             inputFormatters: const [
               //  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]'))

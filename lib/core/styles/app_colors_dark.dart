@@ -48,6 +48,7 @@ class AppColorsDark {
 
   static const Color white = Color(0xFFFFFFFF);
   static const Color black = Color(0xFF000000);
+  static const Color whiteSecondary = Color(0xffF5F4F8);
   static Color transparent = Colors.transparent;
 
   static const Color bodyText = Color(0xFFBDBDBD);
@@ -68,6 +69,7 @@ class AppColorsDark {
   static const Color onError = red3;
   static const Color errorContainer = red1;
   static const Color tertiary = white;
+  static const Color lightGreen = Color(0xFF8BC83F);
 
 
 

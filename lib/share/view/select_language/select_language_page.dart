@@ -43,20 +43,20 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
                 child: Text(
                   'Выберите язык',
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
               ),
               50.height,
               Container(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.only(left: 16,right: 16,top: 24,bottom: 24),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).cardTheme.color,
+                  color: Theme.of(context).hoverColor,
                   boxShadow: [
                     BoxShadow(
-                      color: Theme.of(context).shadowColor.withOpacity(0.1),
-                      spreadRadius: 5,
-                      blurRadius: 7,
-                      offset: const Offset(0, 3), // changes position of shadow
+                      color: context.theme.shadowColor.withOpacity(0.3),
+                      spreadRadius: 3,
+                      blurRadius: 10,
+                      offset: const Offset(0, 7), // changes position of shadow
                     ),
                   ],
                   borderRadius: BorderRadius.circular(16.0),

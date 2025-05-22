@@ -3,6 +3,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/application.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
+import 'package:drop_shadow/drop_shadow.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -50,23 +51,19 @@ class _SplashPageState extends State<SplashPage> {
           children: [
             16.height,
             SizedBox(
-              height: context.screenSize.height / 2.2,
+              height: context.screenSize.height / 2,
               child: Stack(
                 children: [
                   Container(
-                    margin: const EdgeInsets.only(left: 40, right: 40, top: 70),
-                    decoration: const BoxDecoration(
-                        image: DecorationImage(
-                      image: AssetImage("assets/ellipse.png"),
-                      fit: BoxFit.contain,
-                    )),
-                  ),
-                  Container(
-                    decoration: const BoxDecoration(
-                        image: DecorationImage(
-                      image: AssetImage("assets/car.png"),
-                      fit: BoxFit.contain,
-                    )),
+                    padding: const EdgeInsets.only(bottom: 16),
+                    alignment: Alignment.center,
+                    child: DropShadow(
+                        color: AppColorsDark.green1,
+                        spread: 0,
+                        child: Image.asset(
+                          "assets/charger.png",
+                          width: context.screenSize.width,
+                        )),
                   ),
                   Positioned(
                       left: 0,
@@ -116,7 +113,7 @@ class _SplashPageState extends State<SplashPage> {
                           context.router.push(const DashboardPageRoute());
                         } else {
                           if (Application.language != null) {
-                            context.router.push(const LoginOptionRoutePage());
+                            context.router.push(const SignInFormRoutePage());
                           } else {
                             context.router
                                 .push(const SelectLanguagePageRoute());

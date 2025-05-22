@@ -64,5 +64,17 @@ class AppRouter extends RootStackRouter  {
       path: '/about_app_page',
       page: AboutAppRoutePage.page,
     ),
+    AutoRoute(
+      path: '/AccountSetupConnectorRoutePage',
+      page: AccountSetupConnectorRoutePage.page,
+    ),
+    AutoRoute(
+      path: '/AccountSetupLocationRoutePage',
+      page: AccountSetupLocationRoutePage.page,
+    ),
+    AutoRoute(
+      path: '/AccountSetupUserRoutePage',
+      page: AccountSetupUserRoutePage.page,
+    ),
   ];
 }

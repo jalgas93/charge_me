@@ -3,9 +3,10 @@ import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
 import 'package:charge_me/feature/auth/view/register_form_page.dart';
+import 'package:drop_shadow/drop_shadow.dart';
+import 'package:drop_shadow_image/drop_shadow_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../core/router/router.gr.dart';
 import '../../../core/styles/app_colors_dark.dart';
 import '../../../core/utils/permission_until.dart';
@@ -29,6 +30,7 @@ class _SingInFormPageState extends State<SingInFormPage> {
       TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
   bool isObs = true;
+  bool _keyboardVisible = false;
 
   late AuthBloc _bloc;
   late AuthRepository _repository;
@@ -57,18 +59,35 @@ class _SingInFormPageState extends State<SingInFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    _keyboardVisible = MediaQuery.of(context).viewInsets.bottom != 0;
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: constraints.maxHeight),
+              constraints: BoxConstraints(maxHeight: _keyboardVisible
+              ? constraints.maxHeight + constraints.maxWidth / 3
+                  : constraints.maxHeight),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   16.height,
-                  Image.asset('assets/car_2.png'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      DropShadowImage(
+                        offset: const Offset(10,10),
+                        scale: 1,
+                        blurRadius: 25,
+                        borderRadius: 25,
+                        image: Image.asset('assets/charger_new_color_2.png',
+                          width: context.screenSize.width/3,),
+                      ),
+                      Image.asset('assets/car_2.png'),
+                    ],
+                  ),
                   const TitleText(
                     title: 'Let’s',
                     supplementary: 'Sign In',

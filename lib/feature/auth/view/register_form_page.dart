@@ -11,6 +11,8 @@ import '../../../share/widgets/app_bar_container.dart';
 import '../../../share/widgets/custom_button.dart';
 import '../../../share/widgets/item_app_bar.dart';
 import '../auth_repository.dart';
+import '../widget/lower_part.dart';
+import '../widget/phone_field_widget.dart';
 import '../widget/text_form_container.dart';
 import '../widget/title_text.dart';
 
@@ -84,7 +86,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
               constraints: BoxConstraints(
                   maxHeight: _keyboardVisible
                       ? constraints.maxHeight + constraints.maxWidth / 2
-                      : constraints.maxHeight),
+                      : constraints.maxHeight + constraints.maxWidth / 3),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -101,11 +103,17 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                           controller: _controllerFirstname,
                           prefixIcon: 'assets/profile2.png',
                           hintText: 'First name',
+                          onChanged: (event){
+                            _formRegister.currentState!.validate();
+                          },
                         ),
                         TextFormContainer(
                           controller: _controllerUsername,
                           prefixIcon: 'assets/profile2.png',
                           hintText: 'Username',
+                          onChanged: (event){
+                            _formRegister.currentState!.validate();
+                          },
                         ),
                         TextFormContainer(
                           controller: _controllerPassword,
@@ -119,16 +127,28 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                               isObs = !isObs;
                             });
                           },
+                          onChanged: (event){
+                            _formRegister.currentState!.validate();
+                          },
                         ),
                         TextFormContainer(
                           controller: _controllerAvatar,
                           prefixIcon: 'assets/profile2.png',
                           hintText: 'Avatar',
+                          onChanged: (event){
+                            _formRegister.currentState!.validate();
+                          },
                         ),
+                        PhoneFieldWidget(
+                          controller: _controllerPhone,
+                          onChanged: (event){
+                            _formRegister.currentState!.validate();
+                          },
+                        )
                       ],
                     ),
                   ),
-                  16.height,
+                  const LowerPart(),
                   BlocConsumer<AuthBloc, AuthState>(
                     bloc: _bloc,
                     listener: (context, AuthState state) {

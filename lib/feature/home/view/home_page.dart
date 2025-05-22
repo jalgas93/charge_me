@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           automaticallyImplyLeading: false,
           leading: GestureDetector(
             onTap: () {
-              context.router.push(const LoginOptionRoutePage());
+              context.router.push(const SignInFormRoutePage());
             },
             child: ItemAppBar(
               icon: 'assets/profile_image.png',
@@ -71,6 +71,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ],
           ),
           actions: [
+            IconButton(onPressed: (){
+              context.router.push(const AccountSetupConnectorRoutePage());
+            }, icon: const Icon(Icons.add)),
             Stack(
               children: [
                 Align(

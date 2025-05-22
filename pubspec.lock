@@ -321,6 +321,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  drop_shadow:
+    dependency: "direct main"
+    description:
+      name: drop_shadow
+      sha256: "1fa552baeb7c6a3c36a7ff77186a2302a7bf53c93914f46328a9c4eb68ec6b08"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
+  drop_shadow_image:
+    dependency: "direct main"
+    description:
+      name: drop_shadow_image
+      sha256: d73a954ce7c7aaa17ea27d45c2fdbfb7f868d20edd0482bbc94a3d69308d86a7
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.9.1"
   encrypt:
     dependency: transitive
     description:
@@ -502,6 +518,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.1"
+  flutter_dotenv:
+    dependency: "direct main"
+    description:
+      name: flutter_dotenv
+      sha256: b7c7be5cd9f6ef7a78429cabd2774d3c4af50e79cb2b7593e3d5d763ef95c61b
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.2.1"
   flutter_launcher_icons:
     dependency: "direct main"
     description:
