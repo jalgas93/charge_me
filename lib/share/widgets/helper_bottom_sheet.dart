@@ -92,7 +92,7 @@ class HelperBottomSheet {
                     height: 5,
                     width: context.screenSize.width / 6,
                     decoration: BoxDecoration(
-                        color: AppColorsDark.darkStyleText,
+                        color: AppColorsDark.secondary,
                         borderRadius: BorderRadius.circular(100)),
                   ),
                 ),

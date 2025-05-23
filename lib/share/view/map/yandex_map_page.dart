@@ -197,7 +197,7 @@ class _YandexMapPageState extends State<YandexMapPage> {
               child: CustomButton(
                   width: context.screenSize.width / 1.2,
                   onTap: () {
-                    context.router.push(const AccountSetupUserRoutePage());
+                    context.router.push(const AccountSetupLocationRoutePage());
                   },
                   text: 'Добавить местоположение'),
             ),

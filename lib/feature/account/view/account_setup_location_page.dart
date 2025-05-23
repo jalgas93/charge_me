@@ -8,6 +8,7 @@ import '../../../core/styles/app_colors_dark.dart';
 import '../../../share/widgets/app_bar_container.dart';
 import '../../../share/widgets/custom_button.dart';
 import '../../../share/widgets/item_app_bar.dart';
+import '../../../share/widgets/skip_container.dart';
 import '../widget/second_container_map.dart';
 import '../widget/title_fields.dart';
 
@@ -36,6 +37,13 @@ class _AccountSetupLocationPageState extends State<AccountSetupLocationPage> {
               context.router.popForced();
             },
           ),
+          actions: [
+            SkipContainer(
+              onTap: (){
+                context.router.push(const AccountSetupUserRoutePage());
+              },
+            )
+          ],
         ),
       ),
       body: Padding(

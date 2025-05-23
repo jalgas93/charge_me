@@ -10,6 +10,7 @@ import '../../../core/styles/app_colors_dark.dart';
 import '../../../share/widgets/app_bar_container.dart';
 import '../../../share/widgets/custom_button.dart';
 import '../../../share/widgets/item_app_bar.dart';
+import '../../../share/widgets/skip_container.dart';
 import '../widget/connector_selection.dart';
 
 @RoutePage(name: "AccountSetupConnectorRoutePage")
@@ -37,6 +38,13 @@ class _AccountSetupConnectorPageState extends State<AccountSetupConnectorPage> {
               context.router.popForced();
             },
           ),
+          actions: [
+            SkipContainer(
+              onTap: (){
+                context.router.push(const AccountSetupLocationRoutePage());
+              },
+            )
+          ],
         ),
       ),
       body: Padding(

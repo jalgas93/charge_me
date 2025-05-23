@@ -1,6 +1,7 @@
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
+import 'package:charge_me/core/router/router.gr.dart';
 import 'package:charge_me/feature/account/bloc/account_setup_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import '../../../share/widgets/app_bar_container.dart';
 import '../../../share/widgets/custom_button.dart';
 import '../../../share/widgets/helper_bottom_sheet.dart';
 import '../../../share/widgets/item_app_bar.dart';
+import '../../../share/widgets/skip_container.dart';
 import '../../../share/widgets/status_widgets/success_status.dart';
 import '../../auth/widget/text_form_container.dart';
 import '../../auth/widget/title_text.dart';
@@ -73,6 +75,13 @@ class _AccountSetupUserPageState extends State<AccountSetupUserPage> {
               context.router.popForced();
             },
           ),
+          actions: [
+            SkipContainer(
+              onTap: (){
+                context.router.push(const DashboardPageRoute());
+              },
+            )
+          ],
         ),
       ),
       body: LayoutBuilder(
