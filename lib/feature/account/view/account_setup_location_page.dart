@@ -47,15 +47,16 @@ class _AccountSetupLocationPageState extends State<AccountSetupLocationPage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               const TitleFields(
-                field: 'Where is the ',
-                field2: 'location',
-                field3: ' ?',
+                field: 'Добавьте свое',
+                field2: ' местоположение',
+                field3: '',
               ),
               SecondContainerMap(
                 constraints: constraints,
-                onPressed: (){
-                  // context.router.push(const YandexMapPageRoute());
+                onTap: (){
+                   context.router.push(const YandexMapPageRoute());
                 },
+                isLocation: false,
               ),
               const Spacer(),
               Align(

@@ -71,7 +71,7 @@ class AppColorsDark {
   static const Color tertiary = white;
   static const Color lightGreen = Color(0xFF8BC83F);
 
-
+  static const Color darkStyleText = Color(0xFF252B5C);
 
 
   static const List<Color> gradientGreen = [

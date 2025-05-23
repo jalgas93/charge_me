@@ -38,22 +38,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-/*        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            nextPage(4);
-            UtilsDashboard.setIsSelected = 4;
-          },
-          shape: const CircleBorder(),
-          child: Container(
-            height: 100,
-            width: 100,
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: context.theme.unselectedWidgetColor),
-            child: Image.asset('assets/energy.png'),
-          ),
-        ),*/
         bottomNavigationBar: BottomAppBar(
           shape: const CircularNotchedRectangle(),
           notchMargin: 6,

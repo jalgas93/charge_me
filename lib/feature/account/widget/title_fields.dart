@@ -26,11 +26,11 @@ class TitleFields extends StatelessWidget {
       text: TextSpan(
         text: field,
         style: context.textTheme.bodyLarge
-            ?.copyWith(fontSize: 22),
+            ?.copyWith(fontSize: 20),
         children: <TextSpan>[
           TextSpan(
             text: field2,
-            style: context.textTheme.titleLarge?.copyWith(color: AppColorsDark.primaryContainer),
+            style: context.textTheme.titleLarge?.copyWith(color: AppColorsDark.white),
           ),
           TextSpan(
             text: field3,

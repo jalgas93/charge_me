@@ -15,8 +15,18 @@ class AccountSetupBloc extends Bloc<AccountSetupEvent, AccountSetupState> {
   AccountSetupBloc({required AccountSetupRepository repository})
       : _repository = repository,
         super(const AccountSetupState.initial()) {
-    on<AccountSetupEvent>((event, emit) {
-      // TODO: implement event handler
-    });
+    on<AccountSetupEvent>((event, emit) => _accountSetup(event, emit));
+  }
+
+  Future<void> _accountSetup(
+    AccountSetupEvent event,
+    Emitter<AccountSetupState> emit,
+  ) async {
+    emit(const AccountSetupState.loading());
+    try {
+      emit(const AccountSetupState.success());
+    } catch (e) {
+      emit(AccountSetupState.error(error: e));
+    }
   }
 }

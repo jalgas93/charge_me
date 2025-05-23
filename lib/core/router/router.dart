@@ -76,5 +76,9 @@ class AppRouter extends RootStackRouter  {
       path: '/AccountSetupUserRoutePage',
       page: AccountSetupUserRoutePage.page,
     ),
+    AutoRoute(
+      path: '/yandex_map_page',
+      page: YandexMapPageRoute.page,
+    ),
   ];
 }

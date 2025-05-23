@@ -1,17 +1,22 @@
-/*
 import 'dart:async';
 
+import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:charge_me/core/extensions/context_extensions.dart';
+import 'package:charge_me/core/extensions/empty_space.dart';
+import 'package:charge_me/core/router/router.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
-import '../../../feature/dashboard/utils/utils_dashboard.dart';
+import '../../../core/styles/app_colors_dark.dart';
 import '../../../feature/home/model/app_lat_long.dart';
 import '../../../feature/home/model/map_point.dart';
-import '../../../feature/location/widget/initial_booking.dart';
-import '../../../feature/location/widget/success_booking.dart';
-import '../../utils/charge_bottom_sheet.dart';
 import '../../utils/location_service.dart';
+import '../../widgets/app_bar_container.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/item_app_bar.dart';
 
+@RoutePage(name: "YandexMapPageRoute")
 class YandexMapPage extends StatefulWidget {
   const YandexMapPage({super.key});
 
@@ -21,6 +26,13 @@ class YandexMapPage extends StatefulWidget {
 
 class _YandexMapPageState extends State<YandexMapPage> {
   final mapControllerCompleter = Completer<YandexMapController>();
+  final List<MapObject> _mapObjects = [];
+
+  // Координаты маркера (Москва)
+  final Point _targetPoint = Point(
+    latitude: 41.183600,
+    longitude: 69.164800,
+  );
 
   @override
   void initState() {
@@ -44,8 +56,7 @@ class _YandexMapPageState extends State<YandexMapPage> {
     AppLatLong location;
     const defLocation = MetroLocation();
     try {
-      //  location = await LocationService().getCurrentLocation();
-      location = const AppLatLong(lat: 41.326928, long: 69.327526);
+      location = await LocationService().getCurrentLocation();
     } catch (_) {
       location = defLocation;
     }
@@ -53,8 +64,8 @@ class _YandexMapPageState extends State<YandexMapPage> {
   }
 
   Future<void> _moveToCurrentLocation(
-      AppLatLong appLatLong,
-      ) async {
+    AppLatLong appLatLong,
+  ) async {
     (await mapControllerCompleter.future).moveCamera(
       animation: const MapAnimation(type: MapAnimationType.linear, duration: 1),
       CameraUpdate.newCameraPosition(
@@ -68,33 +79,12 @@ class _YandexMapPageState extends State<YandexMapPage> {
       ),
     );
   }
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton.small(
-        backgroundColor: Theme.of(context).primaryColor,
-        shape: const CircleBorder(),
-        onPressed: () async {
-          AppLatLong location = await LocationService().getCurrentLocation();
-          _moveToCurrentLocation(location);
-        },
-        child: const Icon(Icons.map),
-      ),
-      body: YandexMap(
-        onMapCreated: (controller) async {
-          mapControllerCompleter.complete(controller);
-        },
-        mapObjects: _getPlacemarkObjects(context),
-      ),
-    );
-  }
+
   /// Метод для генерации точек на карте
   List<MapPoint> _getMapPoints() {
     return const [
       MapPoint(name: 'jalgas1', latitude: 41.326680, longitude: 69.327475),
-      MapPoint(name: 'jalgas2', latitude: 41.327567, longitude: 69.326915),
-      MapPoint(name: 'jalgas3', latitude: 41.326836, longitude: 69.326400),
-      MapPoint(name: 'jalgas4', latitude: 41.327110, longitude: 69.328197),
+
     ];
   }
 
@@ -103,30 +93,117 @@ class _YandexMapPageState extends State<YandexMapPage> {
     return _getMapPoints()
         .map(
           (point) => PlacemarkMapObject(
-          mapId: MapObjectId('MapObject $point'),
-          point: Point(latitude: point.latitude, longitude: point.longitude),
-          opacity: 1,
-          icon: PlacemarkIcon.single(
-            PlacemarkIconStyle(
-              image: BitmapDescriptor.fromAssetImage(
-                'assets/map_point.png',
+            mapId: MapObjectId('MapObject $point'),
+            point: Point(latitude: point.latitude, longitude: point.longitude),
+            opacity: 1,
+            direction: 90,
+            isDraggable: true,
+            onDragStart: (_) => print('Drag start'),
+            onDrag: (_, Point point) =>
+                print('Drag at point $point'),
+            onDragEnd: (_) => print('Drag end'),
+            icon: PlacemarkIcon.single(
+              PlacemarkIconStyle(
+                image: BitmapDescriptor.fromAssetImage(
+                    'assets/location_1.png'),
+                scale: 1.5,
               ),
-              scale: 2,
             ),
           ),
-          onTap: (_, __) async {
-            await ChargeBottomSheet.draggableScrollableSheet(
-                context: context,
-                children: [
-                  ValueListenableBuilder(
-                      valueListenable: UtilsDashboard.change,
-                      builder: (context, value, child) {
-                        return value ? const StationOther() : Station(listConnectors: []);
-                      })
-                ]);
-          }),
-    )
+        )
         .toList();
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          YandexMap(
+              onMapCreated: (controller) async {
+                mapControllerCompleter.complete(controller);
+              },
+              mapObjects: _getPlacemarkObjects(context)),
+          Positioned(
+            left: 16,
+            top: 36,
+            child: ItemAppBar(
+              icon: 'assets/back.png',
+              color: AppColorsDark.black,
+              colorIcon: AppColorsDark.white,
+              onPressed: () {
+                context.router.popForced();
+              },
+            ),
+          ),
+          Positioned(
+            right: 16,
+            bottom: context.screenSize.width / 1.5,
+            child: ItemAppBar(
+              icon: 'assets/gps.png',
+              color: AppColorsDark.black,
+              colorIcon: AppColorsDark.white,
+              onPressed: () async {
+                AppLatLong location =
+                    await LocationService().getCurrentLocation();
+                _moveToCurrentLocation(location);
+              },
+            ),
+          ),
+          Positioned(
+            right: 16,
+            left: 16,
+            bottom: context.screenSize.width / 4,
+            child: Container(
+              height: context.screenSize.width / 2.5,
+              width: context.screenSize.width,
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+              decoration: BoxDecoration(
+                  color: AppColorsDark.white,
+                  borderRadius: BorderRadius.circular(25)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Информация о местоположении',
+                      style: context.textTheme.titleSmall
+                          ?.copyWith(color: AppColorsDark.darkStyleText)),
+                  16.height,
+                  Row(
+                    children: [
+                      const ItemAppBar(
+                        color: AppColorsDark.whiteSecondary,
+                        icon: 'assets/icon_pin.png',
+                      ),
+                      16.width,
+                      Flexible(
+                        child: Text(
+                          'Jl. Cisangkuy, Citarum, Kec. Bandung Wetan, Kota Bandung, Jawa Barat 40115',
+                          style: context.textTheme.bodyMedium
+                              ?.copyWith(color: AppColorsDark.darkStyleText),
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 24,
+            child: Align(
+              alignment: Alignment.center,
+              child: CustomButton(
+                  width: context.screenSize.width / 1.2,
+                  onTap: () {
+                    context.router.push(const AccountSetupUserRoutePage());
+                  },
+                  text: 'Добавить местоположение'),
+            ),
+          )
+        ],
+      ),
+    );
+  }
 }
-*/
