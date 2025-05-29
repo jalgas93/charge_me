@@ -13,6 +13,7 @@ import '../../../core/utils/permission_until.dart';
 import '../../../share/widgets/custom_button.dart';
 import '../auth_repository.dart';
 import '../bloc/auth_bloc.dart';
+import '../widget/phone_field_widget.dart';
 import '../widget/text_form_container.dart';
 import '../widget/title_text.dart';
 
@@ -26,8 +27,9 @@ class SingInFormPage extends StatefulWidget {
 
 class _SingInFormPageState extends State<SingInFormPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  static final TextEditingController _controllerUsername =
-      TextEditingController();
+  final focusNodePhone = FocusNode();
+  final focusNodePassword = FocusNode();
+  static final TextEditingController _controllerPhone = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
   bool isObs = true;
   bool _keyboardVisible = false;
@@ -45,13 +47,15 @@ class _SingInFormPageState extends State<SingInFormPage> {
   @override
   void dispose() {
     _bloc.close();
+    focusNodePhone.dispose();
+    focusNodePassword.dispose();
     super.dispose();
   }
 
   void submit() {
     if (_formKey.currentState!.validate()) {
       _bloc.add(AuthEvent.loginWithUsername(
-        username: _controllerUsername.text.trim(),
+        username: _controllerPhone.text.trim(),
         password: _controllerPassword.text.trim(),
       ));
     }
@@ -97,22 +101,27 @@ class _SingInFormPageState extends State<SingInFormPage> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        TextFormContainer(
-                          controller: _controllerUsername,
-                          prefixIcon: 'assets/profile2.png',
-                          hintText: 'Username',
-                          onChanged: (event){
+                        PhoneFieldWidget(
+                          autovalidateMode: AutovalidateMode.disabled,
+                          focusNode: focusNodePhone,
+                          controller: _controllerPhone,
+                          onChanged: (value) {},
+                          onSubmitted: (value) {
                             _formKey.currentState!.validate();
+                            FocusScope.of(context).requestFocus(focusNodePassword);
                           },
+                          textInputAction: TextInputAction.next,
                         ),
                         TextFormContainer(
+                          focusNode: focusNodePassword,
                           controller: _controllerPassword,
                           prefixIcon: 'assets/lock.png',
                           hintText: 'Password',
                           prefixColor: AppColorsDark.red2,
                           isObs: isObs,
                           isShow: true,
-                          onChanged: (event){
+                          onEditingComplete: (){
+                            focusNodePassword.unfocus();
                             _formKey.currentState!.validate();
                           },
                           actionsButton: () {
@@ -121,6 +130,7 @@ class _SingInFormPageState extends State<SingInFormPage> {
                             });
                           },
                           inputFormatters: [],
+                          textInputAction: TextInputAction.done,
                         ),
                       ],
                     ),
@@ -149,7 +159,9 @@ class _SingInFormPageState extends State<SingInFormPage> {
                       ),
                       16.height,
                       TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            context.router.push(const PasswordChangeRoutePage());
+                          },
                           child: Text(
                             'Forgot password?',
                             style: context.textTheme.bodyLarge,

@@ -12,6 +12,7 @@ import '../../../share/widgets/app_bar_container.dart';
 import '../../../share/widgets/custom_button.dart';
 import '../../../share/widgets/helper_bottom_sheet.dart';
 import '../../../share/widgets/item_app_bar.dart';
+import '../../../share/widgets/show_dialog_form.dart';
 import '../../../share/widgets/skip_container.dart';
 import '../../../share/widgets/status_widgets/success_status.dart';
 import '../../auth/widget/text_form_container.dart';
@@ -27,11 +28,9 @@ class AccountSetupUserPage extends StatefulWidget {
 }
 
 class _AccountSetupUserPageState extends State<AccountSetupUserPage> {
-  final GlobalKey<FormState> _formAccount = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final focusNodeFirstName = FocusNode();
   final TextEditingController _controllerFirstname = TextEditingController();
-  final TextEditingController _controllerUsername = TextEditingController();
-  final TextEditingController _controllerAvatar = TextEditingController();
-  final TextEditingController _controllerPassword = TextEditingController();
   late AccountSetupBloc _bloc;
   late AccountSetupRepository _repository;
   bool _keyboardVisible = false;
@@ -47,18 +46,16 @@ class _AccountSetupUserPageState extends State<AccountSetupUserPage> {
   @override
   void dispose() {
     _bloc.close();
+    focusNodeFirstName.dispose();
     super.dispose();
   }
 
-  void submit()async {
-    if (_formAccount.currentState!.validate()) {
-      await HelperBottomSheet.draggableScrollableSheet(
-          context: context,
-          children: [
-            const SuccessStatus(),
-          ]);
+  void submit() async {
+    if (_formKey.currentState!.validate()) {
+      _bloc.add(const AccountSetupEvent.started());
     }
   }
+
   @override
   Widget build(BuildContext context) {
     _keyboardVisible = MediaQuery.of(context).viewInsets.bottom != 0;
@@ -77,7 +74,7 @@ class _AccountSetupUserPageState extends State<AccountSetupUserPage> {
           ),
           actions: [
             SkipContainer(
-              onTap: (){
+              onTap: () {
                 context.router.push(const DashboardPageRoute());
               },
             )
@@ -98,7 +95,8 @@ class _AccountSetupUserPageState extends State<AccountSetupUserPage> {
                   const TitleText(
                     title: 'Заполните вашу информацию',
                     supplementary: '',
-                    description: 'Вы можете отредактировать это позже в настройках своей учетной записи.',
+                    description:
+                        'Вы можете отредактировать это позже в настройках своей учетной записи.',
                   ),
                   Align(
                     alignment: Alignment.topCenter,
@@ -110,47 +108,25 @@ class _AccountSetupUserPageState extends State<AccountSetupUserPage> {
                           shape: BoxShape.circle,
                           color: AppColorsDark.whiteSecondary,
                           image: DecorationImage(
-                            image: AssetImage('assets/plus.png')
-                          ),
+                              image: AssetImage('assets/plus.png')),
                         ),
                       ),
                     ),
                   ),
                   Form(
-                    key: _formAccount,
+                    key: _formKey,
                     child: Column(
                       children: [
                         TextFormContainer(
+                          focusNode: focusNodeFirstName,
                           controller: _controllerFirstname,
                           prefixIcon: 'assets/profile2.png',
                           hintText: 'First name',
-                          onChanged: (event){
-                            _formAccount.currentState!.validate();
+                          onEditingComplete: () {
+                            focusNodeFirstName.unfocus();
+                            _formKey.currentState!.validate();
                           },
-                        ),
-                        TextFormContainer(
-                          controller: _controllerPassword,
-                          prefixIcon: 'assets/lock.png',
-                          hintText: 'Password',
-                          prefixColor: AppColorsDark.red2,
-                          isObs: isObs,
-                          isShow: true,
-                          actionsButton: () {
-                            setState(() {
-                              isObs = !isObs;
-                            });
-                          },
-                          onChanged: (event){
-                            _formAccount.currentState!.validate();
-                          },
-                        ),
-                        TextFormContainer(
-                          controller: _controllerAvatar,
-                          prefixIcon: 'assets/profile2.png',
-                          hintText: 'Avatar',
-                          onChanged: (event){
-                            _formAccount.currentState!.validate();
-                          },
+                          textInputAction: TextInputAction.done,
                         ),
                       ],
                     ),
@@ -158,6 +134,11 @@ class _AccountSetupUserPageState extends State<AccountSetupUserPage> {
                   BlocConsumer<AccountSetupBloc, AccountSetupState>(
                     bloc: _bloc,
                     listener: (context, AccountSetupState state) {
+                      state.maybeWhen(
+                          success: () async {
+                            await ShowDialogForm().showInfo(context: context, text: 'sdsf');
+                          },
+                          orElse: () {});
                     },
                     builder: (context, state) {
                       return CustomButton(

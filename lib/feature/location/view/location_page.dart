@@ -49,7 +49,7 @@ class _LocationPageState extends State<LocationPage> {
 
   Future<void> _fetchCurrentLocation() async {
     AppLatLong location;
-    const defLocation = MetroLocation();
+    const defLocation = AlmataLocation();
     try {
       //  location = await LocationService().getCurrentLocation();
       location = const AppLatLong(lat: 41.326928, long: 69.327526);

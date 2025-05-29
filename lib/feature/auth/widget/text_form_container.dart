@@ -5,19 +5,23 @@ import 'package:flutter/services.dart';
 import '../../../core/styles/app_colors_dark.dart';
 
 class TextFormContainer extends StatelessWidget {
-  const TextFormContainer(
-      {super.key,
-      required this.prefixIcon,
-      required this.hintText,
-      this.keyboardType,
-      required this.controller,
-      this.prefixColor,
-      this.isObs = false,
-      this.isShow = false,
-      this.actionsButton,
-      this.inputFormatters,
-      this.validator,
-      this.onChanged});
+  const TextFormContainer({
+    super.key,
+    required this.prefixIcon,
+    required this.hintText,
+    this.keyboardType,
+    required this.controller,
+    this.prefixColor,
+    this.isObs = false,
+    this.isShow = false,
+    this.actionsButton,
+    this.inputFormatters,
+    this.validator,
+    this.onChanged,
+    this.onEditingComplete,
+    this.textInputAction,
+    this.focusNode,
+  });
 
   final String prefixIcon;
   final String hintText;
@@ -30,6 +34,9 @@ class TextFormContainer extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final String? Function(String?)? validator;
   final ValueChanged<String>? onChanged;
+  final Function()? onEditingComplete;
+  final TextInputAction? textInputAction;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -46,19 +53,21 @@ class TextFormContainer extends StatelessWidget {
             color: AppColorsDark.white4,
             borderRadius: BorderRadius.circular(10)),
         child: TextFormField(
-            autofocus: false,
             obscureText: isObs,
             controller: controller,
+            focusNode: focusNode,
             cursorColor: context.textTheme.bodyLarge?.color,
             keyboardType: keyboardType,
             style: context.textTheme.titleSmall,
-            validator: (String? value) {
-              if (value == null || value == '') {
-                return 'Обязательное поле';
-              }
-              return null;
-            },
+            validator: validator ??
+                (String? value) {
+                  if (value == null || value == '') {
+                    return 'Обязательное поле';
+                  }
+                  return null;
+                },
             onChanged: onChanged,
+            onEditingComplete: onEditingComplete,
             decoration: InputDecoration(
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: AppColorsDark.transparent),
@@ -103,7 +112,7 @@ class TextFormContainer extends StatelessWidget {
               hintStyle: context.textTheme.bodyLarge,
             ),
             textCapitalization: TextCapitalization.none,
-            textInputAction: TextInputAction.next,
+            textInputAction: textInputAction,
             inputFormatters: const [
               //  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z]'))
             ]),

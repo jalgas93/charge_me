@@ -4,7 +4,7 @@ import '../../feature/home/model/app_lat_long.dart';
 import 'app_location.dart';
 
 class LocationService implements AppLocation {
-  final defLocation = const MetroLocation();
+  final defLocation = const AlmataLocation();
 
   @override
   Future<bool> checkPermission() {

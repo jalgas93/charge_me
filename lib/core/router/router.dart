@@ -80,5 +80,21 @@ class AppRouter extends RootStackRouter  {
       path: '/yandex_map_page',
       page: YandexMapPageRoute.page,
     ),
+    AutoRoute(
+      path: '/Password_change_page',
+      page: PasswordChangeRoutePage.page,
+    ),
+    AutoRoute(
+      path: '/Accept_privacy_page',
+      page: AcceptPrivacyPoliceRoutePage.page,
+    ),
+    AutoRoute(
+      path: '/Payment_page',
+      page: PaymentPageRoute.page,
+    ),
+    AutoRoute(
+      path: '/scanner_page',
+      page: ScannerRoutePage.page,
+    ),
   ];
 }

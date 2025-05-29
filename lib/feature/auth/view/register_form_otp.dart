@@ -109,7 +109,7 @@ class _RegisterFormOtpState extends State<RegisterFormOtp>
                 ),
                 child: Row(
                   children: [
-                    Image.asset('assets/timer.png'),
+                    Image.asset('assets/timer.png',color: AppColorsDark.white),
                     const SizedBox(width: 8),
                     Countdown(
                       animation: StepTween(

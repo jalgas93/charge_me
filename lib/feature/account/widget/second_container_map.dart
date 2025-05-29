@@ -28,7 +28,7 @@ class SecondContainerMap extends StatelessWidget {
         Stack(
           children: [
             Container(
-              height: constraints.maxHeight / 1.8,
+              height: constraints.maxHeight / 1.6,
               decoration: const BoxDecoration(
                   color: Colors.green,
                   borderRadius: BorderRadius.all(Radius.circular(25)),

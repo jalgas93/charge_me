@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:auto_route/annotations.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/feature/dashboard/utils/utils_dashboard.dart';
+import 'package:charge_me/feature/scanner/view/scanner_page.dart';
 import 'package:flutter/material.dart';
 import '../../core/styles/app_colors_dark.dart';
 import '../home/view/home_page.dart';
@@ -24,8 +25,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   var listScreen = const [
     HomePage(),
     LocationPage(),
+    ScannerPage(),
     SupportPage(),
-    ProfilePage()
+    ProfilePage(),
   ];
 
   void nextPage(index) {
@@ -90,20 +92,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               shape: BoxShape.circle,
                               color: AppColorsDark.green1),
                           child: IconButton(
-                            onPressed: (){},
-                            icon: Image.asset('assets/energy.png'),
-                          ),
+                              onPressed: () {
+                                nextPage(2);
+                                UtilsDashboard.setIsSelected = 2;
+                              },
+                              icon: Icon(
+                                Icons.qr_code_scanner,
+                                color: value == 2
+                                    ? context.theme.indicatorColor
+                                    : context.theme.unselectedWidgetColor,
+                              )),
                         ),
                       ),
                       Expanded(
                           child: IconButton(
                         onPressed: () {
-                          nextPage(2);
-                          UtilsDashboard.setIsSelected = 2;
+                          nextPage(3);
+                          UtilsDashboard.setIsSelected = 3;
                         },
                         icon: Image.asset(
                           'assets/chart.png',
-                          color: value == 2
+                          color: value == 3
                               ? context.theme.focusColor
                               : context.theme.unselectedWidgetColor,
                         ),
@@ -111,12 +120,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Expanded(
                         child: IconButton(
                             onPressed: () {
-                              nextPage(3);
-                              UtilsDashboard.setIsSelected = 3;
+                              nextPage(4);
+                              UtilsDashboard.setIsSelected = 4;
                             },
                             icon: Image.asset(
                               'assets/profile.png',
-                              color: value == 3
+                              color: value == 4
                                   ? context.theme.focusColor
                                   : context.theme.unselectedWidgetColor,
                             )),

@@ -3,12 +3,15 @@ import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/router/router.gr.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/styles/app_colors_dark.dart';
 import '../../../share/widgets/app_bar_container.dart';
 import '../../../share/widgets/custom_button.dart';
 import '../../../share/widgets/item_app_bar.dart';
 import '../../../share/widgets/skip_container.dart';
+import '../account_repository.dart';
+import '../bloc/account_setup_bloc.dart';
 import '../widget/second_container_map.dart';
 import '../widget/title_fields.dart';
 
@@ -22,6 +25,26 @@ class AccountSetupLocationPage extends StatefulWidget {
 }
 
 class _AccountSetupLocationPageState extends State<AccountSetupLocationPage> {
+  late AccountSetupBloc _bloc;
+  late AccountSetupRepository _repository;
+
+  @override
+  void initState() {
+    _repository = AccountSetupRepository();
+    _bloc = AccountSetupBloc(repository: _repository);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _bloc.close();
+    super.dispose();
+  }
+
+  void submit() async {
+    _bloc.add(const AccountSetupEvent.geocode());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

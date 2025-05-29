@@ -25,7 +25,9 @@ class RegisterFormPage extends StatefulWidget {
 }
 
 class _RegisterFormPageState extends State<RegisterFormPage> {
-  final GlobalKey<FormState> _formRegister = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final focusNodePhone = FocusNode();
+  final focusNodePassword = FocusNode();
   final TextEditingController _controllerFirstname = TextEditingController();
   final TextEditingController _controllerUsername = TextEditingController();
   final TextEditingController _controllerPhone = TextEditingController();
@@ -46,11 +48,13 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
   @override
   void dispose() {
     _bloc.close();
+    focusNodePhone.dispose();
+    focusNodePassword.dispose();
     super.dispose();
   }
 
   void submit() {
-    if (_formRegister.currentState!.validate()) {
+    if (_formKey.currentState!.validate()) {
       _bloc.add(AuthEvent.registerWithUsername(
         username: _controllerUsername.text.trim(),
         phone: _controllerPhone.text.trim(),
@@ -85,8 +89,8 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
             child: ConstrainedBox(
               constraints: BoxConstraints(
                   maxHeight: _keyboardVisible
-                      ? constraints.maxHeight + constraints.maxWidth / 2
-                      : constraints.maxHeight + constraints.maxWidth / 3),
+                      ? constraints.maxHeight + constraints.maxWidth / 3
+                      : constraints.maxHeight),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -96,26 +100,21 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                     description: 'Давайте познакомимся',
                   ),
                   Form(
-                    key: _formRegister,
+                    key: _formKey,
                     child: Column(
                       children: [
-                        TextFormContainer(
-                          controller: _controllerFirstname,
-                          prefixIcon: 'assets/profile2.png',
-                          hintText: 'First name',
-                          onChanged: (event){
-                            _formRegister.currentState!.validate();
+                        PhoneFieldWidget(
+                          autovalidateMode: AutovalidateMode.disabled,
+                          focusNode: focusNodePhone,
+                          controller: _controllerPhone,
+                          onSubmitted: (value) {
+                            _formKey.currentState!.validate();
+                            FocusScope.of(context).requestFocus(focusNodePassword);
                           },
+                          textInputAction: TextInputAction.next,
                         ),
                         TextFormContainer(
-                          controller: _controllerUsername,
-                          prefixIcon: 'assets/profile2.png',
-                          hintText: 'Username',
-                          onChanged: (event){
-                            _formRegister.currentState!.validate();
-                          },
-                        ),
-                        TextFormContainer(
+                          focusNode: focusNodePassword,
                           controller: _controllerPassword,
                           prefixIcon: 'assets/lock.png',
                           hintText: 'Password',
@@ -127,24 +126,12 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                               isObs = !isObs;
                             });
                           },
-                          onChanged: (event){
-                            _formRegister.currentState!.validate();
+                          onEditingComplete: (){
+                            focusNodePassword.unfocus();
+                            _formKey.currentState!.validate();
                           },
+                          textInputAction: TextInputAction.done,
                         ),
-                        TextFormContainer(
-                          controller: _controllerAvatar,
-                          prefixIcon: 'assets/profile2.png',
-                          hintText: 'Avatar',
-                          onChanged: (event){
-                            _formRegister.currentState!.validate();
-                          },
-                        ),
-                        PhoneFieldWidget(
-                          controller: _controllerPhone,
-                          onChanged: (event){
-                            _formRegister.currentState!.validate();
-                          },
-                        )
                       ],
                     ),
                   ),

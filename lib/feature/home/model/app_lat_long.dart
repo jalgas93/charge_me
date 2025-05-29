@@ -8,9 +8,16 @@ class AppLatLong {
   });
 }
 
-class MetroLocation extends AppLatLong {
-  const MetroLocation({
-    super.lat = 41.326928,
-    super.long = 69.327526,
+class AlmataLocation extends AppLatLong {
+  const AlmataLocation({
+    super.lat = 43.161200,
+    super.long = 76.540000,
   });
 }
+class TashkentLocation extends AppLatLong {
+  const TashkentLocation({
+    super.lat = 41.2646,
+    super.long = 60.1258,
+  });
+}
+

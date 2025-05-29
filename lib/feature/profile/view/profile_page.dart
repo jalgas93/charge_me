@@ -100,6 +100,9 @@ class _ProfilePageState extends State<ProfilePage> {
               colorText: AppColorsDark.red2,
               image: 'assets/sign_out.png',
               onTap: (){
+                context.router.pushAndPopUntil(
+                    const SignInFormRoutePage(),
+                    predicate: (Route<dynamic> route) => false);
               },
             ),
           ],

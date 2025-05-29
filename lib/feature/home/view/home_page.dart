@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ),
           actions: [
             IconButton(onPressed: (){
-              context.router.push(const AccountSetupConnectorRoutePage());
+              context.router.push(const AcceptPrivacyPoliceRoutePage());
             }, icon: const Icon(Icons.add)),
             Stack(
               children: [

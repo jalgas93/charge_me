@@ -60,6 +60,11 @@ class DarkTheme {
       bottomAppBarTheme: BottomAppBarTheme(
         color: AppColorsDark.transparent,
       ),
+      checkboxTheme: CheckboxThemeData(
+          checkColor: MaterialStateProperty.all(Colors.green),
+          fillColor: MaterialStateProperty.all(Colors.white),
+          overlayColor: MaterialStateProperty.all(Colors.yellow),
+          side: const BorderSide(color: AppColorsDark.green1)),
 
       ///AppBar theme
       appBarTheme: const AppBarTheme(
