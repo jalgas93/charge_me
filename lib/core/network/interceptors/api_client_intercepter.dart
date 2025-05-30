@@ -13,7 +13,7 @@ class ApiClientInterceptor extends Interceptor {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    options.baseUrl = ConfigApp.url;
+    options.baseUrl = ConfigApp.localHost;
     options.responseType = ResponseType.json;
 
     return super.onRequest(options, handler);

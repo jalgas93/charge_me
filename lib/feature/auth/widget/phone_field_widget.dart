@@ -55,8 +55,8 @@ class PhoneFieldWidget extends StatelessWidget {
           onChanged: onChanged,
           onSubmitted: onSubmitted,
           textAlignVertical: TextAlignVertical.center,
-          languageCode: "KZ",
-          initialCountryCode: 'KZ',
+          languageCode: "UZ",
+          initialCountryCode: 'UZ',
           onCountryChanged: (country) {
             print('Country changed to: ' + country.name);
           },

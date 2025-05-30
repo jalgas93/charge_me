@@ -3,6 +3,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
 import 'package:charge_me/feature/auth/view/register_form_page.dart';
+import 'package:charge_me/share/widgets/throw_error.dart';
 import 'package:drop_shadow/drop_shadow.dart';
 import 'package:drop_shadow_image/drop_shadow_image.dart';
 import 'package:flutter/material.dart';
@@ -54,8 +55,8 @@ class _SingInFormPageState extends State<SingInFormPage> {
 
   void submit() {
     if (_formKey.currentState!.validate()) {
-      _bloc.add(AuthEvent.loginWithUsername(
-        username: _controllerPhone.text.trim(),
+      _bloc.add(AuthEvent.loginWithPhone(
+        phone: '+998${_controllerPhone.text.trim()}',
         password: _controllerPassword.text.trim(),
       ));
     }
@@ -70,9 +71,10 @@ class _SingInFormPageState extends State<SingInFormPage> {
           return SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: _keyboardVisible
-              ? constraints.maxHeight + constraints.maxWidth / 3
-                  : constraints.maxHeight),
+              constraints: BoxConstraints(
+                  maxHeight: _keyboardVisible
+                      ? constraints.maxHeight + constraints.maxWidth / 3
+                      : constraints.maxHeight),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -82,12 +84,14 @@ class _SingInFormPageState extends State<SingInFormPage> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       DropShadowImage(
-                        offset: const Offset(10,10),
+                        offset: const Offset(10, 10),
                         scale: 1,
                         blurRadius: 25,
                         borderRadius: 25,
-                        image: Image.asset('assets/charger_new_color_2.png',
-                          width: context.screenSize.width/3,),
+                        image: Image.asset(
+                          'assets/charger_new_color_2.png',
+                          width: context.screenSize.width / 3,
+                        ),
                       ),
                       Image.asset('assets/car_2.png'),
                     ],
@@ -108,7 +112,8 @@ class _SingInFormPageState extends State<SingInFormPage> {
                           onChanged: (value) {},
                           onSubmitted: (value) {
                             _formKey.currentState!.validate();
-                            FocusScope.of(context).requestFocus(focusNodePassword);
+                            FocusScope.of(context)
+                                .requestFocus(focusNodePassword);
                           },
                           textInputAction: TextInputAction.next,
                         ),
@@ -120,7 +125,7 @@ class _SingInFormPageState extends State<SingInFormPage> {
                           prefixColor: AppColorsDark.red2,
                           isObs: isObs,
                           isShow: true,
-                          onEditingComplete: (){
+                          onEditingComplete: () {
                             focusNodePassword.unfocus();
                             _formKey.currentState!.validate();
                           },
@@ -142,15 +147,25 @@ class _SingInFormPageState extends State<SingInFormPage> {
                         bloc: _bloc,
                         listener: (context, AuthState state) {
                           state.maybeWhen(
-                              successLoginWithUsername: (result) {
+                              successLoginWithPhone: (result) {
                                 context.router.pushAndPopUntil(
                                     const DashboardPageRoute(),
                                     predicate: (Route<dynamic> route) => false);
                                 PermissionUtil.requestAll();
                               },
+                              error: (e) {
+                                ThrowError.showNotify(
+                                    context: context, errMessage: "Error");
+                              },
                               orElse: () {});
                         },
-                        builder: (context, state) {
+                        builder: (context, AuthState state) {
+                          state.maybeWhen(
+                              loading: () {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              },
+                              orElse: () {});
                           return CustomButton(
                               width: constraints.maxWidth / 1.2,
                               onTap: () => submit(),
@@ -160,7 +175,8 @@ class _SingInFormPageState extends State<SingInFormPage> {
                       16.height,
                       TextButton(
                           onPressed: () {
-                            context.router.push(const PasswordChangeRoutePage());
+                            context.router
+                                .push(const PasswordChangeRoutePage());
                           },
                           child: Text(
                             'Forgot password?',

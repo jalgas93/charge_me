@@ -8,6 +8,7 @@ import 'package:drop_shadow/drop_shadow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/logging/log.dart';
 import '../../../core/router/router.gr.dart';
 import '../../../core/styles/app_colors_dark.dart';
 import '../../../core/utils/flutter_secure_storage.dart';
@@ -106,8 +107,8 @@ class _SplashPageState extends State<SplashPage> {
               listener: (BuildContext context, AppState state) {
                 state.maybeWhen(
                     success: ()async {
-                      final token = await SecureStorageService.getInstance
-                          .getValue("access_token");
+                      final token = await SecureStorageService.getInstance.getValue("access_token");
+                      Log.i('access_token $token');
                       if (context.mounted) {
                         if (token != null) {
                           context.router.push(const DashboardPageRoute());

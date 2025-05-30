@@ -39,6 +39,7 @@ import 'package:charge_me/feature/scanner/view/scanner_page.dart' as _i14;
 import 'package:charge_me/share/view/select_language/select_language_page.dart'
     as _i15;
 import 'package:charge_me/share/view/splash/splash_screen.dart' as _i18;
+import 'package:flutter/material.dart' as _i24;
 
 /// generated route for
 /// [_i1.AboutAppPage]
@@ -251,10 +252,18 @@ class PaymentPageRoute extends _i23.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i12.RegisterFormOtp]
-class RegisterFormOtpRoutePage extends _i23.PageRouteInfo<void> {
-  const RegisterFormOtpRoutePage({List<_i23.PageRouteInfo>? children})
-      : super(
+class RegisterFormOtpRoutePage
+    extends _i23.PageRouteInfo<RegisterFormOtpRoutePageArgs> {
+  RegisterFormOtpRoutePage({
+    _i24.Key? key,
+    required String requestId,
+    List<_i23.PageRouteInfo>? children,
+  }) : super(
           RegisterFormOtpRoutePage.name,
+          args: RegisterFormOtpRoutePageArgs(
+            key: key,
+            requestId: requestId,
+          ),
           initialChildren: children,
         );
 
@@ -263,9 +272,29 @@ class RegisterFormOtpRoutePage extends _i23.PageRouteInfo<void> {
   static _i23.PageInfo page = _i23.PageInfo(
     name,
     builder: (data) {
-      return const _i12.RegisterFormOtp();
+      final args = data.argsAs<RegisterFormOtpRoutePageArgs>();
+      return _i12.RegisterFormOtp(
+        key: args.key,
+        requestId: args.requestId,
+      );
     },
   );
+}
+
+class RegisterFormOtpRoutePageArgs {
+  const RegisterFormOtpRoutePageArgs({
+    this.key,
+    required this.requestId,
+  });
+
+  final _i24.Key? key;
+
+  final String requestId;
+
+  @override
+  String toString() {
+    return 'RegisterFormOtpRoutePageArgs{key: $key, requestId: $requestId}';
+  }
 }
 
 /// generated route for

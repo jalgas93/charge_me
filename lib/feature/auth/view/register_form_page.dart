@@ -10,6 +10,7 @@ import '../../../core/router/router.gr.dart';
 import '../../../share/widgets/app_bar_container.dart';
 import '../../../share/widgets/custom_button.dart';
 import '../../../share/widgets/item_app_bar.dart';
+import '../../../share/widgets/throw_error.dart';
 import '../auth_repository.dart';
 import '../widget/lower_part.dart';
 import '../widget/phone_field_widget.dart';
@@ -55,12 +56,9 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
 
   void submit() {
     if (_formKey.currentState!.validate()) {
-      _bloc.add(AuthEvent.registerWithUsername(
-        username: _controllerUsername.text.trim(),
-        phone: _controllerPhone.text.trim(),
+      _bloc.add(AuthEvent.registerWithTelegram(
+        phone: '+998${_controllerPhone.text.trim()}',
         password: _controllerPassword.text.trim(),
-        firstname: _controllerFirstname.text.trim(),
-        avatar: _controllerAvatar.text.trim(),
       ));
     }
   }
@@ -109,7 +107,8 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                           controller: _controllerPhone,
                           onSubmitted: (value) {
                             _formKey.currentState!.validate();
-                            FocusScope.of(context).requestFocus(focusNodePassword);
+                            FocusScope.of(context)
+                                .requestFocus(focusNodePassword);
                           },
                           textInputAction: TextInputAction.next,
                         ),
@@ -126,7 +125,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                               isObs = !isObs;
                             });
                           },
-                          onEditingComplete: (){
+                          onEditingComplete: () {
                             focusNodePassword.unfocus();
                             _formKey.currentState!.validate();
                           },
@@ -140,13 +139,24 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                     bloc: _bloc,
                     listener: (context, AuthState state) {
                       state.maybeWhen(
-                          successRegisterWithUsername: (result) {
+                          successRegisterWithTelegram: (result) {
+                            var requestId = result;
                             context.router
-                                .push(const RegisterFormOtpRoutePage());
+                                .push(RegisterFormOtpRoutePage(requestId: ''));
+                          },
+                          error: (e) {
+                            ThrowError.showNotify(
+                                context: context, errMessage: "Error");
                           },
                           orElse: () {});
                     },
-                    builder: (context, state) {
+                    builder: (context, AuthState state) {
+                      state.maybeWhen(
+                          loading: () {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          },
+                          orElse: () {});
                       return CustomButton(
                           width: constraints.maxWidth / 1.2,
                           onTap: () => submit(),
