@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+
 import '../../core/base_repository.dart';
 
 class AuthRepository extends BaseRepository {
@@ -48,7 +52,7 @@ class AuthRepository extends BaseRepository {
       "code": code,
     };
     final response = await client.post(
-      'api/v1/auth/registration',
+      'api/v1/auth/verify',
       data: data,
     );
     return response.data;
@@ -64,6 +68,18 @@ class AuthRepository extends BaseRepository {
     };
     final response = await client.post(
       'api/v1/auth/sign-in',
+      data: data,
+    );
+    return response.data;
+  }
+  Future<dynamic> resendOtpTg({
+    required String phone,
+  }) async {
+    var data = {
+      "phone": phone,
+    };
+    final response = await client.post(
+      'api/v1/auth/resendOtp',
       data: data,
     );
     return response.data;

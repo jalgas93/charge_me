@@ -1,28 +1,26 @@
 import 'dart:convert';
 
 class ApiResponse {
-  final String? type;
   final bool? success;
-  final int? errorCode;
-  final String? errMessage;
+  final int? statusCode;
+  final String? message;
   final dynamic data;
   final dynamic response;
 
-  ApiResponse({this.type,required this.success,this.errorCode, this.data, this.errMessage, this.response});
+  ApiResponse({required this.success,this.statusCode, this.data, this.message, this.response});
 
   factory ApiResponse.fromJson(dynamic json) {
     if (json is String) json = jsonDecode(json);
     return ApiResponse(
-      type: json['type'],
       success: json['success'],
-      errorCode: json['errorCode'],
-      errMessage: json['errMessage'],
+      statusCode: json['statusCode'],
+      message: json['message'],
       data: json['data'],
       response: json,
     );
   }
 
-  bool get isSuccess => errorCode == null;
+  bool get isSuccess => statusCode != null;
 
   bool get isError => !isSuccess;
 }

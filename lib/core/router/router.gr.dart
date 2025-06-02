@@ -257,12 +257,14 @@ class RegisterFormOtpRoutePage
   RegisterFormOtpRoutePage({
     _i24.Key? key,
     required String requestId,
+    required String phone,
     List<_i23.PageRouteInfo>? children,
   }) : super(
           RegisterFormOtpRoutePage.name,
           args: RegisterFormOtpRoutePageArgs(
             key: key,
             requestId: requestId,
+            phone: phone,
           ),
           initialChildren: children,
         );
@@ -276,6 +278,7 @@ class RegisterFormOtpRoutePage
       return _i12.RegisterFormOtp(
         key: args.key,
         requestId: args.requestId,
+        phone: args.phone,
       );
     },
   );
@@ -285,15 +288,18 @@ class RegisterFormOtpRoutePageArgs {
   const RegisterFormOtpRoutePageArgs({
     this.key,
     required this.requestId,
+    required this.phone,
   });
 
   final _i24.Key? key;
 
   final String requestId;
 
+  final String phone;
+
   @override
   String toString() {
-    return 'RegisterFormOtpRoutePageArgs{key: $key, requestId: $requestId}';
+    return 'RegisterFormOtpRoutePageArgs{key: $key, requestId: $requestId, phone: $phone}';
   }
 }
 

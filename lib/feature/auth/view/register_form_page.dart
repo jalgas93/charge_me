@@ -6,6 +6,7 @@ import 'package:charge_me/feature/auth/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/logging/log.dart';
 import '../../../core/router/router.gr.dart';
 import '../../../share/widgets/app_bar_container.dart';
 import '../../../share/widgets/custom_button.dart';
@@ -139,10 +140,15 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                     bloc: _bloc,
                     listener: (context, AuthState state) {
                       state.maybeWhen(
-                          successRegisterWithTelegram: (result) {
-                            var requestId = result;
-                            context.router
-                                .push(RegisterFormOtpRoutePage(requestId: ''));
+                          successTelegramState: (model) {
+                            Log.i('success Telegram $model');
+                            var requestId = model.resultSms?.requestId;
+                            if (requestId != null) {
+                              context.router.push(RegisterFormOtpRoutePage(
+                                requestId: requestId,
+                                phone: _controllerPhone.text.trim(),
+                              ));
+                            }
                           },
                           error: (e) {
                             ThrowError.showNotify(

@@ -166,7 +166,7 @@ class _PasswordChangePageState extends State<PasswordChangePage> {
                       state.maybeWhen(
                           success: () {
                             context.router
-                                .push(RegisterFormOtpRoutePage(requestId: ''));
+                                .push(RegisterFormOtpRoutePage(requestId: '',phone: ''));
                           },
                           orElse: () {});
                     },

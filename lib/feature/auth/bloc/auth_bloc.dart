@@ -1,10 +1,13 @@
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:charge_me/feature/auth/model/sign_in/sign_in_model.dart';
-import 'package:charge_me/feature/auth/model/telegram_register/telegram_status.dart';
+import 'package:charge_me/feature/auth/model/tg/sms_response.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/application.dart';
+import '../../../core/logging/log.dart';
 import '../../../core/utils/constant/shared_preferences_keys.dart';
 import '../../../core/utils/flutter_secure_storage.dart';
 import '../auth_repository.dart';
@@ -67,10 +70,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(const AuthState.loading());
           try {
             final response = await _repository.registerByTelegram(
-                phone: event.phone, password: event.password);
-
-            emit(AuthState.successRegisterWithTelegram(
-                telegramStatus: TelegramStatus.fromJson(response)));
+                phone: event.phone,
+                password: event.password,
+                createAt: DateFormat('dd.MM.yyyy').format(DateTime.now()));
+            emit(AuthState.successTelegramState(
+                model: SmsResponse.fromJson(response['data'])));
           } catch (e) {
             emit(AuthState.error(error: e));
           }
@@ -82,6 +86,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
                 requestId: event.requestId, code: event.code);
 
             emit(const AuthState.successVerifyRegisterTelegram());
+          } catch (e) {
+            emit(AuthState.error(error: e));
+          }
+        },
+        resendOtpTelegram: (event) async {
+          emit(const AuthState.loading());
+          try {
+           final response =  await _repository.resendOtpTg(phone: event.phone);
+
+           emit(AuthState.successResendOtpTelegram(
+               model: SmsResponse.fromJson(response['data'])));
           } catch (e) {
             emit(AuthState.error(error: e));
           }

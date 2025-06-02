@@ -8,5 +8,6 @@ class AuthState with _$AuthState {
   const factory AuthState.successRegisterWithPhone({required RegisterModel registerModel}) = _SuccessRegisterWithPhone;
   const factory AuthState.successLoginWithPhone({required SignInModel signInModel}) = _SuccessLoginWithPhone;
   const factory AuthState.successVerifyRegisterTelegram() = _SuccessVerifyRegisterTelegram;
-  const factory AuthState.successRegisterWithTelegram({required TelegramStatus telegramStatus}) = _SuccessRegisterWithTelegram;
+  const factory AuthState.successTelegramState({required SmsResponse model }) = _SuccessTelegramState;
+  const factory AuthState.successResendOtpTelegram({required SmsResponse model }) = _SuccessResendOtpTelegram;
 }

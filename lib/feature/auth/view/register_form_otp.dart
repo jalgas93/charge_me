@@ -17,13 +17,15 @@ import '../../../share/widgets/sms_auto_field.dart';
 import '../../../share/widgets/throw_error.dart';
 import '../auth_repository.dart';
 import '../bloc/auth_bloc.dart';
+import '../utils/auth_utils.dart';
 import '../widget/title_text.dart';
 
 @RoutePage(name: "RegisterFormOtpRoutePage")
 class RegisterFormOtp extends StatefulWidget {
-  const RegisterFormOtp({super.key, required this.requestId});
+  const RegisterFormOtp({super.key, required this.requestId, required this.phone});
 
   final String requestId;
+  final String phone;
   @override
   State<RegisterFormOtp> createState() => _RegisterFormOtpState();
 }
@@ -34,6 +36,7 @@ class _RegisterFormOtpState extends State<RegisterFormOtp>
   AnimationController? _animationController;
   int levelClock = 1 * 60;
   String _code = "";
+  String requestId = "";
   late AuthBloc _bloc;
   late AuthRepository _repository;
 
@@ -45,6 +48,7 @@ class _RegisterFormOtpState extends State<RegisterFormOtp>
     _animationController!.forward();
     _repository = AuthRepository();
     _bloc = AuthBloc(repository: _repository);
+    requestId = widget.requestId;
     super.initState();
   }
 
@@ -61,6 +65,9 @@ class _RegisterFormOtpState extends State<RegisterFormOtp>
     _animationController!.forward();
     _optController.clear();
     SmsAutoFill().unregisterListener();
+    _bloc.add(AuthEvent.resendOtpTelegram(
+      phone: '+998${widget.phone}',
+    ));
   }
 
   _listenSmsCode() async {
@@ -175,6 +182,12 @@ class _RegisterFormOtpState extends State<RegisterFormOtp>
                         context.router.pushAndPopUntil(
                             const DashboardPageRoute(),
                             predicate: (Route<dynamic> route) => false);
+                      },
+                      successResendOtpTelegram: (result){
+                        var id = result.resultSms?.requestId;
+                        if(id != null){
+                          requestId = id;
+                        }
                       },
                       error: (e) {
                         ThrowError.showNotify(

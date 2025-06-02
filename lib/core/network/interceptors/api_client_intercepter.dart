@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../share/utils/constant/config_app.dart';
 import '../../../share/utils/flutter_secure_storage.dart';
+import '../../logging/log.dart';
 import '../response/api_exception.dart';
 import '../response/api_response.dart';
 

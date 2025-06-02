@@ -23,4 +23,7 @@ class AuthEvent with _$AuthEvent {
     required String code,
     required String requestId,
   }) = _VerifyRegisterTelegram;
+  const factory AuthEvent.resendOtpTelegram({
+    required String phone,
+  }) = _ResendOtpTelegram;
 }
