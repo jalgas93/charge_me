@@ -191,7 +191,7 @@ class _RegisterFormOtpState extends State<RegisterFormOtp>
                       },
                       error: (e) {
                         ThrowError.showNotify(
-                            context: context, errMessage: "Error");
+                            context: context, errMessage: "$e");
                       },
                       orElse: () {});
                 },

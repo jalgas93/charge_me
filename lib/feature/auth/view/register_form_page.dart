@@ -1,6 +1,5 @@
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:charge_me/core/extensions/empty_space.dart';
 import 'package:charge_me/core/styles/app_colors_dark.dart';
 import 'package:charge_me/feature/auth/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
@@ -143,6 +142,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                           successTelegramState: (model) {
                             Log.i('success Telegram $model');
                             var requestId = model.resultSms?.requestId;
+                            Log.i('requestId $requestId');
                             if (requestId != null) {
                               context.router.push(RegisterFormOtpRoutePage(
                                 requestId: requestId,

@@ -14,7 +14,7 @@ class DarkTheme {
       colorScheme: ColorScheme.fromSeed(
         brightness: Brightness.dark,
         seedColor: AppColorsDark.yellow1,
-        primary: AppColorsDark.black,
+        primary: AppColorsDark.darkStyleText,
         onPrimary: AppColorsDark.onPrimary,
         primaryContainer: AppColorsDark.primaryContainer,
         secondary: AppColorsDark.secondary,

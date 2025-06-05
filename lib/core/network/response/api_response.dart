@@ -20,7 +20,7 @@ class ApiResponse {
     );
   }
 
-  bool get isSuccess => statusCode != null;
+  bool get isSuccess => statusCode == 200 || statusCode == 201;
 
   bool get isError => !isSuccess;
 }

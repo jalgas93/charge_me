@@ -2,9 +2,7 @@ import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
-import 'package:charge_me/feature/auth/view/register_form_page.dart';
 import 'package:charge_me/share/widgets/throw_error.dart';
-import 'package:drop_shadow/drop_shadow.dart';
 import 'package:drop_shadow_image/drop_shadow_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -155,7 +153,7 @@ class _SingInFormPageState extends State<SingInFormPage> {
                               },
                               error: (e) {
                                 ThrowError.showNotify(
-                                    context: context, errMessage: "Error");
+                                    context: context, errMessage: "$e");
                               },
                               orElse: () {});
                         },

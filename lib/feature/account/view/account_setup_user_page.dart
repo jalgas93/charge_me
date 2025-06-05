@@ -1,6 +1,7 @@
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
+import 'package:charge_me/core/extensions/empty_space.dart';
 import 'package:charge_me/core/router/router.gr.dart';
 import 'package:charge_me/feature/account/bloc/account_setup_bloc.dart';
 import 'package:flutter/cupertino.dart';
@@ -131,6 +132,8 @@ class _AccountSetupUserPageState extends State<AccountSetupUserPage> {
                       ],
                     ),
                   ),
+                  //const Spacer(),
+                  100.height,
                   BlocConsumer<AccountSetupBloc, AccountSetupState>(
                     bloc: _bloc,
                     listener: (context, AccountSetupState state) {

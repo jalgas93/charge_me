@@ -3,44 +3,31 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 class ApiException implements Exception {
-  final int? errorCode;
-  final String? errMessage;
-  final DioError? dioError;
-
-  final bool apiError;
-  final bool statusError;
-  final int? responseStatus;
+  final int? statusCode;
+  final String? message;
 
   ApiException({
-    this.errorCode,
-    this.errMessage,
-    this.dioError,
-    this.apiError = false,
-    this.statusError = false,
-    this.responseStatus,
+    this.statusCode,
+    this.message,
   });
 
   factory ApiException.fromJson(dynamic json) {
     if (json is String) json = jsonDecode(json);
     return ApiException(
-      errorCode: json['errorCode'],
-      errMessage: json['errMessage'],
-      apiError: true,
+      statusCode: json['statusCode'],
+      message: json['message'],
     );
   }
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
-    data['errorCode'] = errorCode;
-    data['errMessage'] = errMessage;
-    data['apiError'] = apiError;
-    data['statusError'] = statusError;
-    data['responseStatus'] = responseStatus;
+    data['statusCode'] = statusCode;
+    data['message'] = message;
     return data;
   }
 
   @override
-  String toString() => errMessage ?? '';
+  String toString() => message ?? '';
 
-  String get message => errMessage!;
+  String get messageA => message!;
 }

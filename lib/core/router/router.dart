@@ -96,5 +96,9 @@ class AppRouter extends RootStackRouter  {
       path: '/scanner_page',
       page: ScannerRoutePage.page,
     ),
+    AutoRoute(
+      path: '/account_setup_car_page',
+      page: AccountSetupCarRoutePage.page,
+    ),
   ];
 }

@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:charge_me/feature/account/account_repository.dart';
+import 'package:charge_me/feature/account/model/add_car/add_car.dart';
 import 'package:charge_me/feature/auth/auth_repository.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -31,16 +32,38 @@ class AccountSetupBloc extends Bloc<AccountSetupEvent, AccountSetupState> {
       } catch (e) {
         emit(AccountSetupState.error(error: e));
       }
-    }, geocode: (event) async {
+    }, addLocation: (event) async {
       emit(const AccountSetupState.loading());
       try {
-        final dynamic response = await _repository.address(
-            latitude: 41.305912, longitude: 69.331843, lang: 'uz');
-        emit(AccountSetupState.successGeocode(
-            geoResponse: GeoResponse.fromJson(response)));
+        final dynamic response = await _repository.addLocation(
+            latitude: event.latitude,
+          longitude: event.latitude,
+          road: event.road,
+          userId: event.userId,
+        );
+        emit(const AccountSetupState.successAddLocation());
       } catch (e) {
         emit(AccountSetupState.error(error: e));
       }
+    }, addCar: (event) async {
+      emit(const AccountSetupState.loading());
+      try {
+        await _repository.addCar(
+          manufacture: event.manufacture,
+          model: event.model,
+          connector: event.connector,
+          makeYear: event.makeYear,
+          registrationNumber: event.registrationNumber,
+          batteryCapacity: event.batteryCapacity,
+          plug: event.plug,
+          userId: event.userId,
+        );
+        emit(const AccountSetupState.successAddCar());
+      } catch (e) {
+        emit(AccountSetupState.error(error: e));
+      }
+    }, geocode: (value) {
+
     });
   }
 }

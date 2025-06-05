@@ -8,15 +8,18 @@ import 'package:flutter/material.dart';
 import '../../../share/widgets/item_app_bar.dart';
 
 class SecondContainerMap extends StatelessWidget {
-  const SecondContainerMap(
-      {super.key,
-      this.onTap,
-      required this.constraints,
-      required this.isLocation});
+  const SecondContainerMap({
+    super.key,
+    this.onTap,
+    required this.constraints,
+    required this.isLocation,
+    this.address,
+  });
 
   final Function()? onTap;
   final BoxConstraints constraints;
   final bool isLocation;
+  final String? address;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +31,7 @@ class SecondContainerMap extends StatelessWidget {
         Stack(
           children: [
             Container(
-              height: constraints.maxHeight / 1.6,
+              height: constraints.maxHeight / 1.8,
               decoration: const BoxDecoration(
                   color: Colors.green,
                   borderRadius: BorderRadius.all(Radius.circular(25)),
@@ -58,7 +61,7 @@ class SecondContainerMap extends StatelessWidget {
                       ),
                     ),
                     child: GestureDetector(
-                      onTap:onTap ,
+                      onTap: onTap,
                       child: Text('Выберите на карте',
                           style: context.textTheme.bodyLarge
                               ?.copyWith(color: AppColorsDark.darkStyleText)),
@@ -69,24 +72,23 @@ class SecondContainerMap extends StatelessWidget {
             )
           ],
         ),
-        16.height,
-        isLocation
-            ? Row(
-                children: [
-                  const ItemAppBar(
-                    color: AppColorsDark.whiteSecondary,
-                    icon: 'assets/icon_pin.png',
-                  ),
-                  16.width,
-                  Flexible(
-                    child: Text(
-                      'Jl. Cisangkuy, Citarum, Kec. Bandung Wetan, Kota Bandung, Jawa Barat 40115',
-                      style: context.textTheme.bodyMedium,
-                    ),
-                  )
-                ],
-              )
-            : const SizedBox.shrink(),
+        50.height,
+        Row(
+          children: [
+            const ItemAppBar(
+              color: AppColorsDark.whiteSecondary,
+              icon: 'assets/icon_pin.png',
+            ),
+            16.width,
+            Flexible(
+              child: Text(
+                address ?? 'Your address',
+                style: context.textTheme.titleMedium
+                    ?.copyWith(color: AppColorsDark.white),
+              ),
+            )
+          ],
+        )
       ],
     );
   }

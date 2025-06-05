@@ -1,3 +1,4 @@
+import 'package:charge_me/core/helpers/app_user.dart';
 import 'package:dio/dio.dart';
 
 import '../../../share/utils/constant/config_app.dart';
@@ -13,9 +14,15 @@ class ApiClientInterceptor extends Interceptor {
   ApiClientInterceptor({required this.client});
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+  Future<void> onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    var accessToken = await SecureStorageService.getInstance.getValue("access_token");
     options.baseUrl = ConfigApp.localHost;
     options.responseType = ResponseType.json;
+    if (accessToken!=null) {
+      options.headers['Authorization'] =
+      'Bearer $accessToken';
+    }
+
 
     return super.onRequest(options, handler);
   }

@@ -98,7 +98,7 @@ class _AcceptPrivacyPolicyState extends State<AcceptPrivacyPolicy> {
                       state.maybeWhen(
                           success: () {
                             context.router
-                                .push(const AccountSetupConnectorRoutePage());
+                                .push(const AccountSetupCarRoutePage());
                           },
                           orElse: () {});
                     },

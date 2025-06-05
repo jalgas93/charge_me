@@ -5,16 +5,16 @@ import 'package:flutter/material.dart';
 import '../../../core/styles/app_colors_dark.dart';
 import '../../../share/widgets/item_app_bar.dart';
 
-
 class AddressInfo extends StatefulWidget {
-  const AddressInfo({super.key});
+  const AddressInfo({super.key, required this.address});
+
+  final String address;
 
   @override
   State<AddressInfo> createState() => _AddressInfoState();
 }
 
 class _AddressInfoState extends State<AddressInfo> {
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -22,8 +22,7 @@ class _AddressInfoState extends State<AddressInfo> {
       width: context.screenSize.width,
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       decoration: BoxDecoration(
-          color: AppColorsDark.white,
-          borderRadius: BorderRadius.circular(25)),
+          color: AppColorsDark.white, borderRadius: BorderRadius.circular(25)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -40,7 +39,7 @@ class _AddressInfoState extends State<AddressInfo> {
               16.width,
               Flexible(
                 child: Text(
-                  'Jl. Cisangkuy, Citarum, Kec. Bandung Wetan, Kota Bandung, Jawa Barat 40115',
+                  widget.address,
                   style: context.textTheme.bodyMedium
                       ?.copyWith(color: AppColorsDark.darkStyleText),
                 ),

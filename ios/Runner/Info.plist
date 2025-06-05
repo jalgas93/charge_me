@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>YandexMapKitApiKey</key>
+    <string>b84b403d-0bd1-44f3-80e9-1cbee6f3708d</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Доступ к геолокации пользователя необходим для отображения текущей геопозиции</string>
 	<key>CFBundleDevelopmentRegion</key>
