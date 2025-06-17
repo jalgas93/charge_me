@@ -53,7 +53,7 @@ class SuccessChargingUp extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Expanded(child: ItemBattery()),
+              //const Expanded(child: ItemBattery()),
               Stack(
                 children: [
                   Padding(

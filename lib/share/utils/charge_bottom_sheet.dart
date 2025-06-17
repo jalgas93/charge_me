@@ -1,10 +1,11 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/styles/app_colors_dark.dart';
 
 class ChargeBottomSheet {
-  static Future<void> draggableScrollableSheet({
+  static Future<dynamic> draggableScrollableSheet({
     required BuildContext context,
     required List<Widget> children,
   }) async {

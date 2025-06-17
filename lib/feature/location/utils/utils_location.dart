@@ -1,18 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
-enum TypesConnector {
-  chademo,
-  ccs1,
-  ccs2,
-  type1,
-  type2,
-  gbt,
-  tesla,
-  j1772type1,
-  combo1,
-  combo2,
-}
 enum BookingStation{
   initialBooking,
   successBooking,
@@ -20,13 +8,13 @@ enum BookingStation{
   finishCharging,
 }
 class UtilsLocation {
-  static final ValueNotifier<String> _typesConnector = ValueNotifier('CHAdeMo');
+  static final ValueNotifier<String?> _typesConnector = ValueNotifier('GB_T');
 
-  static set setConnector(String value) {
+  static set setConnector(String? value) {
     _typesConnector.value = value;
   }
 
-  static ValueNotifier<String> get typesConnector => _typesConnector;
+  static ValueNotifier<String?> get typesConnector => _typesConnector;
 
   static final ValueNotifier<int> _typesOfPower = ValueNotifier(150);
 

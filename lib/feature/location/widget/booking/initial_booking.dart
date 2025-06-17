@@ -1,5 +1,6 @@
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
+import 'package:charge_me/feature/location/model/stations.dart';
 import 'package:charge_me/feature/location/utils/utils_location.dart';
 import 'package:flutter/material.dart';
 
@@ -8,116 +9,153 @@ import '../../../../share/widgets/custom_button.dart';
 import 'item_title.dart';
 
 class InitialBooking extends StatelessWidget {
-  const InitialBooking({super.key, required this.listConnectors});
+  const InitialBooking(
+      {super.key, required this.station, required this.stream});
 
-  final List<String> listConnectors;
+  final Station station;
+  final Stream stream;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: LayoutBuilder(
         builder: (context, constraints) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const ItemTitle(
-                title: 'СИТИ ЦЕНТР ТЦ',
-                description: 'Улица Мирзо Улугбекаб Ташкент',
+              ItemTitle(
+                title: '${station.location?.city}',
+                description: '${station.location?.address}',
                 descriptionSupplement: 'Время работы с 00:00 - 24:00',
-                id: 'ID 81862612',
+                id: '${station.externalId}',
               ),
-              const SizedBox(height: 8),
+              8.height,
               const Divider(),
-              const SizedBox(height: 8),
+              8.height,
               Text(
                 'Типы зарядных устройств',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               8.height,
-              SizedBox(
-                width: constraints.maxWidth,
-                height: constraints.maxWidth / 3,
-                child: ListView.separated(
-                  itemCount: listConnectors.length,
-                  physics: const BouncingScrollPhysics(),
-                  scrollDirection: Axis.horizontal,
-                  shrinkWrap: true,
-                  itemBuilder: (context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        UtilsLocation.setConnector = listConnectors[index];
-                      },
-                      child: ValueListenableBuilder(
-                        valueListenable: UtilsLocation.typesConnector,
-                        builder: (context, value, child) {
-                          return Flexible(
-                            child: Container(
-                              height: constraints.maxWidth / 3,
-                              padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 16),
-                              decoration: BoxDecoration(
-                                  color: value == listConnectors[index]
-                                      ? context.theme.focusColor
-                                      : AppColorsDark.black,
-                                  borderRadius: BorderRadius.circular(25)),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    listConnectors[index],
-                                    style:
-                                        Theme.of(context).textTheme.titleMedium,
-                                  ),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '60 kBT',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium
-                                            ?.copyWith(
-                                              color:
-                                                  value == listConnectors[index]
-                                                      ? AppColorsDark.white
-                                                      : AppColorsDark.green1,
+              StreamBuilder(
+                stream: stream,
+                builder: (context, snapshot) {
+                  if (snapshot.data != null) {
+                    var connector =
+                        ConnectorList.fromJson(snapshot.data).payload;
+                    print("object ${connector}");
+                    if (connector != null) {
+                      return SizedBox(
+                        width: constraints.maxWidth,
+                        height: constraints.maxWidth / 3,
+                        child: ListView.separated(
+                          itemCount: connector.length,
+                          physics: const BouncingScrollPhysics(),
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemBuilder: (context, int index) {
+                            return GestureDetector(
+                              onTap: () {
+                                UtilsLocation.setConnector =
+                                    connector[index].type;
+                              },
+                              child: ValueListenableBuilder(
+                                valueListenable: UtilsLocation.typesConnector,
+                                builder: (context, value, child) {
+                                  return Container(
+                                    height: constraints.maxWidth / 3,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12, horizontal: 16),
+                                    decoration: BoxDecoration(
+                                        color: value == connector[index].type
+                                            ? context.theme.focusColor
+                                            : AppColorsDark.black,
+                                        borderRadius:
+                                            BorderRadius.circular(25)),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${connector[index].type}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium,
+                                        ),
+                                        8.width,
+                                        Text(
+                                          '${connector[index].status}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(
+                                                  color: connector[index]
+                                                              .status ==
+                                                          'AVAILABLE'
+                                                      ? AppColorsDark.yellow1
+                                                      : AppColorsDark.red1),
+                                        ),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${connector[index].maxPower} kBT',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.copyWith(
+                                                    color: value ==
+                                                            connector[index]
+                                                                .type
+                                                        ? AppColorsDark.white
+                                                        : AppColorsDark.green1,
+                                                  ),
                                             ),
-                                      ),
-                                      Text(
-                                        r'14$ / кВТ*ч ',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium
-                                            ?.copyWith(
-                                              color:
-                                                  value == listConnectors[index]
-                                                      ? AppColorsDark.white
-                                                      : AppColorsDark.white,
+                                            Text(
+                                              '${connector[index].costPerKwh?.toStringAsFixed(0)} Sum / кВТ*ч',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.copyWith(
+                                                    color: value ==
+                                                            connector[index]
+                                                        ? AppColorsDark.white
+                                                        : AppColorsDark.white,
+                                                  ),
                                             ),
-                                      ),
-                                    ],
-                                  )
-                                ],
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                },
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                  separatorBuilder: (context, int index) {
-                    return const SizedBox(width: 8);
-                  },
-                ),
+                            );
+                          },
+                          separatorBuilder: (context, int index) {
+                            return const SizedBox(width: 8);
+                          },
+                        ),
+                      );
+                    }
+                  }
+                  return const SizedBox.shrink();
+                },
               ),
               8.height,
               const Divider(),
               8.height,
-              CustomButton(onTap: () {
-                UtilsLocation.setChargingUp = BookingStation.successBooking;
-              }, radius: 25, text: 'Забронировать'),
+              CustomButton(
+                  onTap: () {
+                    UtilsLocation.setChargingUp = BookingStation.successBooking;
+                  },
+                  radius: 25,
+                  text: 'Продолжить'),
             ],
           );
         },

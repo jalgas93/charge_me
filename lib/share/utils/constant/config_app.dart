@@ -7,5 +7,6 @@ class ConfigApp {
   static String apiBaseUrl = dotenv.env['PROD_URL'] ?? '';
   static String apiDevUrl = dotenv.env['DEV_URL'] ?? '';
   static String localHost = 'http://192.168.4.117:8080/';
+  static String websocket = 'ws://192.168.4.117:8080/';
 
 }
