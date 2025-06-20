@@ -52,10 +52,12 @@ class Location with _$Location {
 @freezed
 class Connector with _$Connector {
   factory Connector({
+    @JsonKey(name: 'connector_id') String? connectorId,
     @JsonKey(name: 'type') String? type,
     @JsonKey(name: 'status') String? status,
     @JsonKey(name: 'energy_consumed') num? energyConsumed,
     @JsonKey(name: 'cost_per_kwh') num? costPerKwh,
+    @JsonKey(name: 'cost_booking_minutes') num? costBookingMinutes,
     @JsonKey(name: 'blocked_by') String? blockedBy,
     @JsonKey(name: 'max_power') num? maxPower,
   }) = _Connector;
@@ -75,4 +77,20 @@ class ConnectorList with _$ConnectorList {
 
   factory ConnectorList.fromJson(Map<String, dynamic> json) =>
       _$ConnectorListFromJson(json);
+}
+@freezed
+class Transaction with _$Transaction {
+  factory Transaction({
+    @JsonKey(name: 'transaction_id') String? transactionId,
+    @JsonKey(name: 'charger_id') String? chargingId,
+    @JsonKey(name: 'start_time') DateTime? startTime,
+    @JsonKey(name: 'end_time') DateTime? endTime,
+    @JsonKey(name: 'energy_consumed') num? energyConsumed,
+    @JsonKey(name: 'cost') num? cost,
+    @JsonKey(name: 'status') String? status,
+    @JsonKey(name: 'update_at') DateTime? updateAt,
+  }) = _Transaction;
+
+  factory Transaction.fromJson(Map<String, dynamic> json) =>
+      _$TransactionFromJson(json);
 }

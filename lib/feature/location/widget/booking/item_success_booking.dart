@@ -4,10 +4,23 @@ import 'package:charge_me/share/widgets/circle_container.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/styles/app_colors_dark.dart';
+import '../../../../share/widgets/count_down.dart';
 import 'item_rate.dart';
 
 class ItemSuccessBooking extends StatelessWidget {
-  const ItemSuccessBooking({super.key});
+  const ItemSuccessBooking(
+      {super.key,
+      required this.type,
+      required this.price,
+      required this.levelClock,
+      required this.animation,
+        required this.costBookingMinutes});
+
+  final String type;
+  final num price;
+  final int levelClock;
+  final   AnimationController animation;
+  final num costBookingMinutes;
 
   @override
   Widget build(BuildContext context) {
@@ -16,15 +29,15 @@ class ItemSuccessBooking extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const ItemRate(
+            ItemRate(
               title: 'Тариф',
-              description: r'14 $ / кВТ*ч',
+              description: '${price.toStringAsFixed(0)} sum / кВТ*ч',
             ),
             CircleContainer(
               padding:
                   const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 8),
               color: AppColorsDark.green1,
-              child: Text('Type 1',
+              child: Text(type,
                   style: context.textTheme.bodyMedium
                       ?.copyWith(color: AppColorsDark.white)),
             ),
@@ -41,11 +54,22 @@ class ItemSuccessBooking extends StatelessWidget {
               children: [
                 Text('Бесплатное бронирование',
                     style: context.textTheme.titleSmall),
-                Text('Осталось ${14}', style: context.textTheme.bodyMedium)
+                Row(
+                  children: [
+                    Text('Осталось', style: context.textTheme.bodyMedium),
+                    10.width,
+                    Countdown(
+                      animation: StepTween(
+                        begin: levelClock,
+                        // THIS IS A USER ENTERED NUMBER
+                        end: 0,
+                      ).animate(animation as Animation<double>),
+                    )
+                  ],
+                )
               ],
             ),
-            Text(r'14 $',
-                style: context.textTheme.titleLarge),
+            Text('${costBookingMinutes.toStringAsFixed(0)} sum', style: context.textTheme.titleLarge),
           ],
         ),
         16.height,
@@ -55,10 +79,11 @@ class ItemSuccessBooking extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               decoration: const BoxDecoration(
                   color: AppColorsDark.green0,
-                  borderRadius:  BorderRadius.all(Radius.circular(16))),
+                  borderRadius: BorderRadius.all(Radius.circular(16))),
               child: Text(
                 'Вставьте коннектор в разъем электромобиля и подтвердите подключение',
-                style: context.textTheme.bodyLarge?.copyWith(color: AppColorsDark.black),
+                style: context.textTheme.bodyLarge
+                    ?.copyWith(color: AppColorsDark.black),
               ),
             ),
             16.height,
@@ -73,7 +98,7 @@ class ItemSuccessBooking extends StatelessWidget {
               ],
             ),
             16.height,
-           const Divider()
+            const Divider()
           ],
         )
       ],

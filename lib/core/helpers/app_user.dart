@@ -3,6 +3,8 @@ import '../../share/utils/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
 
 class AppUser {
+
+  final navigatorKey = GlobalKey<NavigatorState>();
 /*   static final accessToken = SecureStorageService.getInstance.getValue("access_token");
    static final refreshToken = SecureStorageService.getInstance.getValue("refresh_token");
 

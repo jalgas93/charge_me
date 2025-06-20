@@ -29,7 +29,10 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
       try {
         final dynamic response = await _repository.getStations();
         Log.i(response);
-        emit(LocationState.successLocation(list: Stations.fromJson(response).list ?? []));
+        emit(LocationState.successLocation(
+            list: Stations
+                .fromJson(response)
+                .list ?? []));
       } catch (e) {
         emit(LocationState.error(error: e));
       }

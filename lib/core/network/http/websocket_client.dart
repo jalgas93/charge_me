@@ -43,7 +43,6 @@ class WebSocketManager {
           if (_channel != null && event != null) {
             Map<String, dynamic> map = jsonDecode(event);
             _controller.add(map); // Передаем данные в StreamBuilder
-            Log.i('MAP', map);
           }
         },
         onError: (error) {
@@ -65,14 +64,14 @@ class WebSocketManager {
     }
   }
 
-  void transmit(dynamic data) {
+  Future<void> transmit(dynamic data) async {
     if (_channel != null) {
       _channel!.sink.add(data);
     }
   }
 
   void _eventListener(dynamic event) {
-    print('Received event: $event');
+    Log.i('Received event',event);
   }
 
   void _reconnect({required String stationId}) {

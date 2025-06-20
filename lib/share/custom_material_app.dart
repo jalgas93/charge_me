@@ -6,12 +6,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:auto_route/auto_route.dart' as autoRoute;
 import '../core/application.dart';
+import '../core/network/http/websocket_new.dart';
 import '../core/provider/theme_notifier.dart';
 import '../core/router/custom_route_observer.dart';
 import '../core/router/router.dart';
 import '../core/service_locator.dart';
 import '../core/styles/theme/dark_theme.dart';
 import '../core/styles/theme/light_theme.dart';
+import '../feature/location/bloc/websocket/websocket_bloc.dart';
 import '../generated/l10n.dart';
 import 'bloc/app_bloc/app_bloc.dart';
 import 'package:provider/provider.dart';
@@ -28,11 +30,15 @@ class CustomMaterialApp extends StatefulWidget {
 class _CustomMaterialAppState extends State<CustomMaterialApp> {
   bool _initialized = false;
   late AppBloc _appBloc;
+  late WebsocketBloc _websocketBloc;
+  late WebSocketService _webSocketService;
 
   @override
   void initState() {
     super.initState();
     _appBloc = AppBloc();
+    _webSocketService = WebSocketService();
+    _websocketBloc = WebsocketBloc(webSocketService: _webSocketService);
     Application.tokenChangeHandler = _appTokenChanged;
     Application.onAppLanguageChanged = _appLanguageChanged;
     startApplication().then((_) {
@@ -45,6 +51,7 @@ class _CustomMaterialAppState extends State<CustomMaterialApp> {
   @override
   void dispose() {
     _appBloc.close();
+    _websocketBloc.close();
     super.dispose();
   }
 
@@ -77,6 +84,9 @@ class _CustomMaterialAppState extends State<CustomMaterialApp> {
       providers: [
         BlocProvider<AppBloc>(
           create: (BuildContext context) => _appBloc,
+        ),
+        BlocProvider<WebsocketBloc>(
+          create: (BuildContext context) => _websocketBloc,
         ),
         ChangeNotifierProvider(
             create: (_) => ThemeNotifier(
