@@ -8,6 +8,7 @@ part 'user_model.g.dart';
 class UserModel with _$UserModel {
   const factory UserModel({
     @JsonKey(name: 'userId') int? userId,
+    @JsonKey(name: 'phone') String? phone,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>

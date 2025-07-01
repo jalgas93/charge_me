@@ -1,14 +1,13 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:charge_me/feature/location/bloc/location_bloc.dart';
 import 'package:charge_me/feature/location/location_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 import '../../../core/logging/log.dart';
-import '../../../core/network/http/websocket_client.dart';
-import '../../../core/network/http/websocket_new.dart';
+import '../../../core/provider/websocket_provider.dart';
 import '../../../core/styles/app_colors_dark.dart';
 import '../../../share/utils/charge_bottom_sheet.dart';
 import '../../../share/utils/location_service.dart';
@@ -17,11 +16,11 @@ import '../../../share/widgets/throw_error.dart';
 import '../../home/model/app_lat_long.dart';
 import '../bloc/websocket/websocket_bloc.dart';
 import '../model/stations.dart';
-import '../utils/utils_location.dart';
 import '../widget/booking/search_form_field.dart';
 import 'booking_page.dart';
 import 'charging_page.dart';
-import 'initial_page.dart';
+import 'finish_charging.dart';
+import 'connector_page.dart';
 
 class LocationPage extends StatefulWidget {
   const LocationPage({super.key});
@@ -36,18 +35,16 @@ class _LocationPageState extends State<LocationPage> {
   late LocationBloc _bloc;
   late LocationRepository _repository;
   late WebsocketBloc _websocketBloc;
-  late WebSocketService _webSocketService;
   List<Station>? listStation;
-  final WebSocketManager _wsManager = WebSocketManager();
+
   List<Connector>? connector;
+
 
   @override
   void initState() {
     super.initState();
     _repository = LocationRepository();
-    _webSocketService = WebSocketService();
     _bloc = LocationBloc(repository: _repository);
-    //_websocketBloc = WebsocketBloc(webSocketService: _webSocketService);
     _websocketBloc = BlocProvider.of<WebsocketBloc>(context);
     _bloc.add(const LocationEvent.started());
     _initPermission().ignore();
@@ -56,7 +53,6 @@ class _LocationPageState extends State<LocationPage> {
   @override
   void dispose() {
     _bloc.close();
-    //_websocketBloc.close();
     controller.dispose();
     super.dispose();
   }
@@ -197,11 +193,10 @@ class _LocationPageState extends State<LocationPage> {
               ),
               onTap: (_, __) async {
                 _websocketBloc.add(WebsocketEvent.connect(
-                    stationId: station.externalId ?? ''));
-                _websocketBloc.add(WebsocketEvent.sendWebSocketMessage(
-                    message: jsonEncode({"action": "Connector"})));
+                    stationId: station.externalId ?? 'STS_1'));
                 await ChargeBottomSheet
-                    .draggableScrollableSheet(context: context, children: [
+                    .draggableScrollableSheet(
+                    context: context, children: [
                   BlocConsumer<WebsocketBloc, WebsocketState>(
                     bloc: _websocketBloc,
                     listener: (context, WebsocketState state) {
@@ -217,162 +212,77 @@ class _LocationPageState extends State<LocationPage> {
                           connectWebSocket: () async {
                             Log.i('connectWebSocket');
                           },
-                          receivedWebSocketMessage: (data) async {
-                            connector = ConnectorList.fromJson(data).payload;
-                            Log.i('receivedWebSocketMessage litener');
+                          connectorSuccess: (data) async {
+                            Log.i('connectorSuccess listener $data');
+                          },
+                          bookingSuccess: (data) async {
+                            Log.i('bookingSuccess listener $data');
+                          },
+                          bookingCancelSuccess: (data){
+                            Log.i('bookingCancelSuccess listener $data');
+                          },
+                          chargingSuccess: (data) async {
+                            Log.i('chargingSuccess listener $data');
+                          },
+                          finishSuccess: (data) async {
+                            Log.i('finishSuccess listener $data ');
                           },
                           orElse: () {});
                     },
                     builder: (context, WebsocketState state) {
-                      return state.maybeWhen(connectWebSocket: () {
-                        Log.i('connectWebSocket');
-                        return Container(
-                          height: 500,
-                          color: Colors.white,
+                      return state.maybeWhen(
+                          connectorSuccess: (data) {
+                            connector = ConnectorList.fromJson(data).payload;
+                        return Provider<ConnectorProviderData>(
+                          create: (_) => ConnectorProviderData(connector: connector),
+                          child: ConnectorPage(
+                            station: station,
+                          ),
                         );
-                      }, disconnectWebSocket: () {
-                        return Container(
-                          height: 500,
-                          color: Colors.grey,
-                        );
-                      }, receivedWebSocketMessage: (data) {
-                        return InitialPage(
-                          connector: connector!,
-                          station: station,
-                          onTap: () async {
-                            _websocketBloc.add(const WebsocketEvent.booking());
-                            /*        UtilsLocation.setChargingUp =
-                                    BookingStation.booking;
-                                await WebSocketManager().transmit(
-                                    jsonEncode({"action": "Connector"}));*/
-                            // await WebSocketManager()
-                            //     .transmit(jsonEncode({"action": "StartBooking"}));
+                      }, bookingSuccess: (data) {
+                        return Provider<ConnectorProviderData>(
+                          create: (_) => ConnectorProviderData(connector: connector),
+                          builder: (context,child){
+                            return BookingPage(
+                              station: station,
+                            );
                           },
                         );
-                      }, bookingSuccess: () {
-                        return BookingPage(
-                          station: station,
-                          connector: connector!,
-                          onTapCancel: () async {
-                            UtilsLocation.setChargingUp =
-                                BookingStation.connect;
-                            /*         await WebSocketManager()
-                                                .transmit(jsonEncode({"action": "StopBooking"}));*/
-                          },
-                          onTapCharging: () async {
-                            _websocketBloc.add(const WebsocketEvent.charging());
-                            /*     UtilsLocation.setChargingUp =
-                                    BookingStation.charging;*/
-                            /*         await WebSocketManager()
-                                                .transmit(jsonEncode({"action": "StartTransaction"}));*/
+                      }, chargingSuccess: (data) {
+                            var response = StartTransaction.fromJson(data).payload;
+                        return Provider<ConnectorProviderData>(
+                          create: (_) => ConnectorProviderData(connector: connector),
+                          builder: (context,child){
+                            return ChargingPage(
+                              station: station,
+                              payloadStartTransaction: response!,
+                            );
                           },
                         );
-                      }, chargingSuccess: () {
-                        return ChargingPage(
-                          station: station,
-                          connector: connector!,
-                          onTapFinish: () async {
-                            UtilsLocation.setChargingUp = BookingStation.finish;
+                      }, finishSuccess: (data){
+                            var response = StopTransaction.fromJson(data).payload;
+                        return Provider<ConnectorProviderData>(
+                          create: (_) => ConnectorProviderData(connector: connector),
+                          builder: (context,child){
+                            return ResultPage(
+                              station: station,
+                              stopTransaction:response,
+                              onTap: (){
+                                Navigator.pop(context);
+                              },
+                            );
                           },
                         );
-                      }, orElse: () {
-                        return Container(
-                          height: 500,
-                          color: Colors.yellow,
-                        );
+                          },
+                          orElse: () {
+                        return const SizedBox.shrink();
                       });
                     },
                   )
-                ]);
+                ]).then((value){
+                  _websocketBloc.add(const WebsocketEvent.disconnectedWebSocket());});
               }),
         )
         .toList();
   }
 }
-
-/*
-
-            _wsManager.connect(stationId: station.externalId ?? '').then((value)async{
-                  await WebSocketManager()
-                      .transmit(jsonEncode({"action": "Connector"}));
-                });
-                if (context.mounted) {
-                  await ChargeBottomSheet.draggableScrollableSheet(context: context, children: [
-                    StreamBuilder(
-                      stream: _wsManager.stream,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const CircularProgressIndicator(); // Waiting for the stream
-                        } else if (snapshot.hasError) {
-                          return Text("Error: ${snapshot.error}"); // Show error message
-                        } else if (snapshot.hasData) {
-                          Log.i("snapshot data ${snapshot.data}");
-                          if (ConnectorList.fromJson(snapshot.data).action ==
-                              "Connector") {
-                           var connector = ConnectorList.fromJson(snapshot.data).payload;
-                             return ValueListenableBuilder(
-                                  valueListenable:
-                                  UtilsLocation.processChargingUp,
-                                  builder: (context, value, child) {
-                                    switch (value) {
-                                      case BookingStation.connect:
-                                        return InitialPage(
-                                          connector: connector!,
-                                          station: station,
-                                          onTap: () async{
-                                            UtilsLocation.setChargingUp =
-                                                BookingStation.booking;
-                                            await WebSocketManager()
-                                                .transmit(jsonEncode({"action": "Connector"}));
-                                            // await WebSocketManager()
-                                            //     .transmit(jsonEncode({"action": "StartBooking"}));
-                                          },
-                                        );
-                                      case BookingStation.booking:
-                                        return BookingPage(
-                                          station: station,
-                                          connector: connector!,
-                                          onTapCancel: ()async {
-                                            UtilsLocation.setChargingUp =
-                                                BookingStation.connect;
-                                   /*         await WebSocketManager()
-                                                .transmit(jsonEncode({"action": "StopBooking"}));*/
-                                          },
-                                          onTapCharging: () async{
-                                            UtilsLocation.setChargingUp =
-                                                BookingStation.charging;
-                                   /*         await WebSocketManager()
-                                                .transmit(jsonEncode({"action": "StartTransaction"}));*/
-                                          },
-                                        );
-                                      case BookingStation.charging:
-                                        return ChargingPage(
-                                          station: station,
-                                          connector: connector!,
-                                          onTapFinish: () async{
-                                            UtilsLocation.setChargingUp =
-                                                BookingStation.finish;
-                                          },
-                                        );
-                                      case BookingStation.finish:
-                                        return ResultPage(
-                                          station: station,
-                                          connector: connector!,
-                                        );
-                                      default:
-                                        return const SizedBox.shrink();
-                                    }
-                                  });
-
-                          }// Show the latest value
-                        } else {
-                          return const Text("No data available"); // Handle any other cases
-                        }
-                        return const SizedBox.shrink();
-                      },
-                    ),
-                  ]).then((value) {
-                    WebSocketManager().disconnect();
-                  });
-                }
- */

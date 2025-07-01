@@ -15,12 +15,14 @@ class WebsocketState with _$WebsocketState {
   const factory WebsocketState.errorWebSocket({required dynamic error}) =
       _WebSocketError;
 
-  const factory WebsocketState.receivedWebSocketMessage(
-      {required dynamic message}) = _WebSocketMessageReceived;
+  const factory WebsocketState.connectorSuccess(
+      {required dynamic message}) = _ConnectorSuccess;
 
-  const factory WebsocketState.bookingSuccess() = _BookingSuccess;
+  const factory WebsocketState.bookingSuccess({required dynamic message}) = _BookingSuccess;
 
-  const factory WebsocketState.chargingSuccess() = _ChargingSuccess;
+  const factory WebsocketState.bookingCancelSuccess({required dynamic message}) = _BookingCancelSuccess;
 
-  const factory WebsocketState.finishSuccess() = _FinishSuccess;
+  const factory WebsocketState.chargingSuccess({required dynamic message}) = _ChargingSuccess;
+
+  const factory WebsocketState.finishSuccess({required dynamic message}) = _FinishSuccess;
 }

@@ -8,11 +8,14 @@ class WebsocketEvent with _$WebsocketEvent {
 
   const factory WebsocketEvent.disconnectedWebSocket() = _DisconnectWebSocket;
 
-  const factory WebsocketEvent.sendWebSocketMessage({required String message}) =
-      _SendWebSocketMessage;
+  const factory WebsocketEvent.connector({required String message}) =
+      _Connector;
 
-  const factory WebsocketEvent.booking() = _Booking;
+  const factory WebsocketEvent.booking({required String message}) = _Booking;
 
-  const factory WebsocketEvent.charging() = _Charging;
-  const factory WebsocketEvent.finish() = _Finish;
+  const factory WebsocketEvent.bookingCancel({required String message}) = _BookingCancel;
+
+  const factory WebsocketEvent.charging({required String message}) = _Charging;
+
+  const factory WebsocketEvent.finish({required String message}) = _Finish;
 }

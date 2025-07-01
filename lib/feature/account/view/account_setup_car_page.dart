@@ -45,8 +45,8 @@ class _AccountSetupCarPageState extends State<AccountSetupCarPage> {
   }
 
   void submit() async {
-    Log.i("UserId",AppUser.userModel.value!.userId!);
-    if(AppUser.userModel.value?.userId != null){
+    Log.i("UserId",AppUser.userModel?.userId!);
+    if(AppUser.userModel?.userId != null){
       _bloc.add(const AccountSetupEvent.addCar(
           manufacture: 'BYD',
           model: 'Chazor',

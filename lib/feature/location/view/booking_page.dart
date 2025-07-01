@@ -1,10 +1,17 @@
-import 'package:auto_route/annotations.dart';
+import 'dart:convert';
+
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
+import 'package:charge_me/core/helpers/app_helper.dart';
+import 'package:charge_me/core/provider/websocket_provider.dart';
 import 'package:charge_me/core/styles/app_colors_dark.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
+import '../../../core/helpers/app_user.dart';
 import '../../../share/widgets/circle_container.dart';
+import '../bloc/websocket/websocket_bloc.dart';
 import '../model/stations.dart';
 import '../utils/utils_location.dart';
 import '../widget/booking/item_success_booking.dart';
@@ -14,24 +21,21 @@ class BookingPage extends StatefulWidget {
   const BookingPage({
     super.key,
     this.station,
-    this.onTapCancel,
-    this.onTapCharging,
-    required this.connector,
   });
 
-  final List<Connector> connector;
   final Station? station;
-  final Function()? onTapCancel;
-  final Function()? onTapCharging;
 
   @override
   State<BookingPage> createState() => _BookingPageState();
 }
 
-class _BookingPageState extends State<BookingPage>  with SingleTickerProviderStateMixin{
+class _BookingPageState extends State<BookingPage>
+    with SingleTickerProviderStateMixin {
   AnimationController? _animationController;
+  String _extId = AppHelper.getRandomUuid();
   int levelClock = 3 * 60;
 
+  List<Connector>? get connector => Provider.of<ConnectorProviderData>(context,listen: false).connector;
 
   @override
   void initState() {
@@ -46,8 +50,10 @@ class _BookingPageState extends State<BookingPage>  with SingleTickerProviderSta
     _animationController!.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
+    var websocketBloc = context.read<WebsocketBloc>();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: LayoutBuilder(
@@ -56,21 +62,29 @@ class _BookingPageState extends State<BookingPage>  with SingleTickerProviderSta
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ItemTitle(
-                title: widget.station?.location?.city ?? '',
-                description: widget.station?.location?.address ?? '',
-                stationId: widget.station?.externalId ?? '',
-                connectorId: '# ${widget.connector[UtilsLocation.index.value].connectorId}',
-                type: widget.connector[UtilsLocation.index.value].type ?? '',
-                maxPower: '${widget.connector[UtilsLocation.index.value].maxPower} kBT',
-              ),
-              16.height,
-              ItemSuccessBooking(
-                type: widget.connector[UtilsLocation.index.value].type??'',
-                price: widget.connector[UtilsLocation.index.value].costPerKwh ?? 0,
-                costBookingMinutes: widget.connector[UtilsLocation.index.value].costBookingMinutes ?? 0,
-                levelClock: levelClock,
-                animation: _animationController!,
+              Column(
+                children: [
+                  ItemTitle(
+                    title: widget.station?.location?.city ?? '',
+                    description: widget.station?.location?.address ?? '',
+                    stationId: widget.station?.externalId ?? '',
+                    connectorId:
+                        '# ${connector?[UtilsLocation.index.value].connectorId}',
+                    type: connector?[UtilsLocation.index.value].type ?? '',
+                    maxPower:
+                        '${connector?[UtilsLocation.index.value].maxPower} kBT',
+                  ),
+                  16.height,
+                  ItemSuccessBooking(
+                    type: connector?[UtilsLocation.index.value].type ?? '',
+                    price: connector?[UtilsLocation.index.value].costPerKwh ?? 0,
+                    costBookingMinutes: connector?[UtilsLocation.index.value]
+                            .costBookingMinutes ??
+                        0,
+                    levelClock: levelClock,
+                    animation: _animationController!,
+                  ),
+                ],
               ),
               16.height,
               Row(
@@ -78,7 +92,31 @@ class _BookingPageState extends State<BookingPage>  with SingleTickerProviderSta
                 children: [
                   Flexible(
                     child: GestureDetector(
-                      onTap: widget.onTapCancel,
+                      onTap: () {
+                        websocketBloc.add(WebsocketEvent.bookingCancel(
+                          message: jsonEncode({
+                            "action": "CancelBooking",
+                            "messageId": "cancelBooking",
+                            "payload": {
+                              "status": BookingStation.available.name,
+                              "booking": AppUser.userModel?.phone,
+                              "userId":AppUser.userModel?.userId,
+                              "connectorId":"${connector?[UtilsLocation.index.value].connectorId}",
+                              "timestamp":
+                              DateTime.now().toIso8601String(),
+                              "chargerId": widget.station?.externalId ??'STS_1'
+                            }
+                          }),
+                        ));
+                        websocketBloc.add(WebsocketEvent.connector(
+                            message: jsonEncode({"action": "Connector"})));
+                        websocketBloc.add(WebsocketEvent.connector(
+                          message: jsonEncode({
+                            "action": "Connector",
+                            "messageId": "connector",
+                          }),
+                        ));
+                      },
                       child: CircleContainer(
                         color: AppColorsDark.white,
                         padding: const EdgeInsets.symmetric(
@@ -95,7 +133,22 @@ class _BookingPageState extends State<BookingPage>  with SingleTickerProviderSta
                   8.width,
                   Flexible(
                     child: GestureDetector(
-                      onTap: widget.onTapCharging,
+                      onTap: () {
+                        _extId = AppHelper.getRandomUuid();
+                        websocketBloc.add(WebsocketEvent.charging(
+                          message: jsonEncode({
+                            "action": "StartTransaction",
+                            "messageId": "startTransaction",
+                            "payload": {
+                              "status": BookingStation.charging.name,
+                              "connectorId": "${connector?[UtilsLocation.index.value].connectorId}",
+                              "timestamp": DateTime.now().toIso8601String(),
+                              "chargerId": widget.station?.externalId,
+                              "energyConsumed": 0
+                            }
+                          }),
+                        ));
+                      },
                       child: CircleContainer(
                         color: AppColorsDark.green1,
                         padding: const EdgeInsets.symmetric(
@@ -126,3 +179,16 @@ class _BookingPageState extends State<BookingPage>  with SingleTickerProviderSta
     );
   }
 }
+/*
+                       onTapCancel: () async {
+                            UtilsLocation.setChargingUp =
+                                BookingStation.connect;
+                            /*         await WebSocketManager()
+                                                .transmit(jsonEncode({"action": "StopBooking"}));*/
+                          },
+                          onTapCharging: () async {
+                           // _websocketBloc.add(const WebsocketEvent.charging());
+                            /*         await WebSocketManager()
+                                                .transmit(jsonEncode({"action": "StartTransaction"}));*/
+                          },
+ */

@@ -3,55 +3,47 @@ import 'dart:convert';
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../core/styles/app_colors_dark.dart';
 import '../../../../share/widgets/circle_container.dart';
 import '../../../../share/widgets/item_app_bar.dart';
-import '../../../core/helpers/app_helper.dart';
-import '../../../core/network/http/websocket_client.dart';
+import '../../../core/helpers/app_user.dart';
+import '../../../core/provider/websocket_provider.dart';
 import '../../../share/widgets/count_down.dart';
+import '../bloc/websocket/websocket_bloc.dart';
 import '../model/stations.dart';
 import '../utils/utils_location.dart';
+import '../widget/booking/item_battery.dart';
 import '../widget/booking/item_rate.dart';
 import '../widget/booking/item_title.dart';
 
 class ChargingPage extends StatefulWidget {
-  const ChargingPage(
-      {super.key,
-      this.onTapFinish,
-      required this.connector,
-      this.station,
-      this.onTapReview,
-      });
+  const ChargingPage({
+    super.key,
+    this.station,
+    this.onTapReview,
+    required this.payloadStartTransaction,
+  });
 
-  final Function()? onTapFinish;
-  final List<Connector> connector;
   final Station? station;
   final Function()? onTapReview;
-
+  final PayloadStartTransaction payloadStartTransaction;
 
   @override
   State<ChargingPage> createState() => _ChargingPageState();
 }
 
-class _ChargingPageState extends State<ChargingPage> with SingleTickerProviderStateMixin{
-  final WebSocketManager _wsManager = WebSocketManager();
+class _ChargingPageState extends State<ChargingPage>
+    with SingleTickerProviderStateMixin {
   AnimationController? _animationController;
   int levelClock = 3 * 60;
+  List<Connector>? get connector => Provider.of<ConnectorProviderData>(context,listen: false).connector;
+  PayloadStartTransaction get response => widget.payloadStartTransaction;
 
   @override
   void initState() {
-/*     WebSocketManager()
-         .transmit(jsonEncode({
-       "action": "StartTransaction",
-       "messageId": "123",
-       "payload": {
-         "status": "Charging",
-         "timestamp": "2025-03-27T22:07:09",
-         "chargerId": "${widget.station?.externalId}",
-         "energyConsumed": 0
-       }
-     }));*/
     _animationController = AnimationController(
         vsync: this, duration: Duration(seconds: levelClock));
     _animationController!.forward();
@@ -63,8 +55,10 @@ class _ChargingPageState extends State<ChargingPage> with SingleTickerProviderSt
     _animationController!.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
+    var websocketBloc = context.read<WebsocketBloc>();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Column(
@@ -75,8 +69,9 @@ class _ChargingPageState extends State<ChargingPage> with SingleTickerProviderSt
             description: 'Как зарядитесь до нужного уровня нажмите "Завершить"',
             descriptionSupplement: 'Время работы с 00:00 - 24:00',
             stationId: widget.station?.externalId ?? '',
-            connectorId: '# ${widget.connector[UtilsLocation.index.value].connectorId}',
-            maxPower: '${widget.connector[UtilsLocation.index.value].maxPower} kBT',
+            connectorId:
+                '# ${connector?[UtilsLocation.index.value].connectorId}',
+            maxPower: '${connector?[UtilsLocation.index.value].maxPower} kBT',
           ),
           8.height,
           const Divider(),
@@ -86,13 +81,14 @@ class _ChargingPageState extends State<ChargingPage> with SingleTickerProviderSt
               ItemRate(
                 title: 'Тариф',
                 description:
-                    '${widget.connector[UtilsLocation.index.value].costPerKwh?.toStringAsFixed(0)} sum / кВТ*ч',
+                    '${connector?[UtilsLocation.index.value].costPerKwh?.toStringAsFixed(0)} sum / кВТ*ч',
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text('Заряжено на:', style: context.textTheme.titleSmall),
-                  Text('${widget.connector[UtilsLocation.index.value].energyConsumed} kBT',
+                  Text(
+                      '${connector?[UtilsLocation.index.value].energyConsumed} kBT',
                       style: context.textTheme.bodyMedium)
                 ],
               )
@@ -103,7 +99,7 @@ class _ChargingPageState extends State<ChargingPage> with SingleTickerProviderSt
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              //const Expanded(child: ItemBattery()),
+              const Expanded(child: ItemBattery()),
               Stack(
                 children: [
                   Padding(
@@ -115,7 +111,7 @@ class _ChargingPageState extends State<ChargingPage> with SingleTickerProviderSt
                         color: AppColorsDark.greyBorder,
                         shape: BoxShape.circle,
                       ),
-                      child:   Countdown(
+                      child: Countdown(
                         animation: StepTween(
                           begin: levelClock,
                           // THIS IS A USER ENTERED NUMBER
@@ -142,21 +138,23 @@ class _ChargingPageState extends State<ChargingPage> with SingleTickerProviderSt
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               GestureDetector(
-                onTap: (){
-/*                  WebSocketManager().transmit(jsonEncode({
+                onTap: () {
+                  websocketBloc.add(WebsocketEvent.finish(
+                      message: jsonEncode({
                     "action": "StopTransaction",
-                    "messageId": "1234",
+                    "messageId": "stopTransaction",
                     "payload": {
-                      "transactionId": "3ef22a69-49ca-49e7-aab7-b67c5bb2d49c",
-                      "status": "Finishing",
-                      "timestamp": "2025-03-27T22:07:09",
-                      "chargerId": "STS_001",
-                      "energyConsumed": 20,
-                      "cost": 20.5
+                      "transactionId": response.transactionId,
+                      "status": BookingStation.finishing.name,
+                      "userId":AppUser.userModel?.userId,
+                      "connectorId": "${connector?[UtilsLocation.index.value].connectorId}",
+                      "timestamp": DateTime.now().toIso8601String(),
+                      "endTime": DateTime.now().toIso8601String(),
+                      "chargerId": widget.station?.externalId,
+                      "energyConsumed": 50,
+                      "cost": 35.5
                     }
-                  }));*/
-                  UtilsLocation.setChargingUp =
-                      BookingStation.finish;
+                  })));
                 },
                 child: CircleContainer(
                   color: AppColorsDark.bodyText,
@@ -164,7 +162,7 @@ class _ChargingPageState extends State<ChargingPage> with SingleTickerProviderSt
                     vertical: 8,
                     horizontal: 16,
                   ),
-                  child: Text('${widget.connector[0].energyConsumed} sum / Завершить',
+                  child: Text('${connector?[UtilsLocation.index.value].energyConsumed} sum / Завершить',
                       style: context.textTheme.bodyLarge?.copyWith(
                         color: AppColorsDark.green3,
                       )),

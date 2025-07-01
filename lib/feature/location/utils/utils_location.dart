@@ -4,7 +4,8 @@ enum BookingStation {
   connect,
   booking,
   charging,
-  finish,
+  finishing,
+  available
 }
 
 class UtilsLocation {

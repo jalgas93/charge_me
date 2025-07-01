@@ -52,7 +52,7 @@ class Location with _$Location {
 @freezed
 class Connector with _$Connector {
   factory Connector({
-    @JsonKey(name: 'connector_id') String? connectorId,
+    @JsonKey(name: 'connector_identifier') String? connectorId,
     @JsonKey(name: 'type') String? type,
     @JsonKey(name: 'status') String? status,
     @JsonKey(name: 'energy_consumed') num? energyConsumed,
@@ -79,6 +79,54 @@ class ConnectorList with _$ConnectorList {
       _$ConnectorListFromJson(json);
 }
 @freezed
+class StartTransaction with _$StartTransaction {
+  factory StartTransaction({
+    @JsonKey(name: 'action') String? action,
+    @JsonKey(name: 'messageId') String? messageId,
+    @JsonKey(name: 'payload') PayloadStartTransaction? payload,
+
+  }) = _StartTransaction;
+
+  factory StartTransaction.fromJson(Map<String, dynamic> json) =>
+      _$StartTransactionFromJson(json);
+}
+
+@freezed
+class PayloadStartTransaction with _$PayloadStartTransaction {
+  factory PayloadStartTransaction({
+    @JsonKey(name: 'status') String? status,
+    @JsonKey(name: 'currentTime') DateTime? currentTime,
+    @JsonKey(name: 'transactionId') String? transactionId,
+  }) = _PayloadStartTransaction;
+
+  factory PayloadStartTransaction.fromJson(Map<String, dynamic> json) =>
+      _$PayloadStartTransactionFromJson(json);
+}
+@freezed
+class StopTransaction with _$StopTransaction {
+  factory StopTransaction({
+    @JsonKey(name: 'action') String? action,
+    @JsonKey(name: 'messageId') String? messageId,
+    @JsonKey(name: 'payload') Transaction? payload,
+
+  }) = _StopTransaction;
+
+  factory StopTransaction.fromJson(Map<String, dynamic> json) =>
+      _$StopTransactionFromJson(json);
+}
+
+@freezed
+class PayloadStopTransaction with _$PayloadStopTransaction {
+  factory PayloadStopTransaction({
+    @JsonKey(name: 'status') String? status,
+    @JsonKey(name: 'currentTime') DateTime? currentTime,
+    @JsonKey(name: 'transactionId') String? transactionId,
+  }) = _PayloadStopTransaction;
+
+  factory PayloadStopTransaction.fromJson(Map<String, dynamic> json) =>
+      _$PayloadStopTransactionFromJson(json);
+}
+@freezed
 class Transaction with _$Transaction {
   factory Transaction({
     @JsonKey(name: 'transaction_id') String? transactionId,
@@ -87,6 +135,7 @@ class Transaction with _$Transaction {
     @JsonKey(name: 'end_time') DateTime? endTime,
     @JsonKey(name: 'energy_consumed') num? energyConsumed,
     @JsonKey(name: 'cost') num? cost,
+    @JsonKey(name: 'cost_per_kwh') num? costPerKwh,
     @JsonKey(name: 'status') String? status,
     @JsonKey(name: 'update_at') DateTime? updateAt,
   }) = _Transaction;

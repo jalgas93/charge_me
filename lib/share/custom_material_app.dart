@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'package:charge_me/feature/location/location_repository.dart';
+import 'package:charge_me/share/app_repository.dart';
 import 'package:charge_me/share/utils/constant/shared_preferences_keys.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -36,9 +38,11 @@ class _CustomMaterialAppState extends State<CustomMaterialApp> {
   @override
   void initState() {
     super.initState();
-    _appBloc = AppBloc();
+    _appBloc = AppBloc(repository: AppRepository());
     _webSocketService = WebSocketService();
-    _websocketBloc = WebsocketBloc(webSocketService: _webSocketService);
+    _websocketBloc = WebsocketBloc(
+        locationRepository: LocationRepository(),
+        websocketService: WebSocketService());
     Application.tokenChangeHandler = _appTokenChanged;
     Application.onAppLanguageChanged = _appLanguageChanged;
     startApplication().then((_) {

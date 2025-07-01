@@ -1,24 +1,31 @@
+import 'dart:convert';
+
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
 import 'package:charge_me/feature/location/model/stations.dart';
 import 'package:charge_me/feature/location/utils/utils_location.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../core/styles/app_colors_dark.dart';
 import '../../../../share/widgets/custom_button.dart';
+import '../../../core/helpers/app_user.dart';
+import '../../../core/provider/websocket_provider.dart';
+import '../bloc/websocket/websocket_bloc.dart';
 import '../widget/booking/item_title.dart';
+import '../widget/color_file.dart';
 
-class InitialPage extends StatelessWidget {
-  const InitialPage(
-      {super.key, required this.connector, this.onTap, required this.station});
+class ConnectorPage extends StatelessWidget {
+  const ConnectorPage({super.key, required this.station});
 
   final Station station;
-  final List<Connector> connector;
-  final Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
+    var websocketBloc = context.read<WebsocketBloc>();
+    List<Connector>? connector =
+        Provider.of<ConnectorProviderData>(context, listen: false).connector;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: LayoutBuilder(
@@ -43,9 +50,9 @@ class InitialPage extends StatelessWidget {
               8.height,
               SizedBox(
                 width: constraints.maxWidth,
-                height: constraints.maxWidth / 3,
+                height: constraints.maxWidth / 2.8,
                 child: ListView.separated(
-                  itemCount: connector.length,
+                  itemCount: connector!.length,
                   physics: const BouncingScrollPhysics(),
                   scrollDirection: Axis.horizontal,
                   shrinkWrap: true,
@@ -60,7 +67,6 @@ class InitialPage extends StatelessWidget {
                         valueListenable: UtilsLocation.typesConnector,
                         builder: (context, value, child) {
                           return Container(
-                            height: constraints.maxWidth / 3,
                             padding: const EdgeInsets.symmetric(
                                 vertical: 12, horizontal: 16),
                             decoration: BoxDecoration(
@@ -79,16 +85,29 @@ class InitialPage extends StatelessWidget {
                                 ),
                                 8.width,
                                 Text(
-                                  '${connector[index].status}',
+                                  '${connector[index].status?.toUpperCase()}',
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyMedium
                                       ?.copyWith(
-                                          color: connector[index].status ==
-                                                  'AVAILABLE'
-                                              ? AppColorsDark.yellow1
-                                              : AppColorsDark.red1),
+                                          color: ColorFile().statusColor(
+                                              status: connector[index]
+                                                      .status
+                                                      ?.toUpperCase() ??
+                                                  '')),
                                 ),
+                                if (connector[index].status == "booking")
+                                  Text(
+                                    '${connector[index].blockedBy}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: value == connector[index].type
+                                              ? AppColorsDark.white
+                                              : AppColorsDark.yellow1,
+                                        ),
+                                  ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -132,7 +151,26 @@ class InitialPage extends StatelessWidget {
               8.height,
               const Divider(),
               8.height,
-              CustomButton(onTap: onTap, radius: 25, text: 'Продолжить'),
+              CustomButton(
+                  onTap: () async {
+                    websocketBloc.add(WebsocketEvent.booking(
+                      message: jsonEncode({
+                        "action": "StartBooking",
+                        "messageId": "StartBooking",
+                        "payload": {
+                          "status": BookingStation.booking.name,
+                          "booking": AppUser.userModel?.phone,
+                          "userId": AppUser.userModel?.userId,
+                          "connectorId":
+                              "${connector[UtilsLocation.index.value].connectorId}",
+                          "timestamp": DateTime.now().toIso8601String(),
+                          "chargerId": station.externalId
+                        }
+                      }),
+                    ));
+                  },
+                  radius: 25,
+                  text: 'Продолжить'),
             ],
           );
         },

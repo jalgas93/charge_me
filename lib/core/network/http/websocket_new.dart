@@ -14,7 +14,11 @@ class WebSocketService {
   int _reconnectDelay = 1;
   final _controller = StreamController<dynamic>.broadcast();
 
-  WebSocketService();
+  static final WebSocketService _instance = WebSocketService._internal();
+
+  factory WebSocketService() => _instance;
+
+  WebSocketService._internal();
 
   Stream get stream => _controller.stream ?? const Stream.empty();
 
@@ -31,6 +35,7 @@ class WebSocketService {
 
     _subscription = channel!.stream.listen(
       (event) {
+        print('event $event');
         if (channel != null && event != null) {
           Map<String, dynamic> map = jsonDecode(event);
           _controller.add(map); // Передаем данные в StreamBuilder

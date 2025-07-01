@@ -43,11 +43,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
                 phone: event.phone,
                 password: event.password,
                 createAt: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()));
-            AppUser.setUserModel = UserModel.fromJson(response['data']);
+            AppUser.setUserModel = UserModel.fromJson(response);
             await SecureStorageService.getInstance
-                .setValue("access_token", response['data']['token']['accessToken']);
+                .setValue("access_token", response['accessToken']);
             await SecureStorageService.getInstance
-                .setValue("refresh_token", response['data']['token']['refreshToken']);
+                .setValue("refresh_token", response['refreshToken']);
             emit(AuthState.successRegisterWithPhone(
                 registerModel: RegisterModel.fromJson(response)));
           } catch (e) {
@@ -59,11 +59,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           try {
             final response = await _repository.loginWithPhone(
                 phone: event.phone, password: event.password);
-            AppUser.setUserModel = UserModel.fromJson(response['data']);
+            AppUser.setUserModel = UserModel.fromJson(response);
             await SecureStorageService.getInstance
-                .setValue("access_token", response['data']['token']['accessToken']);
+                .setValue("access_token", response['accessToken']);
             await SecureStorageService.getInstance
-                .setValue("refresh_token", response['data']['token']['refreshToken']);
+                .setValue("refresh_token", response['refreshToken']);
             emit(AuthState.successLoginWithPhone(
                 signInModel: SignInModel.fromJson(response)));
           } catch (e) {
@@ -78,7 +78,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
                 password: event.password,
                 createAt: DateFormat('dd.MM.yyyy').format(DateTime.now()));
             emit(AuthState.successTelegramState(
-                model: SmsResponse.fromJson(response['data'])));
+                model: SmsResponse.fromJson(response)));
           } catch (e) {
             emit(AuthState.error(error: e));
           }
@@ -89,11 +89,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             final response = await _repository.registerVerifyTelegram(
                 requestId: event.requestId, code: event.code);
             Log.i("verifyRegisterTelegram", response);
-            AppUser.setUserModel = UserModel.fromJson(response['data']);
+            AppUser.setUserModel = UserModel.fromJson(response);
             await SecureStorageService.getInstance
-                .setValue("access_token", response['data']['token']['accessToken']);
+                .setValue("access_token", response['accessToken']);
             await SecureStorageService.getInstance
-                .setValue("refresh_token", response['data']['token']['refreshToken']);
+                .setValue("refresh_token", response['refreshToken']);
             emit(const AuthState.successVerifyRegisterTelegram());
           } catch (e) {
             emit(AuthState.error(error: e));
@@ -105,7 +105,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
            final response =  await _repository.resendOtpTg(phone: event.phone);
 
            emit(AuthState.successResendOtpTelegram(
-               model: SmsResponse.fromJson(response['data'])));
+               model: SmsResponse.fromJson(response)));
           } catch (e) {
             emit(AuthState.error(error: e));
           }

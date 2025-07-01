@@ -23,5 +23,5 @@ class AppUser {
     _userModel.value = value;
   }
 
-  static ValueNotifier<UserModel?> get userModel => _userModel;
+  static UserModel? get userModel => _userModel.value;
 }
