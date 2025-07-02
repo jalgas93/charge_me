@@ -60,6 +60,8 @@ class Connector with _$Connector {
     @JsonKey(name: 'cost_booking_minutes') num? costBookingMinutes,
     @JsonKey(name: 'blocked_by') String? blockedBy,
     @JsonKey(name: 'max_power') num? maxPower,
+    @JsonKey(name: 'queues') List<Queue>? queues,
+
   }) = _Connector;
 
   factory Connector.fromJson(Map<String, dynamic> json) =>
@@ -70,6 +72,8 @@ class Connector with _$Connector {
 class ConnectorList with _$ConnectorList {
   factory ConnectorList({
     @JsonKey(name: 'action') String? action,
+    @JsonKey(name: 'status') String? status,
+    @JsonKey(name: 'message') String? message,
     @JsonKey(name: 'messageId') String? messageId,
     @JsonKey(name: 'payload') List<Connector>? payload,
 
@@ -142,4 +146,30 @@ class Transaction with _$Transaction {
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>
       _$TransactionFromJson(json);
+}
+
+@freezed
+class Queue with _$Queue {
+  factory Queue({
+    @JsonKey(name: 'user_id') int? userId,
+    @JsonKey(name: 'connector_id') int? connectorId,
+    @JsonKey(name: 'position') int? position,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+  }) = _Queue;
+
+  factory Queue.fromJson(Map<String, dynamic> json) =>
+      _$QueueFromJson(json);
+}
+
+@freezed
+class Active with _$Active {
+  factory Active({
+    @JsonKey(name: 'user_id') int? userId,
+    @JsonKey(name: 'connector_id') int? connectorId,
+    @JsonKey(name: 'started_at') DateTime? startedAt,
+    @JsonKey(name: 'expires_at') DateTime? expiresAt,
+  }) = _Active;
+
+  factory Active.fromJson(Map<String, dynamic> json) =>
+      _$ActiveFromJson(json);
 }

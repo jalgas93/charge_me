@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:charge_me/feature/location/bloc/location_bloc.dart';
 import 'package:charge_me/feature/location/location_repository.dart';
+import 'package:charge_me/feature/location/view/queue_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,7 @@ import '../../../share/widgets/throw_error.dart';
 import '../../home/model/app_lat_long.dart';
 import '../bloc/websocket/websocket_bloc.dart';
 import '../model/stations.dart';
+import '../utils/utils_location.dart';
 import '../widget/booking/search_form_field.dart';
 import 'booking_page.dart';
 import 'charging_page.dart';
@@ -202,7 +204,7 @@ class _LocationPageState extends State<LocationPage> {
                     listener: (context, WebsocketState state) {
                       state.maybeWhen(
                           errorWebSocket: (error) {
-                            ThrowError.showMessage(
+                            ThrowError.showNotify(
                                 errMessage: error.toString(), context: context);
                           },
                           disconnectWebSocket: () {
@@ -218,8 +220,11 @@ class _LocationPageState extends State<LocationPage> {
                           bookingSuccess: (data) async {
                             Log.i('bookingSuccess listener $data');
                           },
-                          bookingCancelSuccess: (data){
+                          bookingCancelSuccess: (data) {
                             Log.i('bookingCancelSuccess listener $data');
+                          },
+                          queueSuccess: (data) {
+                            Log.i('queueSuccess listener $data');
                           },
                           chargingSuccess: (data) async {
                             Log.i('chargingSuccess listener $data');
@@ -233,6 +238,7 @@ class _LocationPageState extends State<LocationPage> {
                       return state.maybeWhen(
                           connectorSuccess: (data) {
                             connector = ConnectorList.fromJson(data).payload;
+                            UtilsLocation.setStatus = connector?[0].status?.toLowerCase();
                         return Provider<ConnectorProviderData>(
                           create: (_) => ConnectorProviderData(connector: connector),
                           child: ConnectorPage(
@@ -248,26 +254,38 @@ class _LocationPageState extends State<LocationPage> {
                             );
                           },
                         );
-                      }, chargingSuccess: (data) {
-                            var response = StartTransaction.fromJson(data).payload;
+                      }, queueSuccess: (data) {
                         return Provider<ConnectorProviderData>(
-                          create: (_) => ConnectorProviderData(connector: connector),
-                          builder: (context,child){
+                          create: (_) =>
+                              ConnectorProviderData(connector: connector),
+                          builder: (context, child) {
+                            return QueuePage(
+                              station: station,
+                            );
+                          },
+                        );
+                      }, chargingSuccess: (data) {
+                        var response = StartTransaction.fromJson(data).payload;
+                        return Provider<ConnectorProviderData>(
+                          create: (_) =>
+                              ConnectorProviderData(connector: connector),
+                          builder: (context, child) {
                             return ChargingPage(
                               station: station,
                               payloadStartTransaction: response!,
                             );
                           },
                         );
-                      }, finishSuccess: (data){
-                            var response = StopTransaction.fromJson(data).payload;
+                      }, finishSuccess: (data) {
+                        var response = StopTransaction.fromJson(data).payload;
                         return Provider<ConnectorProviderData>(
-                          create: (_) => ConnectorProviderData(connector: connector),
-                          builder: (context,child){
+                          create: (_) =>
+                              ConnectorProviderData(connector: connector),
+                          builder: (context, child) {
                             return ResultPage(
                               station: station,
-                              stopTransaction:response,
-                              onTap: (){
+                              stopTransaction: response,
+                              onTap: () {
                                 Navigator.pop(context);
                               },
                             );
@@ -279,8 +297,10 @@ class _LocationPageState extends State<LocationPage> {
                       });
                     },
                   )
-                ]).then((value){
-                  _websocketBloc.add(const WebsocketEvent.disconnectedWebSocket());});
+                ]).then((value) {
+                  _websocketBloc
+                      .add(const WebsocketEvent.disconnectedWebSocket());
+                });
               }),
         )
         .toList();

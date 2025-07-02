@@ -4,6 +4,7 @@ import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
 import 'package:charge_me/feature/location/model/stations.dart';
 import 'package:charge_me/feature/location/utils/utils_location.dart';
+import 'package:charge_me/share/widgets/throw_error.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,11 +17,20 @@ import '../bloc/websocket/websocket_bloc.dart';
 import '../widget/booking/item_title.dart';
 import '../widget/color_file.dart';
 
-class ConnectorPage extends StatelessWidget {
+class ConnectorPage extends StatefulWidget {
   const ConnectorPage({super.key, required this.station});
 
   final Station station;
 
+  @override
+  State<ConnectorPage> createState() => _ConnectorPageState();
+}
+
+class _ConnectorPageState extends State<ConnectorPage> {
+
+  void _submit(){
+
+  }
   @override
   Widget build(BuildContext context) {
     var websocketBloc = context.read<WebsocketBloc>();
@@ -35,10 +45,10 @@ class ConnectorPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ItemTitle(
-                title: '${station.location?.city}',
-                description: '${station.location?.address}',
+                title: '${widget.station.location?.city}',
+                description: '${widget.station.location?.address}',
                 descriptionSupplement: 'Время работы с 00:00 - 24:00',
-                stationId: '${station.externalId}',
+                stationId: '${widget.station.externalId}',
               ),
               8.height,
               const Divider(),
@@ -57,11 +67,11 @@ class ConnectorPage extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   shrinkWrap: true,
                   itemBuilder: (context, int index) {
-                    print('index $index');
                     return GestureDetector(
                       onTap: () {
                         UtilsLocation.setConnector = connector[index].type;
                         UtilsLocation.setIndex = index;
+                        UtilsLocation.setStatus = connector[index].status?.toLowerCase();
                       },
                       child: ValueListenableBuilder(
                         valueListenable: UtilsLocation.typesConnector,
@@ -151,26 +161,58 @@ class ConnectorPage extends StatelessWidget {
               8.height,
               const Divider(),
               8.height,
-              CustomButton(
-                  onTap: () async {
-                    websocketBloc.add(WebsocketEvent.booking(
-                      message: jsonEncode({
-                        "action": "StartBooking",
-                        "messageId": "StartBooking",
-                        "payload": {
-                          "status": BookingStation.booking.name,
-                          "booking": AppUser.userModel?.phone,
-                          "userId": AppUser.userModel?.userId,
-                          "connectorId":
-                              "${connector[UtilsLocation.index.value].connectorId}",
-                          "timestamp": DateTime.now().toIso8601String(),
-                          "chargerId": station.externalId
-                        }
-                      }),
-                    ));
-                  },
-                  radius: 25,
-                  text: 'Продолжить'),
+              ValueListenableBuilder(
+                  valueListenable: UtilsLocation.status,
+                  builder: (context,value,child){
+                    print('value ${value}');
+                     switch(value){
+                       case 'available':
+                         return CustomButton(
+                             onTap: () async {
+                                 websocketBloc.add(WebsocketEvent.booking(
+                                   message: jsonEncode({
+                                     "action": "StartBooking",
+                                     "messageId": "StartBooking",
+                                     "payload": {
+                                       "status": BookingStation.booking.name,
+                                       "phone": AppUser.userModel?.phone,
+                                       "userId": AppUser.userModel?.userId,
+                                       "connectorId":
+                                       "${connector[UtilsLocation.index.value].connectorId}",
+                                       "timestamp": DateTime.now().toIso8601String(),
+                                       "chargerId": widget.station.externalId
+                                     }
+                                   }),
+                                 ));
+                             },
+                             radius: 25,
+                             text: 'Продолжить');
+                       case 'booking':
+                         return CustomButton(
+                             onTap: () async {
+                               if(connector[UtilsLocation.index.value].queues ==null){
+                                 websocketBloc.add(WebsocketEvent.queue(
+                                   message: jsonEncode({
+                                     "action": "Queue",
+                                     "messageId": "QueueMessage",
+                                     "payload": {
+                                       "status": BookingStation.queue.name,
+                                       "phone": AppUser.userModel?.phone,
+                                       "userId": AppUser.userModel?.userId,
+                                       "connectorId":
+                                       "${connector[UtilsLocation.index.value].connectorId}",
+                                       "timestamp": DateTime.now().toIso8601String(),
+                                     }
+                                   }),
+                                 ));
+                               }
+                             },
+                             radius: 25,
+                             text: 'Встать в очередь');
+                       default:
+                         return const SizedBox.shrink();
+                    }
+                  }),
             ],
           );
         },

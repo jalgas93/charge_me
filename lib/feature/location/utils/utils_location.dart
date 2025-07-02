@@ -5,7 +5,8 @@ enum BookingStation {
   booking,
   charging,
   finishing,
-  available
+  available,
+  queue
 }
 
 class UtilsLocation {
@@ -50,4 +51,12 @@ class UtilsLocation {
   }
 
   static ValueNotifier<int> get index => _index;
+
+  static final ValueNotifier<String?> _status = ValueNotifier(null);
+
+  static set setStatus(String? value) {
+    _status.value = value;
+  }
+
+  static ValueNotifier<String?> get status => _status;
 }

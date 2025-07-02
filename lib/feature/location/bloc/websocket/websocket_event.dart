@@ -12,6 +12,7 @@ class WebsocketEvent with _$WebsocketEvent {
       _Connector;
 
   const factory WebsocketEvent.booking({required String message}) = _Booking;
+  const factory WebsocketEvent.queue({required String message}) = _Queue;
 
   const factory WebsocketEvent.bookingCancel({required String message}) = _BookingCancel;
 

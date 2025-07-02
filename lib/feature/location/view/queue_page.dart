@@ -2,54 +2,31 @@ import 'dart:convert';
 
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
-import 'package:charge_me/core/helpers/app_helper.dart';
-import 'package:charge_me/core/provider/websocket_provider.dart';
-import 'package:charge_me/core/styles/app_colors_dark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/helpers/app_user.dart';
+import '../../../core/provider/websocket_provider.dart';
+import '../../../core/styles/app_colors_dark.dart';
 import '../../../share/widgets/circle_container.dart';
 import '../bloc/websocket/websocket_bloc.dart';
 import '../model/stations.dart';
 import '../utils/utils_location.dart';
-import '../widget/booking/item_success_booking.dart';
+import '../widget/booking/item_rate.dart';
 import '../widget/booking/item_title.dart';
 
-class BookingPage extends StatefulWidget {
-  const BookingPage({
-    super.key,
-    this.station,
-  });
+class QueuePage extends StatefulWidget {
+  const QueuePage({super.key, this.station});
 
   final Station? station;
 
   @override
-  State<BookingPage> createState() => _BookingPageState();
+  State<QueuePage> createState() => _QueuePageState();
 }
 
-class _BookingPageState extends State<BookingPage>
-    with SingleTickerProviderStateMixin {
-  AnimationController? _animationController;
-  String _extId = AppHelper.getRandomUuid();
-  int levelClock = 3 * 60;
-
+class _QueuePageState extends State<QueuePage> {
   List<Connector>? get connector => Provider.of<ConnectorProviderData>(context,listen: false).connector;
-
-  @override
-  void initState() {
-    _animationController = AnimationController(
-        vsync: this, duration: Duration(seconds: levelClock));
-    _animationController!.forward();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _animationController!.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,20 +46,10 @@ class _BookingPageState extends State<BookingPage>
                     description: widget.station?.location?.address ?? '',
                     stationId: widget.station?.externalId ?? '',
                     connectorId:
-                        '# ${connector?[UtilsLocation.index.value].connectorId}',
+                    '# ${connector?[UtilsLocation.index.value].connectorId}',
                     type: connector?[UtilsLocation.index.value].type ?? '',
                     maxPower:
-                        '${connector?[UtilsLocation.index.value].maxPower} kBT',
-                  ),
-                  16.height,
-                  ItemSuccessBooking(
-                    type: connector?[UtilsLocation.index.value].type ?? '',
-                    price: connector?[UtilsLocation.index.value].costPerKwh ?? 0,
-                    costBookingMinutes: connector?[UtilsLocation.index.value]
-                            .costBookingMinutes ??
-                        0,
-                    levelClock: levelClock,
-                    animation: _animationController!,
+                    '${connector?[UtilsLocation.index.value].maxPower} kBT',
                   ),
                 ],
               ),
@@ -99,19 +66,13 @@ class _BookingPageState extends State<BookingPage>
                             "messageId": "cancelBooking",
                             "payload": {
                               "status": BookingStation.available.name,
-                              "booking": AppUser.userModel?.phone,
+                              "phone": AppUser.userModel?.phone,
                               "userId":AppUser.userModel?.userId,
                               "connectorId":"${connector?[UtilsLocation.index.value].connectorId}",
                               "timestamp":
                               DateTime.now().toIso8601String(),
                               "chargerId": widget.station?.externalId ??'STS_1'
                             }
-                          }),
-                        ));
-                        websocketBloc.add(WebsocketEvent.connector(
-                          message: jsonEncode({
-                            "action": "Connector",
-                            "messageId": "connector",
                           }),
                         ));
                       },
@@ -176,16 +137,3 @@ class _BookingPageState extends State<BookingPage>
     );
   }
 }
-/*
-                       onTapCancel: () async {
-                            UtilsLocation.setChargingUp =
-                                BookingStation.connect;
-                            /*         await WebSocketManager()
-                                                .transmit(jsonEncode({"action": "StopBooking"}));*/
-                          },
-                          onTapCharging: () async {
-                           // _websocketBloc.add(const WebsocketEvent.charging());
-                            /*         await WebSocketManager()
-                                                .transmit(jsonEncode({"action": "StartTransaction"}));*/
-                          },
- */

@@ -7,6 +7,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../../core/logging/log.dart';
 import '../../../../core/network/http/websocket_new.dart';
 import '../../location_repository.dart';
+import '../../model/stations.dart';
 
 part 'websocket_event.dart';
 
@@ -36,7 +37,11 @@ class WebsocketBloc extends Bloc<WebsocketEvent, WebsocketState> {
       try {
         _webSocketService.connect(stationId: event.stationId).then((value) {
           add(WebsocketEvent.connector(
-              message: jsonEncode({"action": "Connector"})));
+            message: jsonEncode({
+              "action": "Connector",
+              "messageId": "connector",
+            }),
+          ));
         });
       } catch (e) {
         emit(WebsocketState.errorWebSocket(error: e.toString()));
@@ -62,7 +67,27 @@ class WebsocketBloc extends Bloc<WebsocketEvent, WebsocketState> {
         await emit.onEach(
           _locationRepository.booking(message: event.message),
           onData: (data) {
-            emit(WebsocketState.bookingSuccess(message: data));
+              emit(WebsocketState.bookingSuccess(message: data));
+          },
+          onError: (error, stackTrace) {
+            emit(WebsocketState.errorWebSocket(error: error.toString()));
+          },
+        );
+      } catch (e) {
+        emit(WebsocketState.errorWebSocket(error: e.toString()));
+      }
+    }, queue: (event) async {
+      emit(const WebsocketState.loadingWebSocket());
+      try {
+        await emit.onEach(
+          _locationRepository.queue(message: event.message),
+          onData: (data) {
+            if (data['status'] == 'Error') {
+              final errorMessage = data['message'] ?? 'Unknown error';
+              emit(WebsocketState.errorWebSocket(error: errorMessage));
+            } else {
+              emit(WebsocketState.queueSuccess(message: data));
+            }
           },
           onError: (error, stackTrace) {
             emit(WebsocketState.errorWebSocket(error: error.toString()));
@@ -115,7 +140,7 @@ class WebsocketBloc extends Bloc<WebsocketEvent, WebsocketState> {
         await emit.onEach(
           _locationRepository.bookingCancel(message: event.message),
           onData: (data) {
-            emit(WebsocketState.bookingCancelSuccess(message: data));
+            emit(WebsocketState.connectorSuccess(message: data));
           },
           onError: (error, stackTrace) {
             emit(WebsocketState.errorWebSocket(error: error.toString()));

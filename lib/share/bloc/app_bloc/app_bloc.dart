@@ -27,14 +27,23 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   ) async {
     emit(const AppState.loading());
     try {
+      final accessToken = await SecureStorageService.getInstance.getValue("access_token");
+      final refreshToken = await SecureStorageService.getInstance.getValue("refresh_token");
+
+      if(accessToken!=null && refreshToken!=null){
         final dynamic response = await _repository.userSettings(userId: AppUser.userModel?.userId ??  1);
+        print('response ${response}');
+        print('access_token ${response['accessToken']}');
+        print('refresh_token ${response['refreshToken']}');
         AppUser.setUserModel = UserModel.fromJson(response);
         await SecureStorageService.getInstance
             .setValue("access_token", response['accessToken']);
         await SecureStorageService.getInstance
             .setValue("refresh_token", response['refreshToken']);
-
-      emit(const AppState.success());
+        emit(const AppState.success());
+      }else{
+        emit(const AppState.success());
+      }
     } catch (e) {
       emit(AppState.error(error: e));
     }
