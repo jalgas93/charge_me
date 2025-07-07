@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 class ProfileContainer extends StatelessWidget {
   const ProfileContainer(
       {super.key,
-      required this.email,
+      required this.phone,
       required this.name,
       required this.avatar,
       this.onTap});
 
-  final String email;
+  final String phone;
   final String name;
   final String avatar;
   final Function()? onTap;
@@ -48,7 +48,7 @@ class ProfileContainer extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(name, style: context.textTheme.titleSmall?.copyWith(color: AppColorsDark.white)),
-        Text(email, style: context.textTheme.bodyMedium),
+        Text(phone, style: context.textTheme.bodyMedium?.copyWith(color: AppColorsDark.white)),
         const SizedBox(height: 16),
       ],
     );

@@ -159,7 +159,14 @@ class _ConnectorPageState extends State<ConnectorPage> {
                 ),
               ),
               8.height,
-              const Divider(),
+              ValueListenableBuilder(valueListenable: UtilsLocation.message, builder: (context,value,child){
+                switch (value){
+                  case '':
+                    return const Text('Message');
+                  default:
+                    return const Divider();
+                }
+              }),
               8.height,
               ValueListenableBuilder(
                   valueListenable: UtilsLocation.status,
@@ -190,7 +197,6 @@ class _ConnectorPageState extends State<ConnectorPage> {
                        case 'booking':
                          return CustomButton(
                              onTap: () async {
-                               if(connector[UtilsLocation.index.value].queues ==null){
                                  websocketBloc.add(WebsocketEvent.queue(
                                    message: jsonEncode({
                                      "action": "Queue",
@@ -205,7 +211,6 @@ class _ConnectorPageState extends State<ConnectorPage> {
                                      }
                                    }),
                                  ));
-                               }
                              },
                              radius: 25,
                              text: 'Встать в очередь');

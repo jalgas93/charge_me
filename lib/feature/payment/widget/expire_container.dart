@@ -20,8 +20,8 @@ class ExpireContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: context.screenSize.width / 4.5,
-      width: context.screenSize.width / 2.5,
+      height: context.screenSize.width / 5,
+      width: context.screenSize.width / 2.4,
       alignment: Alignment.center,
       padding: const EdgeInsets.only(top: 16, left: 16, bottom: 16),
       decoration: BoxDecoration(
@@ -50,7 +50,7 @@ class ExpireContainer extends StatelessWidget {
             // labelText: 'MM/ГГ',
             // labelStyle: context.textTheme.bodyLarge,
             contentPadding: const EdgeInsets.only(
-              top: 16, // HERE THE IMPORTANT PART
+              top: 8, // HERE THE IMPORTANT PART
             ),
             enabledBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.transparent),
@@ -67,15 +67,15 @@ class ExpireContainer extends StatelessWidget {
             focusedErrorBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.transparent),
             ),
-            errorMaxLines: 2,
+            errorMaxLines: 1,
             suffixIcon: suffixIcon,
             hintText: hintText,
             hintStyle: context.textTheme.bodyLarge,
           ),
           onChanged: (value) {},
-          onEditingComplete: () {
+     /*     onEditingComplete: () {
             formKey.currentState?.validate();
-          },
+          },*/
           textCapitalization: TextCapitalization.none,
           textInputAction: TextInputAction.next,
           inputFormatters: const [

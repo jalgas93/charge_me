@@ -24,7 +24,7 @@ class PanContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: context.screenSize.width / 4.5,
+      height: context.screenSize.width / 5,
       width: context.screenSize.width,
       alignment: Alignment.center,
       padding: const EdgeInsets.only(top: 16, left: 16, bottom: 16),
@@ -53,7 +53,7 @@ class PanContainer extends StatelessWidget {
             //  labelText: 'Номер карты',
             //labelStyle: context.textTheme.bodyLarge,
             contentPadding: const EdgeInsets.only(
-              top: 16, // HERE THE IMPORTANT PART
+              top: 8, // HERE THE IMPORTANT PART
             ),
             enabledBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.transparent),
@@ -75,9 +75,9 @@ class PanContainer extends StatelessWidget {
             hintText: hintText,
             hintStyle: context.textTheme.bodyLarge,
           ),
-          onEditingComplete: (){
+    /*      onEditingComplete: (){
             formKey.currentState?.validate();
-          },
+          },*/
           onChanged: (text) {
             if (text.isNotEmpty) {
               var beginStartNumber = text.split(' ')[0];
@@ -110,6 +110,8 @@ class PanContainer extends StatelessWidget {
                 default:
                   PaymentUtils.setPaymentMethod = '';
               }
+            }else{
+              PaymentUtils.setPaymentMethod = '';
             }
           },
           textCapitalization: TextCapitalization.none,

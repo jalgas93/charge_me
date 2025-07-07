@@ -14,6 +14,8 @@ class WebsocketState with _$WebsocketState {
 
   const factory WebsocketState.errorWebSocket({required dynamic error}) =
       _WebSocketError;
+  const factory WebsocketState.messageWebSocket({required dynamic error}) =
+  _WebSocketMessage;
 
   const factory WebsocketState.connectorSuccess(
       {required dynamic message}) = _ConnectorSuccess;

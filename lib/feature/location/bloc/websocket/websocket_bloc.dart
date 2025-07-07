@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:charge_me/feature/location/utils/utils_location.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../core/logging/log.dart';
@@ -52,7 +53,12 @@ class WebsocketBloc extends Bloc<WebsocketEvent, WebsocketState> {
         await emit.onEach(
           _locationRepository.connector(message: event.message),
           onData: (data) {
-            emit(WebsocketState.connectorSuccess(message: data));
+            if (data['status'] == 'Error') {
+              final errorMessage = data['message'] ?? 'Unknown error';
+              UtilsLocation.setMessage = errorMessage;
+            } else {
+              emit(WebsocketState.connectorSuccess(message: data));
+            }
           },
           onError: (error, stackTrace) {
             emit(WebsocketState.errorWebSocket(error: error.toString()));
@@ -67,7 +73,12 @@ class WebsocketBloc extends Bloc<WebsocketEvent, WebsocketState> {
         await emit.onEach(
           _locationRepository.booking(message: event.message),
           onData: (data) {
+            if (data['status'] == 'Error') {
+              final errorMessage = data['message'] ?? 'Unknown error';
+              UtilsLocation.setMessage = errorMessage;
+            } else {
               emit(WebsocketState.bookingSuccess(message: data));
+            }
           },
           onError: (error, stackTrace) {
             emit(WebsocketState.errorWebSocket(error: error.toString()));
@@ -84,7 +95,9 @@ class WebsocketBloc extends Bloc<WebsocketEvent, WebsocketState> {
           onData: (data) {
             if (data['status'] == 'Error') {
               final errorMessage = data['message'] ?? 'Unknown error';
-              emit(WebsocketState.errorWebSocket(error: errorMessage));
+              print('errorObject ${errorMessage}');
+              UtilsLocation.setMessage = errorMessage;
+              //emit(WebsocketState.connectorSuccess(message: data));
             } else {
               emit(WebsocketState.queueSuccess(message: data));
             }
@@ -102,7 +115,12 @@ class WebsocketBloc extends Bloc<WebsocketEvent, WebsocketState> {
         await emit.onEach(
           _locationRepository.charging(message: event.message),
           onData: (data) {
-            emit(WebsocketState.chargingSuccess(message: data));
+            if (data['status'] == 'Error') {
+              final errorMessage = data['message'] ?? 'Unknown error';
+              UtilsLocation.setMessage = errorMessage;
+            } else {
+              emit(WebsocketState.chargingSuccess(message: data));
+            }
           },
           onError: (error, stackTrace) {
             emit(WebsocketState.errorWebSocket(error: error.toString()));
@@ -117,7 +135,12 @@ class WebsocketBloc extends Bloc<WebsocketEvent, WebsocketState> {
         await emit.onEach(
           _locationRepository.finish(message: event.message),
           onData: (data) {
-            emit(WebsocketState.finishSuccess(message: data));
+            if (data['status'] == 'Error') {
+              final errorMessage = data['message'] ?? 'Unknown error';
+              UtilsLocation.setMessage = errorMessage;
+            } else {
+              emit(WebsocketState.finishSuccess(message: data));
+            }
           },
           onError: (error, stackTrace) {
             emit(WebsocketState.errorWebSocket(error: error.toString()));
@@ -140,7 +163,12 @@ class WebsocketBloc extends Bloc<WebsocketEvent, WebsocketState> {
         await emit.onEach(
           _locationRepository.bookingCancel(message: event.message),
           onData: (data) {
-            emit(WebsocketState.connectorSuccess(message: data));
+            if (data['status'] == 'Error') {
+              final errorMessage = data['message'] ?? 'Unknown error';
+              UtilsLocation.setMessage = errorMessage;
+            } else {
+              emit(WebsocketState.connectorSuccess(message: data));
+            }
           },
           onError: (error, stackTrace) {
             emit(WebsocketState.errorWebSocket(error: error.toString()));

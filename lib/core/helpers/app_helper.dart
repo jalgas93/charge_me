@@ -4,17 +4,19 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
+import '../application.dart';
+
 class AppHelper {
   AppHelper._();
 
   static String? paymentLastPressedCardId;
 
   static NumberFormat currencyFormatter =
-      NumberFormat('###,###,###,##0.00', 'app');
+      NumberFormat('###,###,###,##0.00', Application.language);
   static NumberFormat currencyFormatterNoDecimal =
-      NumberFormat('###,###,###,##0', 'app');
+      NumberFormat('###,###,###,##0', Application.language);
 
-/*  static DateFormat dateFormatter = DateFormat('d MMM HH:mm',
+  static DateFormat dateFormatter = DateFormat('d MMM HH:mm',
       Application.language == 'oz' ? 'uz' : Application.language);
 
   static DateFormat dateFormatterWithYear = DateFormat('d MMM y, HH:mm',
@@ -27,14 +29,13 @@ class AppHelper {
       'yyyy-MM-dd', Application.language == 'oz' ? 'uz' : Application.language);
 
   static DateFormat dateFormatterWithTime = DateFormat(
-      'dd EEEE kk:mm', Application.language);*/
+      'dd EEEE kk:mm', Application.language);
 
   static bool isNumeric(String str) {
     if (str == null) return false;
     return double.tryParse(str) != null;
   }
 
-/*
   static String formatDate(
     int unixTime, {
     bool withYear = false,
@@ -55,7 +56,6 @@ class AppHelper {
     return dateFormatterWithTime
         .format(DateTime.fromMillisecondsSinceEpoch(unixTime));
   }
-*/
 
   static String formatCurrency(
     dynamic value, {

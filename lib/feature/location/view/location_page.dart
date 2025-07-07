@@ -203,10 +203,10 @@ class _LocationPageState extends State<LocationPage> {
                     bloc: _websocketBloc,
                     listener: (context, WebsocketState state) {
                       state.maybeWhen(
-                          errorWebSocket: (error) {
+                    /*      errorWebSocket: (error) {
                             ThrowError.showNotify(
                                 errMessage: error.toString(), context: context);
-                          },
+                          },*/
                           disconnectWebSocket: () {
                             ThrowError.showMessage(
                                 errMessage: 'Disconnected', context: context);

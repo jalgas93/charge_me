@@ -59,4 +59,15 @@ class UtilsLocation {
   }
 
   static ValueNotifier<String?> get status => _status;
+
+  static final ValueNotifier<String?> _message = ValueNotifier(null);
+
+  static set setMessage(String? value) {
+    _message.value = value;
+    Future.delayed(const Duration(seconds: 5), () {
+      _message.value = null;
+    });
+  }
+
+  static ValueNotifier<String?> get message => _message;
 }

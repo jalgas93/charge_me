@@ -33,13 +33,11 @@ class _CustomMaterialAppState extends State<CustomMaterialApp> {
   bool _initialized = false;
   late AppBloc _appBloc;
   late WebsocketBloc _websocketBloc;
-  late WebSocketService _webSocketService;
 
   @override
   void initState() {
     super.initState();
     _appBloc = AppBloc(repository: AppRepository());
-    _webSocketService = WebSocketService();
     _websocketBloc = WebsocketBloc(
         locationRepository: LocationRepository(),
         websocketService: WebSocketService());

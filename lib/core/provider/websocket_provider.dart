@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 import '../../feature/location/bloc/websocket/websocket_bloc.dart';
+import '../../share/widgets/throw_error.dart';
 
 class ConnectorProviderData {
   final List<Connector>? connector;
@@ -50,7 +51,10 @@ class _WebsocketProviderState extends State<WebsocketProvider> {
       builder: (context, WebsocketState state) {
         return state.maybeWhen(connectorSuccess: (data) {
           connector = ConnectorList.fromJson(data).payload;
-          return const SizedBox.shrink();
+          return Provider<ConnectorProviderData>(
+            create: (_) => ConnectorProviderData(connector: connector!),
+            child: widget.child,
+          );
         }, bookingSuccess: (data) {
           return Provider<ConnectorProviderData>(
             create: (_) => ConnectorProviderData(connector: connector!),
