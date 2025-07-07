@@ -75,6 +75,8 @@ dependencies:
   image_picker: ^1.1.2
   #image_cropper: ^8.0.2
 
+  #web_socket_client:
+  web_socket_channel: ^3.0.3
 
   #others
   expansion_tile_list: ^1.0.2
@@ -95,6 +97,7 @@ dependencies:
   intl_utils: ^2.8.7
   drop_shadow: ^0.1.0
   drop_shadow_image: ^0.9.1
+  mobile_scanner: ^6.0.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

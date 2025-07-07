@@ -14,7 +14,7 @@ class DarkTheme {
       colorScheme: ColorScheme.fromSeed(
         brightness: Brightness.dark,
         seedColor: AppColorsDark.yellow1,
-        primary: AppColorsDark.black,
+        primary: AppColorsDark.darkStyleText,
         onPrimary: AppColorsDark.onPrimary,
         primaryContainer: AppColorsDark.primaryContainer,
         secondary: AppColorsDark.secondary,
@@ -60,6 +60,11 @@ class DarkTheme {
       bottomAppBarTheme: BottomAppBarTheme(
         color: AppColorsDark.transparent,
       ),
+      checkboxTheme: CheckboxThemeData(
+          checkColor: MaterialStateProperty.all(Colors.green),
+          fillColor: MaterialStateProperty.all(Colors.white),
+          overlayColor: MaterialStateProperty.all(Colors.yellow),
+          side: const BorderSide(color: AppColorsDark.green1)),
 
       ///AppBar theme
       appBarTheme: const AppBarTheme(

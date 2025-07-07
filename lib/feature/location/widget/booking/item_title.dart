@@ -8,17 +8,19 @@ class ItemTitle extends StatelessWidget {
       {super.key,
       required this.title,
       required this.description,
-        this.descriptionSupplement,
-      required this.id,
-      this.number,
-      this.watt});
+      this.descriptionSupplement,
+      this.type,
+      required this.stationId,
+      this.connectorId,
+      this.maxPower});
 
   final String title;
   final String description;
   final String? descriptionSupplement;
-  final String id;
-  final String? number;
-  final String? watt;
+  final String? type;
+  final String stationId;
+  final String? connectorId;
+  final String? maxPower;
 
   @override
   Widget build(BuildContext context) {
@@ -35,33 +37,33 @@ class ItemTitle extends StatelessWidget {
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         if (descriptionSupplement != null)
-        Text(
-          descriptionSupplement!,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+          Text(
+            descriptionSupplement!,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
         8.height,
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CircleContainer(
               child: Text(
-                id,
+                stationId,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),
             8.width,
-            if (number != null)
+            if (connectorId != null)
               CircleContainer(
                 child: Text(
-                  number!,
+                  connectorId!,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
             8.width,
-            if (number != null)
+            if (maxPower != null)
               CircleContainer(
                 child: Text(
-                  watt!,
+                  maxPower!,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),

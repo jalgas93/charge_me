@@ -5,7 +5,7 @@ part 'sign_in_model.g.dart';
 @freezed
 class SignInModel with _$SignInModel {
   factory SignInModel({
-    @JsonKey(name: 'username') String? username,
+    @JsonKey(name: 'phone') String? phone,
     @JsonKey(name: 'password') String? password,
   }) = _SignInModel;
 

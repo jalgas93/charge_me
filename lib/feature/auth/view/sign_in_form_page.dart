@@ -2,8 +2,7 @@ import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
-import 'package:charge_me/feature/auth/view/register_form_page.dart';
-import 'package:drop_shadow/drop_shadow.dart';
+import 'package:charge_me/share/widgets/throw_error.dart';
 import 'package:drop_shadow_image/drop_shadow_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,6 +12,7 @@ import '../../../core/utils/permission_until.dart';
 import '../../../share/widgets/custom_button.dart';
 import '../auth_repository.dart';
 import '../bloc/auth_bloc.dart';
+import '../widget/phone_field_widget.dart';
 import '../widget/text_form_container.dart';
 import '../widget/title_text.dart';
 
@@ -26,8 +26,9 @@ class SingInFormPage extends StatefulWidget {
 
 class _SingInFormPageState extends State<SingInFormPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  static final TextEditingController _controllerUsername =
-      TextEditingController();
+  final focusNodePhone = FocusNode();
+  final focusNodePassword = FocusNode();
+  static final TextEditingController _controllerPhone = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
   bool isObs = true;
   bool _keyboardVisible = false;
@@ -45,13 +46,15 @@ class _SingInFormPageState extends State<SingInFormPage> {
   @override
   void dispose() {
     _bloc.close();
+    focusNodePhone.dispose();
+    focusNodePassword.dispose();
     super.dispose();
   }
 
   void submit() {
     if (_formKey.currentState!.validate()) {
-      _bloc.add(AuthEvent.loginWithUsername(
-        username: _controllerUsername.text.trim(),
+      _bloc.add(AuthEvent.loginWithPhone(
+        phone: '+998${_controllerPhone.text.trim()}',
         password: _controllerPassword.text.trim(),
       ));
     }
@@ -66,9 +69,10 @@ class _SingInFormPageState extends State<SingInFormPage> {
           return SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: _keyboardVisible
-              ? constraints.maxHeight + constraints.maxWidth / 3
-                  : constraints.maxHeight),
+              constraints: BoxConstraints(
+                  maxHeight: _keyboardVisible
+                      ? constraints.maxHeight + constraints.maxWidth / 3
+                      : constraints.maxHeight),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -78,12 +82,14 @@ class _SingInFormPageState extends State<SingInFormPage> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       DropShadowImage(
-                        offset: const Offset(10,10),
+                        offset: const Offset(10, 10),
                         scale: 1,
                         blurRadius: 25,
                         borderRadius: 25,
-                        image: Image.asset('assets/charger_new_color_2.png',
-                          width: context.screenSize.width/3,),
+                        image: Image.asset(
+                          'assets/charger_new_color_2.png',
+                          width: context.screenSize.width / 3,
+                        ),
                       ),
                       Image.asset('assets/car_2.png'),
                     ],
@@ -97,22 +103,28 @@ class _SingInFormPageState extends State<SingInFormPage> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        TextFormContainer(
-                          controller: _controllerUsername,
-                          prefixIcon: 'assets/profile2.png',
-                          hintText: 'Username',
-                          onChanged: (event){
+                        PhoneFieldWidget(
+                          autovalidateMode: AutovalidateMode.disabled,
+                          focusNode: focusNodePhone,
+                          controller: _controllerPhone,
+                          onChanged: (value) {},
+                          onSubmitted: (value) {
                             _formKey.currentState!.validate();
+                            FocusScope.of(context)
+                                .requestFocus(focusNodePassword);
                           },
+                          textInputAction: TextInputAction.next,
                         ),
                         TextFormContainer(
+                          focusNode: focusNodePassword,
                           controller: _controllerPassword,
                           prefixIcon: 'assets/lock.png',
                           hintText: 'Password',
                           prefixColor: AppColorsDark.red2,
                           isObs: isObs,
                           isShow: true,
-                          onChanged: (event){
+                          onEditingComplete: () {
+                            focusNodePassword.unfocus();
                             _formKey.currentState!.validate();
                           },
                           actionsButton: () {
@@ -121,6 +133,7 @@ class _SingInFormPageState extends State<SingInFormPage> {
                             });
                           },
                           inputFormatters: [],
+                          textInputAction: TextInputAction.done,
                         ),
                       ],
                     ),
@@ -132,15 +145,25 @@ class _SingInFormPageState extends State<SingInFormPage> {
                         bloc: _bloc,
                         listener: (context, AuthState state) {
                           state.maybeWhen(
-                              successLoginWithUsername: (result) {
+                              successLoginWithPhone: (result) {
                                 context.router.pushAndPopUntil(
                                     const DashboardPageRoute(),
                                     predicate: (Route<dynamic> route) => false);
                                 PermissionUtil.requestAll();
                               },
+                              error: (e) {
+                                ThrowError.showNotify(
+                                    context: context, errMessage: "$e");
+                              },
                               orElse: () {});
                         },
-                        builder: (context, state) {
+                        builder: (context, AuthState state) {
+                          state.maybeWhen(
+                              loading: () {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              },
+                              orElse: () {});
                           return CustomButton(
                               width: constraints.maxWidth / 1.2,
                               onTap: () => submit(),
@@ -149,7 +172,10 @@ class _SingInFormPageState extends State<SingInFormPage> {
                       ),
                       16.height,
                       TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            context.router
+                                .push(const PasswordChangeRoutePage());
+                          },
                           child: Text(
                             'Forgot password?',
                             style: context.textTheme.bodyLarge,

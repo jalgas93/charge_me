@@ -1,14 +1,17 @@
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/router/router.gr.dart';
+import 'package:charge_me/feature/account/model/yandex_address/response_result.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/styles/app_colors_dark.dart';
 import '../../../share/widgets/app_bar_container.dart';
 import '../../../share/widgets/custom_button.dart';
 import '../../../share/widgets/item_app_bar.dart';
 import '../../../share/widgets/skip_container.dart';
+import '../account_repository.dart';
+import '../bloc/account_setup_bloc.dart';
 import '../widget/second_container_map.dart';
 import '../widget/title_fields.dart';
 
@@ -22,6 +25,37 @@ class AccountSetupLocationPage extends StatefulWidget {
 }
 
 class _AccountSetupLocationPageState extends State<AccountSetupLocationPage> {
+  late AccountSetupBloc _bloc;
+  late AccountSetupRepository _repository;
+  String address = "";
+  double? latitude;
+  double? longitude;
+
+  @override
+  void initState() {
+    _repository = AccountSetupRepository();
+    _bloc = AccountSetupBloc(repository: _repository);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _bloc.close();
+    super.dispose();
+  }
+
+  void submit() async {
+    if (true) {
+      if(true){
+        _bloc.add(AccountSetupEvent.addLocation(
+            latitude: latitude!, longitude: longitude!,
+            road: address,
+            userId: 4
+        ));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +73,7 @@ class _AccountSetupLocationPageState extends State<AccountSetupLocationPage> {
           ),
           actions: [
             SkipContainer(
-              onTap: (){
+              onTap: () {
                 context.router.push(const AccountSetupUserRoutePage());
               },
             )
@@ -49,7 +83,7 @@ class _AccountSetupLocationPageState extends State<AccountSetupLocationPage> {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints){
+            builder: (BuildContext context, BoxConstraints constraints) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -61,25 +95,46 @@ class _AccountSetupLocationPageState extends State<AccountSetupLocationPage> {
               ),
               SecondContainerMap(
                 constraints: constraints,
-                onTap: (){
-                   context.router.push(const YandexMapPageRoute());
+                onTap: () async {
+                  ResponseResult? result =
+                      await context.router.push(const YandexMapPageRoute());
+                  if (result?.address != null) {
+                    address = result!.address!;
+                  }
+                  if (result?.point?.latitude != null) {
+                    latitude = result?.point?.latitude;
+                  }
+                  if (result?.point?.longitude != null) {
+                    longitude = result?.point?.longitude;
+                  }
+                  setState(() {});
                 },
                 isLocation: false,
+                address: address,
               ),
               const Spacer(),
-              Align(
-                alignment: Alignment.center,
-                child: CustomButton(
-                    width: constraints.maxWidth / 1.2,
-                    onTap: () {
-                      context.router.push(const AccountSetupUserRoutePage());
-                    },
-                    text: 'Продолжить'),
+              BlocConsumer<AccountSetupBloc, AccountSetupState>(
+                bloc: _bloc,
+                listener: (context, AccountSetupState state) {
+                  state.maybeWhen(
+                      successAddLocation: () {
+                        context.router.push(const AccountSetupUserRoutePage());
+                      },
+                      orElse: () {});
+                },
+                builder: (context, state) {
+                  return Align(
+                    alignment: Alignment.center,
+                    child: CustomButton(
+                        width: constraints.maxWidth / 1.2,
+                        onTap: submit,
+                        text: 'Продолжить'),
+                  );
+                },
               ),
             ],
           );
-        }
-        ),
+        }),
       ),
     );
   }

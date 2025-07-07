@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/application.dart';
 import '../../../core/router/router.gr.dart';
+import '../../../core/utils/flutter_secure_storage.dart';
 import '../../widgets/custom_button.dart';
 
 @RoutePage(name: 'SelectLanguagePageRoute')
@@ -111,8 +112,17 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
               SizedBox(height: context.screenSize.width / 4),
               CustomButton(
                 width: context.screenSize.width / 1.2,
-                onTap: () {
-                  context.router.push(const DashboardPageRoute());
+                onTap: () async{
+                  final token = await SecureStorageService.getInstance.getValue("access_token");
+                  if (context.mounted) {
+                    if (token != null) {
+                      context.router.push(const DashboardPageRoute());
+                    } else {
+                      if (Application.language != null) {
+                        context.router.push(const SignInFormRoutePage());
+                      }
+                    }
+                  }
                 },
                 text: 'Продолжить',
               ),

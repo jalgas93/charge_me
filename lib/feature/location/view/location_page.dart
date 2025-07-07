@@ -1,21 +1,28 @@
 import 'dart:async';
-import 'package:charge_me/feature/location/utils/utils_location.dart';
-import 'package:charge_me/feature/location/widget/booking/success_booking.dart';
-import 'package:charge_me/feature/location/widget/filter/filters.dart';
+import 'package:charge_me/feature/location/bloc/location_bloc.dart';
+import 'package:charge_me/feature/location/location_repository.dart';
+import 'package:charge_me/feature/location/view/queue_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
+import '../../../core/logging/log.dart';
+import '../../../core/provider/websocket_provider.dart';
 import '../../../core/styles/app_colors_dark.dart';
 import '../../../share/utils/charge_bottom_sheet.dart';
 import '../../../share/utils/location_service.dart';
 import '../../../share/widgets/item_app_bar.dart';
-import '../../dashboard/utils/utils_dashboard.dart';
+import '../../../share/widgets/throw_error.dart';
 import '../../home/model/app_lat_long.dart';
-import '../../home/model/map_point.dart';
-import '../widget/booking/finish_charging.dart';
-import '../widget/booking/initial_booking.dart';
+import '../bloc/websocket/websocket_bloc.dart';
+import '../model/stations.dart';
+import '../utils/utils_location.dart';
 import '../widget/booking/search_form_field.dart';
-import '../widget/booking/success_charging_up.dart';
+import 'booking_page.dart';
+import 'charging_page.dart';
+import 'finish_charging.dart';
+import 'connector_page.dart';
 
 class LocationPage extends StatefulWidget {
   const LocationPage({super.key});
@@ -27,15 +34,27 @@ class LocationPage extends StatefulWidget {
 class _LocationPageState extends State<LocationPage> {
   final mapControllerCompleter = Completer<YandexMapController>();
   final TextEditingController controller = TextEditingController();
+  late LocationBloc _bloc;
+  late LocationRepository _repository;
+  late WebsocketBloc _websocketBloc;
+  List<Station>? listStation;
+
+  List<Connector>? connector;
+
 
   @override
   void initState() {
     super.initState();
+    _repository = LocationRepository();
+    _bloc = LocationBloc(repository: _repository);
+    _websocketBloc = BlocProvider.of<WebsocketBloc>(context);
+    _bloc.add(const LocationEvent.started());
     _initPermission().ignore();
   }
 
   @override
   void dispose() {
+    _bloc.close();
     controller.dispose();
     super.dispose();
   }
@@ -49,10 +68,10 @@ class _LocationPageState extends State<LocationPage> {
 
   Future<void> _fetchCurrentLocation() async {
     AppLatLong location;
-    const defLocation = MetroLocation();
+    const defLocation = AlmataLocation();
     try {
       //  location = await LocationService().getCurrentLocation();
-      location = const AppLatLong(lat: 41.326928, long: 69.327526);
+      location = const AppLatLong(lat: 41.300439, long: 69.268644);
     } catch (_) {
       location = defLocation;
     }
@@ -76,133 +95,212 @@ class _LocationPageState extends State<LocationPage> {
     );
   }
 
-  List<String> list = [
-    'CHAdeMo',
-    'CCS 1',
-    'CCS 2',
-    'Combo 1',
-    'Combo 2',
-    'GB/T',
-    'Type 1',
-    'Type 2',
-    'J1772 Type 1',
-    'Tesla'
-  ];
-  List<int> list2 = [
-    150,
-    200,
-    250,
-    300,
-    350,
-    400,
-    450,
-    500,
-    550,
-    600,
-  ];
+  WebsocketBloc get websocketBloc => BlocProvider.of<WebsocketBloc>(context);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          YandexMap(
-            onMapCreated: (controller) async {
-              mapControllerCompleter.complete(controller);
-            },
-            mapObjects: _getPlacemarkObjects(context),
-          ),
-          Positioned(
-              top: 32,
-              left: 16,
-              right: 16,
-              child: SearchFormField(
-                controller: controller,
-              )),
-          Positioned(
-              bottom: 16,
-              right: 16,
-              left: 16,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ItemAppBar(
-                    icon: 'assets/filter.png',
-                    color: AppColorsDark.black,
-                    colorIcon: AppColorsDark.white,
-                    onPressed: () async {
-                      await ChargeBottomSheet.draggableScrollableSheet(
-                          context: context,
-                          children: [
-                            Filters(
+      body: BlocConsumer<LocationBloc, LocationState>(
+        bloc: _bloc,
+        listener: (context, LocationState state) {
+          state.mapOrNull(
+              successLocation: (response) {},
+              error: (e) {
+                ThrowError.showNotify(context: context, errMessage: "$e");
+              });
+        },
+        builder: (context, state) {
+          state.maybeWhen(
+              successLocation: (response) {
+                print('success');
+                listStation = response;
+              },
+              loading: () {
+                return const Center(child: CircularProgressIndicator());
+              },
+              orElse: () {});
+          return Stack(
+            children: [
+              YandexMap(
+                onMapCreated: (controller) async {
+                  mapControllerCompleter.complete(controller);
+                },
+                mapObjects: _getPlacemarkObjects(context, listStation ?? []),
+              ),
+              Positioned(
+                  top: 32,
+                  left: 16,
+                  right: 16,
+                  child: SearchFormField(
+                    controller: controller,
+                  )),
+              Positioned(
+                  bottom: 16,
+                  right: 16,
+                  left: 16,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ItemAppBar(
+                        icon: 'assets/filter.png',
+                        color: AppColorsDark.black,
+                        colorIcon: AppColorsDark.white,
+                        onPressed: () async {
+                          /*           await ChargeBottomSheet.draggableScrollableSheet(
+                              context: context,
+                              children: [
+                                */ /*        Filters(
                               list: list,
                               list2: list2,
-                            )
-                          ]);
-                    },
-                  ),
-                  ItemAppBar(
-                    icon: 'assets/gps.png',
-                    color: AppColorsDark.black,
-                    colorIcon: AppColorsDark.white,
-                    onPressed: () async {
-                      AppLatLong location =
-                          await LocationService().getCurrentLocation();
-                      _moveToCurrentLocation(location);
-                    },
-                  ),
-                ],
-              )),
-        ],
+                            )*/ /*
+                              ]);*/
+                        },
+                      ),
+                      ItemAppBar(
+                        icon: 'assets/gps.png',
+                        color: AppColorsDark.black,
+                        colorIcon: AppColorsDark.white,
+                        onPressed: () async {
+                          AppLatLong location =
+                              await LocationService().getCurrentLocation();
+                          _moveToCurrentLocation(location);
+                        },
+                      ),
+                    ],
+                  )),
+            ],
+          );
+        },
       ),
     );
   }
 
-  /// Метод для генерации точек на карте
-  List<MapPoint> _getMapPoints() {
-    return const [
-      MapPoint(name: 'jalgas1', latitude: 41.326680, longitude: 69.327475),
-      MapPoint(name: 'jalgas2', latitude: 41.327567, longitude: 69.326915),
-      MapPoint(name: 'jalgas3', latitude: 41.326836, longitude: 69.326400),
-      MapPoint(name: 'jalgas4', latitude: 41.327110, longitude: 69.328197),
-    ];
-  }
-
   /// Метод для генерации объектов маркеров для отображения на карте
-  List<PlacemarkMapObject> _getPlacemarkObjects(BuildContext context) {
-    return _getMapPoints()
+  List<PlacemarkMapObject> _getPlacemarkObjects(
+      BuildContext context, List<Station> list) {
+    return list
         .map(
-          (point) => PlacemarkMapObject(
-              mapId: MapObjectId('MapObject $point'),
-              point:
-                  Point(latitude: point.latitude, longitude: point.longitude),
+          (station) => PlacemarkMapObject(
+              mapId: MapObjectId('MapObject $station'),
+              point: Point(
+                  latitude: station.location!.latitude!,
+                  longitude: station.location!.longitude!),
               opacity: 1,
               icon: PlacemarkIcon.single(
                 PlacemarkIconStyle(
-                  image: BitmapDescriptor.fromAssetImage(
-                      'assets/energy_station_2.png'),
+                  image:
+                      BitmapDescriptor.fromAssetImage('assets/location_1.png'),
                   scale: 2,
                 ),
               ),
               onTap: (_, __) async {
-                await ChargeBottomSheet.draggableScrollableSheet(
-                    context: context,
-                    children: [
-                      ValueListenableBuilder(
-                          valueListenable: UtilsLocation.processChargingUp,
-                          builder: (context, value, child) {
-                            switch(value){
-                              case BookingStation.initialBooking:
-                                return InitialBooking(listConnectors: list);
-                              case BookingStation.successBooking:
-                                return const SuccessBooking();
-                              case BookingStation.successChargingUp:
-                                return const SuccessChargingUp();
-                              case BookingStation.finishCharging:
-                                return const FinishCharging();
-                            }
-                          })
-                    ]);
+                _websocketBloc.add(WebsocketEvent.connect(
+                    stationId: station.externalId ?? 'STS_1'));
+                await ChargeBottomSheet
+                    .draggableScrollableSheet(
+                    context: context, children: [
+                  BlocConsumer<WebsocketBloc, WebsocketState>(
+                    bloc: _websocketBloc,
+                    listener: (context, WebsocketState state) {
+                      state.maybeWhen(
+                    /*      errorWebSocket: (error) {
+                            ThrowError.showNotify(
+                                errMessage: error.toString(), context: context);
+                          },*/
+                          disconnectWebSocket: () {
+                            ThrowError.showMessage(
+                                errMessage: 'Disconnected', context: context);
+                          },
+                          connectWebSocket: () async {
+                            Log.i('connectWebSocket');
+                          },
+                          connectorSuccess: (data) async {
+                            Log.i('connectorSuccess listener $data');
+                          },
+                          bookingSuccess: (data) async {
+                            Log.i('bookingSuccess listener $data');
+                          },
+                          bookingCancelSuccess: (data) {
+                            Log.i('bookingCancelSuccess listener $data');
+                          },
+                          queueSuccess: (data) {
+                            Log.i('queueSuccess listener $data');
+                          },
+                          chargingSuccess: (data) async {
+                            Log.i('chargingSuccess listener $data');
+                          },
+                          finishSuccess: (data) async {
+                            Log.i('finishSuccess listener $data ');
+                          },
+                          orElse: () {});
+                    },
+                    builder: (context, WebsocketState state) {
+                      return state.maybeWhen(
+                          connectorSuccess: (data) {
+                            connector = ConnectorList.fromJson(data).payload;
+                            UtilsLocation.setStatus = connector?[0].status?.toLowerCase();
+                        return Provider<ConnectorProviderData>(
+                          create: (_) => ConnectorProviderData(connector: connector),
+                          child: ConnectorPage(
+                            station: station,
+                          ),
+                        );
+                      }, bookingSuccess: (data) {
+                        return Provider<ConnectorProviderData>(
+                          create: (_) => ConnectorProviderData(connector: connector),
+                          builder: (context,child){
+                            return BookingPage(
+                              station: station,
+                            );
+                          },
+                        );
+                      }, queueSuccess: (data) {
+                        return Provider<ConnectorProviderData>(
+                          create: (_) =>
+                              ConnectorProviderData(connector: connector),
+                          builder: (context, child) {
+                            return QueuePage(
+                              station: station,
+                            );
+                          },
+                        );
+                      }, chargingSuccess: (data) {
+                        var response = StartTransaction.fromJson(data).payload;
+                        return Provider<ConnectorProviderData>(
+                          create: (_) =>
+                              ConnectorProviderData(connector: connector),
+                          builder: (context, child) {
+                            return ChargingPage(
+                              station: station,
+                              payloadStartTransaction: response!,
+                            );
+                          },
+                        );
+                      }, finishSuccess: (data) {
+                        var response = StopTransaction.fromJson(data).payload;
+                        return Provider<ConnectorProviderData>(
+                          create: (_) =>
+                              ConnectorProviderData(connector: connector),
+                          builder: (context, child) {
+                            return ResultPage(
+                              station: station,
+                              stopTransaction: response,
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                            );
+                          },
+                        );
+                          },
+                          orElse: () {
+                        return const SizedBox.shrink();
+                      });
+                    },
+                  )
+                ]).then((value) {
+                  _websocketBloc
+                      .add(const WebsocketEvent.disconnectedWebSocket());
+                });
               }),
         )
         .toList();

@@ -4,17 +4,26 @@ part of 'auth_bloc.dart';
 class AuthEvent with _$AuthEvent {
   const factory AuthEvent.started() = _Started;
 
-  const factory AuthEvent.registerWithUsername({
-    required String username,
+  const factory AuthEvent.registerWithPhone({
     required String phone,
     required String password,
-    required String firstname,
-    required String avatar,
-    String? role,
-  }) = _RegisterWithUsername;
+  }) = _RegisterWithPhone;
 
-  const factory AuthEvent.loginWithUsername({
-    required String username,
+  const factory AuthEvent.registerWithTelegram({
+    required String phone,
     required String password,
-  }) = _LoginWithUsername;
+  }) = _RegisterWithTelegram;
+
+  const factory AuthEvent.loginWithPhone({
+    required String phone,
+    required String password,
+  }) = _LoginWithPhone;
+
+  const factory AuthEvent.verifyRegisterTelegram({
+    required String code,
+    required String requestId,
+  }) = _VerifyRegisterTelegram;
+  const factory AuthEvent.resendOtpTelegram({
+    required String phone,
+  }) = _ResendOtpTelegram;
 }

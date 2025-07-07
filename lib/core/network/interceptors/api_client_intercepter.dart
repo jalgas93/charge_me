@@ -1,7 +1,10 @@
+import 'package:charge_me/core/helpers/app_user.dart';
 import 'package:dio/dio.dart';
 
+import '../../../feature/account/model/user_model/user_model.dart';
 import '../../../share/utils/constant/config_app.dart';
 import '../../../share/utils/flutter_secure_storage.dart';
+import '../../logging/log.dart';
 import '../response/api_exception.dart';
 import '../response/api_response.dart';
 
@@ -12,9 +15,20 @@ class ApiClientInterceptor extends Interceptor {
   ApiClientInterceptor({required this.client});
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    options.baseUrl = ConfigApp.url;
+  Future<void> onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    var accessToken = await SecureStorageService.getInstance.getValue("access_token");
+    options.baseUrl = ConfigApp.localHost;
     options.responseType = ResponseType.json;
+    if (accessToken!=null) {
+      options.headers['Authorization'] =
+      'Bearer $accessToken';
+    }
+    if(const UserModel().userId !=null){
+      options.headers['user_id'] = const UserModel().userId;
+    }
+
+
+
 
     return super.onRequest(options, handler);
   }
@@ -30,7 +44,7 @@ class ApiClientInterceptor extends Interceptor {
 
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
-    if (err.response != null && [401].contains(err.response?.statusCode)) {
+    if (err.response != null && [401, 403].contains(err.response?.statusCode)) {
       final newAccessToken = await refreshToken(client);
       SecureStorageService.getInstance.setValue("access_token", newAccessToken);
       try {
@@ -45,13 +59,21 @@ class ApiClientInterceptor extends Interceptor {
 }
 
 Future<String> refreshToken(Dio client) async {
-  final refreshToken =
-      await SecureStorageService.getInstance.getValue("refresh_token");
-  var response = await client.post('api/v1/auth/refresh', data: refreshToken);
+  final refreshToken = await SecureStorageService.getInstance.getValue("refresh_token");
+  var data = {
+    "refreshToken": refreshToken
+  };
+  var response = await client.post('api/v1/auth/refresh', data: data,
+    options: Options(
+      headers: {
+        'Content-Type': 'application/json'},
+    )
+  );
+
   if (response.statusCode == 200) {
-    return response.data['data']['token'];
+    return response.data['data']['accessToken'];
   }
-  return response.data['data']['token'];
+  return response.data['data']['accessToken'];
 }
 
 Future<Response<dynamic>> _retry(

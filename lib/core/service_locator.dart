@@ -1,12 +1,15 @@
+import 'package:charge_me/core/network/http/websocket_new.dart';
 import 'package:charge_me/core/router/router.dart';
 import 'package:get_it/get_it.dart';
 import 'network/http/api_client.dart';
+import 'network/http/websocket_client.dart';
 
 final getIt = GetIt.instance;
 
 class ServiceLocator {
   static Future<void> setup() async {
     getIt.registerSingleton<ApiClient>(ApiClient.instance());
+    getIt.registerSingleton<WebSocketService>(WebSocketService());
     getIt.registerSingleton<AppRouter>(AppRouter());
     //getIt.registerSingleton<Cache>(await Cache.instance());
   }

@@ -1,7 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:charge_me/feature/account/account_repository.dart';
+import 'package:charge_me/feature/account/model/add_car/add_car.dart';
 import 'package:charge_me/feature/auth/auth_repository.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+
+import '../model/yandex_address/geo_response.dart';
 
 part 'account_setup_event.dart';
 
@@ -22,11 +25,45 @@ class AccountSetupBloc extends Bloc<AccountSetupEvent, AccountSetupState> {
     AccountSetupEvent event,
     Emitter<AccountSetupState> emit,
   ) async {
-    emit(const AccountSetupState.loading());
-    try {
-      emit(const AccountSetupState.success());
-    } catch (e) {
-      emit(AccountSetupState.error(error: e));
-    }
+    await event.map(started: (event) {
+      emit(const AccountSetupState.loading());
+      try {
+        emit(const AccountSetupState.success());
+      } catch (e) {
+        emit(AccountSetupState.error(error: e));
+      }
+    }, addLocation: (event) async {
+      emit(const AccountSetupState.loading());
+      try {
+        final dynamic response = await _repository.addLocation(
+            latitude: event.latitude,
+          longitude: event.latitude,
+          road: event.road,
+          userId: event.userId,
+        );
+        emit(const AccountSetupState.successAddLocation());
+      } catch (e) {
+        emit(AccountSetupState.error(error: e));
+      }
+    }, addCar: (event) async {
+      emit(const AccountSetupState.loading());
+      try {
+        await _repository.addCar(
+          manufacture: event.manufacture,
+          model: event.model,
+          connector: event.connector,
+          makeYear: event.makeYear,
+          registrationNumber: event.registrationNumber,
+          batteryCapacity: event.batteryCapacity,
+          plug: event.plug,
+          userId: event.userId,
+        );
+        emit(const AccountSetupState.successAddCar());
+      } catch (e) {
+        emit(AccountSetupState.error(error: e));
+      }
+    }, geocode: (value) {
+
+    });
   }
 }
