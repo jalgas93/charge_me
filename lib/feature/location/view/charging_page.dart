@@ -1,32 +1,41 @@
 import 'dart:convert';
+import 'dart:ffi';
 
+import 'package:auto_route/annotations.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
+import 'package:charge_me/feature/location/widget/charging/timer_charging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/styles/app_colors_dark.dart';
-import '../../../../share/widgets/circle_container.dart';
-import '../../../../share/widgets/item_app_bar.dart';
 import '../../../core/helpers/app_user.dart';
-import '../../../core/provider/websocket_provider.dart';
-import '../../../share/widgets/count_down.dart';
+import '../../_app/utils/charge_bottom_sheet.dart';
+import '../../_app/view/review/view/add_review_page.dart';
+import '../../_app/widgets/item_app_bar.dart';
+import '../../auth/widget/title_text.dart';
 import '../bloc/websocket/websocket_bloc.dart';
 import '../model/stations.dart';
 import '../utils/utils_location.dart';
+import '../widget/booking/button_booking.dart';
 import '../widget/booking/item_battery.dart';
 import '../widget/booking/item_rate.dart';
-import '../widget/booking/item_title.dart';
+import '../widget/finish/result_container.dart';
+import '../widget/item_title.dart';
 
+@RoutePage(name: 'ChargingRoutePage')
 class ChargingPage extends StatefulWidget {
   const ChargingPage({
     super.key,
     this.station,
     this.onTapReview,
     required this.payloadStartTransaction,
+    required this.connector,
   });
 
+  final Connector? connector;
   final Station? station;
   final Function()? onTapReview;
   final PayloadStartTransaction payloadStartTransaction;
@@ -35,151 +44,127 @@ class ChargingPage extends StatefulWidget {
   State<ChargingPage> createState() => _ChargingPageState();
 }
 
-class _ChargingPageState extends State<ChargingPage>
-    with SingleTickerProviderStateMixin {
-  AnimationController? _animationController;
-  int levelClock = 3 * 60;
-  List<Connector>? get connector => Provider.of<ConnectorProviderData>(context,listen: false).connector;
+class _ChargingPageState extends State<ChargingPage> {
+  Station? get station => widget.station;
+  Connector? get connector => widget.connector;
   PayloadStartTransaction get response => widget.payloadStartTransaction;
-
-  @override
-  void initState() {
-    _animationController = AnimationController(
-        vsync: this, duration: Duration(seconds: levelClock));
-    _animationController!.forward();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _animationController!.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     var websocketBloc = context.read<WebsocketBloc>();
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          ItemTitle(
-            title: 'Вы заряжветесь!',
-            description: 'Как зарядитесь до нужного уровня нажмите "Завершить"',
-            descriptionSupplement: 'Время работы с 00:00 - 24:00',
-            stationId: widget.station?.externalId ?? '',
-            connectorId:
-                '# ${connector?[UtilsLocation.index.value].connectorId}',
-            maxPower: '${connector?[UtilsLocation.index.value].maxPower} kBT',
-          ),
-          8.height,
-          const Divider(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ItemRate(
-                title: 'Тариф',
-                description:
-                    '${connector?[UtilsLocation.index.value].costPerKwh?.toStringAsFixed(0)} sum / кВТ*ч',
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text('Заряжено на:', style: context.textTheme.titleSmall),
-                  Text(
-                      '${connector?[UtilsLocation.index.value].energyConsumed} kBT',
-                      style: context.textTheme.bodyMedium)
-                ],
-              )
-            ],
-          ),
-          const Divider(),
-          16.height,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Expanded(child: ItemBattery()),
-              Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      alignment: Alignment.center,
-                      decoration: const BoxDecoration(
-                        color: AppColorsDark.greyBorder,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Countdown(
-                        animation: StepTween(
-                          begin: levelClock,
-                          // THIS IS A USER ENTERED NUMBER
-                          end: 0,
-                        ).animate(_animationController!),
-                      ),
-                    ),
-                  ),
-                  const Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: Icon(
-                        Icons.access_time_filled,
-                        color: AppColorsDark.green1,
-                      ))
-                ],
-              )
-            ],
-          ),
-          16.height,
-          const Divider(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  websocketBloc.add(WebsocketEvent.finish(
-                      message: jsonEncode({
-                    "action": "StopTransaction",
-                    "messageId": "stopTransaction",
-                    "payload": {
-                      "transactionId": response.transactionId,
-                      "status": BookingStation.finishing.name,
-                      "userId":AppUser.userModel?.userId,
-                      "connectorId": "${connector?[UtilsLocation.index.value].connectorId}",
-                      "timestamp": DateTime.now().toIso8601String(),
-                      "endTime": DateTime.now().toIso8601String(),
-                      "chargerId": widget.station?.externalId,
-                      "energyConsumed": 50,
-                      "cost": 35.5
-                    }
-                  })));
-                },
-                child: CircleContainer(
-                  color: AppColorsDark.bodyText,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 16,
-                  ),
-                  child: Text('${connector?[UtilsLocation.index.value].energyConsumed} sum / Завершить',
-                      style: context.textTheme.bodyLarge?.copyWith(
-                        color: AppColorsDark.green3,
-                      )),
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        title: Text('Charging'.toUpperCase()),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.only(left: 16, right: 16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            const TitleText(
+              title: 'Краткое описание:',
+              description:
+                  'Страница позволяет пользователям выбрать, забронировать и оплатить зарядную станцию для электромобиля.',
+            ),
+            const Spacer(),
+            ItemTitle(
+              title: '${station?.location?.city}',
+              description: '${station?.location?.address}',
+              descriptionSupplement: 'Время работы с 00:00 - 24:00',
+              stationId: '${station?.externalId}',
+              connector: connector,
+            ),
+            8.height,
+            const Divider(),
+            8.height,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ItemRate(
+                  title: 'Тариф',
+                  description:
+                      '${connector?.costPerKwh?.toStringAsFixed(0)} тенге / kWh',
                 ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text('Заряжено на:', style: context.textTheme.titleSmall),
+                    Text('${connector?.energyConsumed} kW',
+                        style: context.textTheme.bodyMedium)
+                  ],
+                )
+              ],
+            ),
+            8.height,
+            const Divider(),
+            8.height,
+            ResultContainer(
+              title: "Начало зарядки",
+              description: DateFormat('dd.MM.yyyy HH:mm')
+                  .format(response.currentTime!),
+            ),
+            8.height,
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [Expanded(child: ItemBattery()), TimerCharging()],
+            ),
+            16.height,
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ValueListenableBuilder(
+                    valueListenable: UtilsLocation.time,
+                    builder: (context, value, child) {
+                      return ButtonBooking(
+                        onTap: () {
+                          websocketBloc.add(
+                            WebsocketEvent.finish(
+                              message: jsonEncode({
+                                "action": "StopTransaction",
+                                "messageId": "stopTransaction",
+                                "payload": {
+                                  "userId": AppUser.userModel?.userId,
+                                  "transactionId": response.transactionId,
+                                  "status": BookingStation.finishing.name,
+                                  "connectorId": "${connector?.connectorId}",
+                                  "timestamp": DateTime.now().toIso8601String(),
+                                  "endTime": DateTime.now().toIso8601String(),
+                                  "durationTime": "$value",
+                                  "energyConsumed": 50,
+                                  "cost": 35.5
+                                }
+                              }),
+                            ),
+                          );
+                        },
+                        containerColor: AppColorsDark.green1,
+                        nameColor: AppColorsDark.white,
+                        name: '${connector?.energyConsumed} тенге / Завершить',
+                      );
+                    },
+                  ),
+                  16.width,
+                  ItemAppBar(
+                    icon: 'assets/star_review.png',
+                    color: AppColorsDark.white,
+                    colorIcon: AppColorsDark.yellow1,
+                    onPressed: () async {
+                      await ChargeBottomSheet.draggableScrollableSheet(
+                          context: context, children: [const AddReviewPage()]);
+                    },
+                  )
+                ],
               ),
-              16.width,
-              ItemAppBar(
-                icon: 'assets/star_review.png',
-                color: AppColorsDark.white,
-                colorIcon: AppColorsDark.green3,
-                onPressed: () async {
-                  print("time ${DateTime.now().millisecondsSinceEpoch}");
-                },
-              )
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }

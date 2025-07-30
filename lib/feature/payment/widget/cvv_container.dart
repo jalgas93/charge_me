@@ -45,6 +45,7 @@ class CvvContainer extends StatelessWidget {
             return null;
           },
           decoration: InputDecoration(
+            fillColor: AppColorsDark.secondaryColorW,
             contentPadding: const EdgeInsets.only(
               top: 8, // HERE THE IMPORTANT PART
             ),

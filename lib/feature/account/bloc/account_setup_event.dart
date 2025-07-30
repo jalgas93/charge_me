@@ -3,10 +3,18 @@ part of 'account_setup_bloc.dart';
 @freezed
 class AccountSetupEvent with _$AccountSetupEvent {
   const factory AccountSetupEvent.started() = _Started;
+
   const factory AccountSetupEvent.geocode({
     required double latitude,
     required double longitude,
   }) = _Geocode;
+
+  const factory AccountSetupEvent.updateUser({
+    String? avatar,
+    String? firstname,
+    String? role,
+    required int userId,
+  }) = _UpdateUser;
 
   const factory AccountSetupEvent.addLocation(
       {required double latitude,

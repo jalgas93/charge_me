@@ -50,6 +50,7 @@ class PanContainer extends StatelessWidget {
             return null;
           },
           decoration: InputDecoration(
+            fillColor: AppColorsDark.secondaryColorW,
             //  labelText: 'Номер карты',
             //labelStyle: context.textTheme.bodyLarge,
             contentPadding: const EdgeInsets.only(
@@ -108,7 +109,7 @@ class PanContainer extends StatelessWidget {
                   PaymentUtils.setPaymentMethod = 'mastercard';
                   break;
                 default:
-                  PaymentUtils.setPaymentMethod = '';
+                  //PaymentUtils.setPaymentMethod = '';
               }
             }else{
               PaymentUtils.setPaymentMethod = '';

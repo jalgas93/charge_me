@@ -8,9 +8,13 @@ import 'package:charge_me/feature/payment/payment_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../share/widgets/app_bar_container.dart';
-import '../../../share/widgets/custom_button.dart';
-import '../../../share/widgets/item_app_bar.dart';
+import '../../../core/helpers/app_user.dart';
+import '../../../core/router/router.gr.dart';
+import '../../_app/utils/charge_bottom_sheet.dart';
+import '../../_app/view/review/view/add_review_page.dart';
+import '../../_app/widgets/app_bar_container.dart';
+import '../../_app/widgets/custom_button.dart';
+import '../../_app/widgets/item_app_bar.dart';
 import '../utils/payment_utils.dart';
 import '../widget/amount_container.dart';
 import '../widget/custom_masked_text_controller.dart';
@@ -44,6 +48,7 @@ class _PaymentPageState extends State<PaymentPage> {
   FocusNode? cvvFocus;
   FocusNode? amountFocus;
   bool _keyboardVisible = false;
+  String _extId = AppHelper.getRandomUuid();
 
   @override
   void initState() {
@@ -63,12 +68,18 @@ class _PaymentPageState extends State<PaymentPage> {
     super.dispose();
   }
 
-  void _submit(){
-      if (_formKey.currentState!.validate()) {
-        _bloc.add(PaymentEvent.topUpBalance(command: "pay", txnId: "123456", account: 1,
-            sum: _controllerAmount.text.asNumber, txnDate: DateTime.now().millisecondsSinceEpoch));
+  void _submit() {
+    _extId = AppHelper.getRandomUuid();
+    if (_formKey.currentState!.validate()) {
+      _bloc.add(PaymentEvent.check(
+        command: "check",
+        txnId: _extId,
+        account: AppUser.userModel?.userId ?? 0,
+        sum: _controllerAmount.text.asNumber,
+      ));
     }
   }
+
   @override
   Widget build(BuildContext context) {
     _keyboardVisible = MediaQuery.of(context).viewInsets.bottom != 0;
@@ -172,14 +183,71 @@ class _PaymentPageState extends State<PaymentPage> {
                     BlocConsumer<PaymentBloc, PaymentState>(
                       bloc: _bloc,
                       listener: (context, state) {
-                        // TODO: implement listener
+                        state.maybeWhen(
+                            successCheck: (data) async {
+                              var sum = data.sum;
+                              await ChargeBottomSheet.draggableScrollableSheet(
+                                  context: context,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text('Сумма к пополнению',
+                                                  style:
+                                                  context.textTheme.titleLarge),
+                                              Row(
+                                                children: [
+                                                  Text('${_controllerAmount.value.text.trim()} ',
+                                                      style:
+                                                      context.textTheme.bodyMedium),
+                                                  Image.asset('assets/tenge.png',
+                                                    color: AppColorsDark.white,
+                                                  )
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          25.height,
+                                          CustomButton(
+                                            isLoading: false,
+                                              onTap: () async {
+                                                _bloc.add(PaymentEvent.pay(
+                                                  command: "pay",
+                                                  txnId: _extId,
+                                                  account: AppUser.userModel?.userId ?? 0,
+                                                  sum: _controllerAmount.text.asNumber,
+                                                  txnDate: DateTime.now().millisecondsSinceEpoch,
+                                                ));
+                                              },
+                                              text: "Пополнить")
+                                        ],
+                                      ),
+                                    )
+                                  ]);
+                            },
+                            successPay: (data) {
+                              context.router.pushAndPopUntil(
+                                  const StatusPageRoute(),
+                                  predicate: (Route<dynamic> route) => false);
+                            },
+                            successBalance: (data) async {},
+                            orElse: (){});
                       },
                       builder: (context,PaymentState state) {
+                        final isLoading = state == const PaymentState.loading();
                         return Align(
                           alignment: Alignment.center,
                           child: CustomButton(
+                            isLoading: isLoading,
                             width: context.screenSize.width / 1.2,
-                            onTap:_submit, text: 'Пополнить',
+                            onTap:_submit, text: 'Продолжить',
 
                           ),
                         );

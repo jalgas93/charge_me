@@ -3,7 +3,7 @@ import 'package:charge_me/core/extensions/empty_space.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/styles/app_colors_dark.dart';
-import '../../../share/widgets/item_app_bar.dart';
+import '../../_app/widgets/item_app_bar.dart';
 
 class AddressInfo extends StatefulWidget {
   const AddressInfo({super.key, required this.address});

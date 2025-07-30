@@ -34,6 +34,8 @@ class AppColorsLight {
   static const Color white3 = Color(0xFFE4E9F3);
   static const Color white4 = Color(0xFFEDF1FA);
 
+  static const Color primaryColor = Color(0xFF3DD598);
+  static const Color unselectedColor = Color(0xFF96A7AF);
   static const Color primary = Color(0xFF475E69);
   static const Color primaryVariant = Color(0xFF30444E);
   static const Color secondary = Color(0xFF3DD598);
@@ -50,6 +52,8 @@ class AppColorsLight {
   static const Color white = Color(0xFFFFFFFF);
   static const Color black = Color(0xFF000000);
   static Color transparent = Colors.transparent;
+  static const Color darkStyleText = Color(0xFF252B5C);
+  static const Color whiteSecondary = Color(0xffF5F4F8);
 
   static const List<Color> gradientGreen = [
     Color(0xFF40DF9F),

@@ -10,6 +10,6 @@ class PaymentState with _$PaymentState {
 
   const factory PaymentState.successBalance({required PaymentModel paymentModel}) =
   _SuccessBalance;
-  const factory PaymentState.successTopUpBalance({required PaymentResponse paymentResponse}) =
-  _SuccessTopUpBalance;
+  const factory PaymentState.successCheck({required PaymentResponse paymentResponse}) =_SuccessCheck;
+  const factory PaymentState.successPay({required PaymentResponse paymentResponse}) =_SuccessPay;
 }

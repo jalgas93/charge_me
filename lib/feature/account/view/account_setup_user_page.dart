@@ -8,14 +8,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/helpers/app_user.dart';
 import '../../../core/styles/app_colors_dark.dart';
-import '../../../share/widgets/app_bar_container.dart';
-import '../../../share/widgets/custom_button.dart';
-import '../../../share/widgets/helper_bottom_sheet.dart';
-import '../../../share/widgets/item_app_bar.dart';
-import '../../../share/widgets/show_dialog_form.dart';
-import '../../../share/widgets/skip_container.dart';
-import '../../../share/widgets/status_widgets/success_status.dart';
+import '../../_app/widgets/app_bar_container.dart';
+import '../../_app/widgets/custom_button.dart';
+import '../../_app/widgets/helper_bottom_sheet.dart';
+import '../../_app/widgets/item_app_bar.dart';
+import '../../_app/widgets/show_dialog_form.dart';
+import '../../_app/widgets/skip_container.dart';
+import '../../_app/widgets/status_widgets/success_status.dart';
+import '../../_app/widgets/throw_error.dart';
 import '../../auth/widget/text_form_container.dart';
 import '../../auth/widget/title_text.dart';
 import '../account_repository.dart';
@@ -53,7 +55,15 @@ class _AccountSetupUserPageState extends State<AccountSetupUserPage> {
 
   void submit() async {
     if (_formKey.currentState!.validate()) {
-      _bloc.add(const AccountSetupEvent.started());
+      if(AppUser.userModel!.userId !=null){
+        _bloc.add(AccountSetupEvent.updateUser(
+          role: "USER",
+          userId: AppUser.userModel!.userId!,
+          firstname: _controllerFirstname.text.trim(),
+        ));
+      }else{
+        ThrowError.showNotify(context: context, errMessage: 'User id null');
+      }
     }
   }
 
@@ -82,79 +92,85 @@ class _AccountSetupUserPageState extends State<AccountSetupUserPage> {
           ],
         ),
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                  maxHeight: _keyboardVisible
-                      ? constraints.maxHeight + constraints.maxWidth / 2
-                      : constraints.maxHeight),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const TitleText(
-                    title: 'Заполните вашу информацию',
-                    supplementary: '',
-                    description:
-                        'Вы можете отредактировать это позже в настройках своей учетной записи.',
-                  ),
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: GestureDetector(
-                      onTap: () async {},
-                      child: Container(
-                        padding: const EdgeInsets.all(48),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColorsDark.whiteSecondary,
-                          image: DecorationImage(
-                              image: AssetImage('assets/plus.png')),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 16,bottom: 16),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                    maxHeight: _keyboardVisible
+                        ? constraints.maxHeight
+                        : constraints.maxHeight),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(left: 16, right: 16),
+                      child: TitleText(
+                        title: 'Заполните вашу информацию',
+                        description:
+                            'Вы можете отредактировать это позже в настройках своей учетной записи.',
+                      ),
+                    ),
+                    16.height,
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: GestureDetector(
+                        onTap: () async {},
+                        child: Container(
+                          padding: const EdgeInsets.all(48),
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColorsDark.whiteSecondary,
+                            image: DecorationImage(
+                                image: AssetImage('assets/plus.png')),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        TextFormContainer(
-                          focusNode: focusNodeFirstName,
-                          controller: _controllerFirstname,
-                          prefixIcon: 'assets/profile2.png',
-                          hintText: 'First name',
-                          onEditingComplete: () {
-                            focusNodeFirstName.unfocus();
-                            _formKey.currentState!.validate();
-                          },
-                          textInputAction: TextInputAction.done,
-                        ),
-                      ],
+                    16.height,
+                    Form(
+                      key: _formKey,
+                      child: TextFormContainer(
+                        focusNode: focusNodeFirstName,
+                        controller: _controllerFirstname,
+                        prefixIcon: 'assets/profile2.png',
+                        hintText: 'First name',
+                        onEditingComplete: () {
+                          focusNodeFirstName.unfocus();
+                          _formKey.currentState!.validate();
+                        },
+                        textInputAction: TextInputAction.done,
+                      ),
                     ),
-                  ),
-                  //const Spacer(),
-                  100.height,
-                  BlocConsumer<AccountSetupBloc, AccountSetupState>(
-                    bloc: _bloc,
-                    listener: (context, AccountSetupState state) {
-                      state.maybeWhen(
-                          success: () async {
-                            await ShowDialogForm().showInfo(context: context, text: 'sdsf');
-                          },
-                          orElse: () {});
-                    },
-                    builder: (context, state) {
-                      return CustomButton(
-                          width: constraints.maxWidth / 1.2,
-                          onTap: () => submit(),
-                          text: 'Завершить');
-                    },
-                  ),
-                ],
+                    const Spacer(),
+                    BlocConsumer<AccountSetupBloc, AccountSetupState>(
+                      bloc: _bloc,
+                      listener: (context, AccountSetupState state) {
+                        state.maybeWhen(
+                            error: (e){
+                              ThrowError.showNotify(context: context, errMessage: e.toString());
+                            },
+                            success: () async {
+                              await ShowDialogForm()
+                                  .showInfo(context: context, text: 'sdsf');
+                            },
+                            orElse: () {});
+                      },
+                      builder: (context, state) {
+                        return CustomButton(
+                            width: constraints.maxWidth / 1.2,
+                            onTap: () => submit(),
+                            text: 'Завершить');
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

@@ -25,7 +25,7 @@ class AccountSetupBloc extends Bloc<AccountSetupEvent, AccountSetupState> {
     AccountSetupEvent event,
     Emitter<AccountSetupState> emit,
   ) async {
-    await event.map(started: (event) {
+    await event.map(started: (event) async {
       emit(const AccountSetupState.loading());
       try {
         emit(const AccountSetupState.success());
@@ -62,8 +62,20 @@ class AccountSetupBloc extends Bloc<AccountSetupEvent, AccountSetupState> {
       } catch (e) {
         emit(AccountSetupState.error(error: e));
       }
-    }, geocode: (value) {
-
+    }, geocode: (value) {},
+        updateUser: (event) async {
+      emit(const AccountSetupState.loading());
+      try {
+        final response = await _repository.userUpdate(
+          firstname: event.firstname,
+          avatar: event.avatar,
+          role: event.role,
+          userId: event.userId,
+        );
+        emit(const AccountSetupState.success());
+      } catch (e) {
+        emit(AccountSetupState.error(error: e));
+      }
     });
   }
 }

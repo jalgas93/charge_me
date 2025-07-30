@@ -1,15 +1,15 @@
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
-import 'package:charge_me/share/widgets/throw_error.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/styles/app_colors_dark.dart';
-import '../../../share/widgets/app_bar_container.dart';
-import '../../../share/widgets/item_app_bar.dart';
+import '../../_app/widgets/app_bar_container.dart';
+import '../../_app/widgets/item_app_bar.dart';
+import '../../_app/widgets/throw_error.dart';
 import '../../auth/widget/social_network.dart';
 
 @RoutePage(name: "SupportServicePage")

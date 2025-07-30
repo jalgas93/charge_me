@@ -100,5 +100,21 @@ class AppRouter extends RootStackRouter  {
           path: '/account_setup_car_page',
           page: AccountSetupCarRoutePage.page,
         ),
+        AutoRoute(
+          path: '/booking_page',
+          page: BookingRoutePage.page,
+        ),
+        AutoRoute(
+          path: '/charging_page',
+          page: ChargingRoutePage.page,
+        ),
+        AutoRoute(
+          path: '/finish_page',
+          page: FinishRoutePage.page,
+        ),
+        AutoRoute(
+          path: '/status_page',
+          page: StatusPageRoute.page,
+        ),
       ];
 }

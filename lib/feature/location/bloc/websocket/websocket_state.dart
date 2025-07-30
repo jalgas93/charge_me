@@ -24,7 +24,7 @@ class WebsocketState with _$WebsocketState {
 
   const factory WebsocketState.queueSuccess({required dynamic message}) = _QueueSuccess;
 
-  const factory WebsocketState.bookingCancelSuccess({required dynamic message}) = _BookingCancelSuccess;
+  const factory WebsocketState.checkSuccess({required dynamic message}) = _CheckSuccess;
 
   const factory WebsocketState.chargingSuccess({required dynamic message}) = _ChargingSuccess;
 

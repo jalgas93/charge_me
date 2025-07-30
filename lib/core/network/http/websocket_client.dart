@@ -4,8 +4,8 @@ import 'dart:convert';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../../../share/utils/constant/config_app.dart';
-import '../../../share/utils/flutter_secure_storage.dart';
+import '../../../feature/_app/utils/flutter_secure_storage.dart';
+import '../../utils/constant/config_app.dart';
 import '../../logging/log.dart';
 
 class WebSocketManager {

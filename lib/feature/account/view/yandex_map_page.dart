@@ -9,9 +9,9 @@ import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 import '../../../core/styles/app_colors_dark.dart';
 import '../../home/model/app_lat_long.dart';
-import '../../../share/utils/location_service.dart';
-import '../../../share/widgets/custom_button.dart';
-import '../../../share/widgets/item_app_bar.dart';
+import '../../_app/utils/location_service.dart';
+import '../../_app/widgets/custom_button.dart';
+import '../../_app/widgets/item_app_bar.dart';
 import '../model/yandex_address/response_result.dart';
 import '../widget/address_info.dart';
 

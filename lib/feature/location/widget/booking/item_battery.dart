@@ -4,7 +4,7 @@ import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/styles/app_colors_dark.dart';
-import '../../../../share/widgets/circle_container.dart';
+import '../../../_app/widgets/circle_container.dart';
 
 class ItemBattery extends StatelessWidget {
   const ItemBattery({super.key});
@@ -13,12 +13,12 @@ class ItemBattery extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: context.screenSize.width / 5,
+      padding: const EdgeInsets.only(left: 60,right: 60),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-          color: Colors.green, borderRadius: BorderRadius.circular(100)),
-      child: SizedBox(
-        height: context.screenSize.width / 9,
-        width: context.screenSize.width / 5,
+          color: Colors.green, borderRadius: BorderRadius.circular(25)),
+      child: Container(
+        padding: const EdgeInsets.all(16),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(25),
           child: CircleContainer(
@@ -31,6 +31,7 @@ class ItemBattery extends StatelessWidget {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset('assets/lightning.png',
                       color: AppColorsDark.green1),

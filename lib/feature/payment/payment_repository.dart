@@ -10,11 +10,27 @@ class PaymentRepository extends BaseRepository {
       "last_updated": lastUpdated
     };*/
     final response =
-        await client.post('api/v1/payment_app.cgi/create');
+        await client.post('payment_app.cgi/create');
     return response.data;
   }
 
-  Future<dynamic> topUpBalance({
+  Future<dynamic> check({
+    required String command,
+    required String txnId,
+    required int account,
+    required num sum,
+  }) async {
+    var data = {
+      "command": command,
+      "txn_id": txnId,
+      "account": account,
+      "sum": sum,
+    };
+    final response =
+        await client.get('payment_app.cgi', queryParameters: data);
+    return response.data;
+  }
+  Future<dynamic> pay({
     required String command,
     required String txnId,
     required int account,
@@ -24,12 +40,12 @@ class PaymentRepository extends BaseRepository {
     var data = {
       "command": command,
       "txn_id": txnId,
+      "txn_date": txnDate,
       "account": account,
       "sum": sum,
-      "txn_date": txnDate,
     };
     final response =
-        await client.get('api/v1/payment_app.cgi', queryParameters: data);
+    await client.get('payment_app.cgi', queryParameters: data);
     return response.data;
   }
 }

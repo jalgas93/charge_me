@@ -9,4 +9,5 @@ class AccountSetupState with _$AccountSetupState {
   const factory AccountSetupState.successGeocode({required GeoResponse geoResponse}) = _SuccessGeocode;
   const factory AccountSetupState.successAddCar() = _SuccessAddCar;
   const factory AccountSetupState.successAddLocation() = _SuccessAddLocation;
+  const factory AccountSetupState.successUpdateUser() = _SuccessUpdateUser;
 }

@@ -5,7 +5,9 @@ import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/feature/dashboard/utils/utils_dashboard.dart';
 import 'package:charge_me/feature/scanner/view/scanner_page.dart';
 import 'package:flutter/material.dart';
+import '../../core/application.dart';
 import '../../core/styles/app_colors_dark.dart';
+import '../../core/styles/app_colors_light.dart';
 import '../home/view/home_page.dart';
 import '../location/view/location_page.dart';
 import '../profile/view/profile_page.dart';
@@ -22,6 +24,17 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int currentIndex = 0;
   PageController controller = PageController();
+
+  @override
+  void initState() {
+    Application.dashboardTabChangeCallback = nextPage;
+    super.initState();
+  }
+  @override
+  void dispose() {
+    Application.dashboardTabChangeCallback = null;
+    super.dispose();
+  }
   var listScreen = const [
     HomePage(),
     LocationPage(),
@@ -30,13 +43,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
     ProfilePage(),
   ];
 
-  void nextPage(index) {
+  void nextPage(index,[bool discardCardId = true]) {
     setState(() {
       currentIndex = index;
       controller.jumpToPage(index);
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,8 +77,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               icon: Image.asset(
                                 'assets/car_3.png',
                                 color: value == 0
-                                    ? context.theme.focusColor
-                                    : context.theme.unselectedWidgetColor,
+                                    ? Theme.of(context).brightness == Brightness.dark
+                                    ? AppColorsDark.green2 // Для темной темы
+                                    : AppColorsLight.primaryColor // Для светлой темы
+                                    : Theme.of(context).brightness == Brightness.dark
+                                    ? AppColorsDark.white2 // Для темной темы
+                                    : AppColorsLight.unselectedColor,
                               ))),
                       Expanded(
                           child: IconButton(
@@ -80,17 +96,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             child: Image.asset(
                               'assets/map.png',
                               color: value == 1
-                                  ? context.theme.focusColor
-                                  : context.theme.unselectedWidgetColor,
+                                  ? Theme.of(context).brightness == Brightness.dark
+                                  ? AppColorsDark.green2 // Для темной темы
+                                  : AppColorsLight.primaryColor // Для светлой темы
+                                  : Theme.of(context).brightness == Brightness.dark
+                                  ? AppColorsDark.white2 // Для темной темы
+                                  : AppColorsLight.unselectedColor,
                             )),
                       )),
                       Expanded(
                         child: Container(
                           height: context.screenSize.width / 7,
                           width: context.screenSize.width / 7,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: AppColorsDark.green1),
+                              color: context.theme.brightness == Brightness.dark
+                                  ? AppColorsDark.green1 // Для темной темы
+                                  : AppColorsLight.green1,
+                          ),
                           child: IconButton(
                               onPressed: () {
                                 nextPage(2);
@@ -99,8 +122,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               icon: Icon(
                                 Icons.qr_code_scanner,
                                 color: value == 2
-                                    ? context.theme.indicatorColor
-                                    : context.theme.unselectedWidgetColor,
+                                    ? Theme.of(context).brightness == Brightness.dark
+                                    ? AppColorsDark.darkStyleText // Для темной темы
+                                    : AppColorsLight.darkStyleText // Для светлой темы
+                                    : Theme.of(context).brightness == Brightness.dark
+                                    ? AppColorsDark.whiteSecondary // Для темной темы
+                                    : AppColorsLight.whiteSecondary,
                               )),
                         ),
                       ),
@@ -113,8 +140,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         icon: Image.asset(
                           'assets/chart.png',
                           color: value == 3
-                              ? context.theme.focusColor
-                              : context.theme.unselectedWidgetColor,
+                              ? Theme.of(context).brightness == Brightness.dark
+                              ? AppColorsDark.green2 // Для темной темы
+                              : AppColorsLight.primaryColor // Для светлой темы
+                              : Theme.of(context).brightness == Brightness.dark
+                              ? AppColorsDark.white2 // Для темной темы
+                              : AppColorsLight.unselectedColor,
                         ),
                       )),
                       Expanded(
@@ -126,8 +157,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             icon: Image.asset(
                               'assets/profile.png',
                               color: value == 4
-                                  ? context.theme.focusColor
-                                  : context.theme.unselectedWidgetColor,
+                                  ? Theme.of(context).brightness == Brightness.dark
+                                  ? AppColorsDark.green2 // Для темной темы
+                                  : AppColorsLight.primaryColor // Для светлой темы
+                                  : Theme.of(context).brightness == Brightness.dark
+                                  ? AppColorsDark.white2 // Для темной темы
+                                  : AppColorsLight.unselectedColor,
                             )),
                       )
                     ],

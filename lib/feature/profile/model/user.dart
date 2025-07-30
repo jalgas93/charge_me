@@ -13,10 +13,10 @@ class User with _$User {
     @JsonKey(name: 'firstname') String? firstname,
     @JsonKey(name: 'birth_date') DateTime? birthDate,
     @JsonKey(name: 'role') String? role ,
-    @JsonKey(name: 'createAt') String? createAt,
-    @JsonKey(name: 'device') String? device,
-    @JsonKey(name: 'location') String? location,
-    @JsonKey(name: 'car') String? car,
+    @JsonKey(name: 'createAt') DateTime? createAt,
+    @JsonKey(name: 'device') Device? device,
+    @JsonKey(name: 'location') Location? location,
+    @JsonKey(name: 'car') Car? car,
   }) = _User;
 
   factory User.fromJson(Map<String, dynamic> json) =>

@@ -47,6 +47,7 @@ class ExpireContainer extends StatelessWidget {
             return null;
           },
           decoration: InputDecoration(
+            fillColor: AppColorsDark.secondaryColorW,
             // labelText: 'MM/ГГ',
             // labelStyle: context.textTheme.bodyLarge,
             contentPadding: const EdgeInsets.only(

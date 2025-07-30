@@ -5,7 +5,8 @@ import 'package:charge_me/core/extensions/empty_space.dart';
 import 'package:charge_me/core/styles/app_colors_dark.dart';
 import 'package:flutter/material.dart';
 
-import '../../../share/widgets/item_app_bar.dart';
+import '../../_app/widgets/item_app_bar.dart';
+
 
 class SecondContainerMap extends StatelessWidget {
   const SecondContainerMap({

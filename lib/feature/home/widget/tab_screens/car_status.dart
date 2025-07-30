@@ -30,14 +30,17 @@ class CarStatus extends StatelessWidget {
                   Text('Battery', style: context.textTheme.bodyMedium),
                   4.height,
                   Container(
-                    height: constraints.maxWidth / 2.5,
-                    width: constraints.maxWidth / 3.5,
+                  padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                        // border: Border.all(color: AppColorsDark.greyBorder),
                         borderRadius: BorderRadius.circular(20),
                         gradient: const LinearGradient(
                           colors: [Color(0xFF03DABB), Color(0xFF03DA99)],
                         )),
+                    child: const SizedBox(
+                        height: 70,
+                    width: 45,
+                    ),
                   ),
                   2.height,
                   Text('Battery', style: context.textTheme.bodyMedium),

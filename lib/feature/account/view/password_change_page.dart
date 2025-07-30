@@ -1,16 +1,16 @@
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/router/router.gr.dart';
-import 'package:charge_me/share/widgets/throw_error.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/styles/app_colors_dark.dart';
-import '../../../share/widgets/app_bar_container.dart';
-import '../../../share/widgets/custom_button.dart';
-import '../../../share/widgets/helper_bottom_sheet.dart';
-import '../../../share/widgets/item_app_bar.dart';
-import '../../../share/widgets/status_widgets/success_status.dart';
+import '../../_app/widgets/app_bar_container.dart';
+import '../../_app/widgets/custom_button.dart';
+import '../../_app/widgets/helper_bottom_sheet.dart';
+import '../../_app/widgets/item_app_bar.dart';
+import '../../_app/widgets/status_widgets/success_status.dart';
+import '../../_app/widgets/throw_error.dart';
 import '../../auth/widget/phone_field_widget.dart';
 import '../../auth/widget/text_form_container.dart';
 import '../../auth/widget/title_text.dart';
@@ -92,7 +92,6 @@ class _PasswordChangePageState extends State<PasswordChangePage> {
                 children: [
                   const TitleText(
                     title: 'Изменение пароля',
-                    supplementary: '',
                     description:
                         'Введите свой номер телефона и новый пароль ниже, чтобы сбросить пароль',
                   ),
@@ -164,6 +163,9 @@ class _PasswordChangePageState extends State<PasswordChangePage> {
                     bloc: _bloc,
                     listener: (context, AccountSetupState state) {
                       state.maybeWhen(
+                          error: (e){
+                            ThrowError.showNotify(context: context, errMessage: e.toString());
+                          },
                           success: () {
                             context.router
                                 .push(RegisterFormOtpRoutePage(requestId: '',phone: ''));

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/styles/app_colors_dark.dart';
 import '../../utils/utils_location.dart';
 
+/*
 class ItemConnector extends StatelessWidget {
   const ItemConnector({super.key, required this.list});
 
@@ -73,3 +74,4 @@ class ItemConnector extends StatelessWidget {
     );
   }
 }
+*/

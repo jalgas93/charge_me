@@ -2,9 +2,9 @@ import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/router/router.gr.dart';
+import 'package:charge_me/feature/_app/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
-import '../../../share/widgets/custom_button.dart';
 
 @RoutePage(name: "LoginOptionRoutePage")
 class LoginOptionPage extends StatefulWidget {

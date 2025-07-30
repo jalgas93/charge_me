@@ -3,18 +3,18 @@ import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
 import 'package:charge_me/core/router/router.gr.dart';
-import 'package:charge_me/share/widgets/custom_button.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
 import '../../../core/styles/app_colors_dark.dart';
-import '../../../share/widgets/app_bar_container.dart';
-import '../../../share/widgets/count_down.dart';
-import '../../../share/widgets/item_app_bar.dart';
-import '../../../share/widgets/sms_auto_field.dart';
-import '../../../share/widgets/throw_error.dart';
+import '../../_app/widgets/app_bar_container.dart';
+import '../../_app/widgets/count_down.dart';
+import '../../_app/widgets/custom_button.dart';
+import '../../_app/widgets/item_app_bar.dart';
+import '../../_app/widgets/sms_auto_field.dart';
+import '../../_app/widgets/throw_error.dart';
 import '../auth_repository.dart';
 import '../bloc/auth_bloc.dart';
 import '../utils/auth_utils.dart';
@@ -22,10 +22,12 @@ import '../widget/title_text.dart';
 
 @RoutePage(name: "RegisterFormOtpRoutePage")
 class RegisterFormOtp extends StatefulWidget {
-  const RegisterFormOtp({super.key, required this.requestId, required this.phone});
+  const RegisterFormOtp(
+      {super.key, required this.requestId, required this.phone});
 
   final String requestId;
   final String phone;
+
   @override
   State<RegisterFormOtp> createState() => _RegisterFormOtpState();
 }
@@ -78,7 +80,8 @@ class _RegisterFormOtpState extends State<RegisterFormOtp>
   }
 
   void submit() async {
-    _bloc.add(AuthEvent.verifyRegisterTelegram(code: _optController.text.trim(), requestId: widget.requestId));
+    _bloc.add(AuthEvent.verifyRegisterTelegram(
+        code: _optController.text.trim(), requestId: widget.requestId));
   }
 
   @override
@@ -102,8 +105,7 @@ class _RegisterFormOtpState extends State<RegisterFormOtp>
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           const TitleText(
-            title: 'Enter the',
-            supplementary: 'code',
+            title: 'Enter the code',
             description:
                 'Enter the 4 digit code that we just sent to jonathan@email.com',
           ),
@@ -183,9 +185,9 @@ class _RegisterFormOtpState extends State<RegisterFormOtp>
                             const DashboardPageRoute(),
                             predicate: (Route<dynamic> route) => false);
                       },
-                      successResendOtpTelegram: (result){
+                      successResendOtpTelegram: (result) {
                         var id = result.resultSms?.requestId;
-                        if(id != null){
+                        if (id != null) {
                           requestId = id;
                         }
                       },
@@ -196,15 +198,16 @@ class _RegisterFormOtpState extends State<RegisterFormOtp>
                       orElse: () {});
                 },
                 builder: (context, AuthState state) {
-                  state.maybeWhen(
-                      loading: () {
-                        return const Center(child: CircularProgressIndicator());
-                      },
-                      orElse: () {});
-                  return CustomButton(
-                      width: context.screenSize.width / 1.2,
-                      onTap: submit,
-                      text: "Отправить");
+                  final isLoading = state == const AuthState.loading();
+                  return state.maybeWhen(loading: () {
+                    return const Center(child: CircularProgressIndicator());
+                  }, orElse: () {
+                    return CustomButton(
+                        isLoading: isLoading,
+                        width: context.screenSize.width / 1.2,
+                        onTap: submit,
+                        text: "Отправить");
+                  });
                 },
               )
             ],

@@ -3,14 +3,18 @@ import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
 import 'package:charge_me/core/router/router.gr.dart';
+import 'package:charge_me/feature/account/bloc/account_setup_bloc.dart';
 import 'package:charge_me/feature/account/utils/account_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/styles/app_colors_dark.dart';
-import '../../../share/widgets/app_bar_container.dart';
-import '../../../share/widgets/custom_button.dart';
-import '../../../share/widgets/item_app_bar.dart';
-import '../../../share/widgets/skip_container.dart';
+import '../../_app/widgets/app_bar_container.dart';
+import '../../_app/widgets/custom_button.dart';
+import '../../_app/widgets/item_app_bar.dart';
+import '../../_app/widgets/skip_container.dart';
+import '../../_app/widgets/throw_error.dart';
+import '../account_repository.dart';
 import '../widget/connector_selection.dart';
 
 @RoutePage(name: "AccountSetupConnectorRoutePage")
@@ -23,6 +27,24 @@ class AccountSetupConnectorPage extends StatefulWidget {
 }
 
 class _AccountSetupConnectorPageState extends State<AccountSetupConnectorPage> {
+  late AccountSetupBloc _bloc;
+  late AccountSetupRepository _repository;
+
+  @override
+  void initState() {
+    _repository = AccountSetupRepository();
+    _bloc = AccountSetupBloc(repository: _repository);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _bloc.close();
+    super.dispose();
+  }
+  void _submit(){
+    _bloc.add(const AccountSetupEvent.started());
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +62,7 @@ class _AccountSetupConnectorPageState extends State<AccountSetupConnectorPage> {
           ),
           actions: [
             SkipContainer(
-              onTap: (){
+              onTap: () {
                 context.router.push(const AccountSetupLocationRoutePage());
               },
             )
@@ -48,90 +70,106 @@ class _AccountSetupConnectorPageState extends State<AccountSetupConnectorPage> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+        padding: const EdgeInsets.all(16),
         child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Выбор разъёма', style: context.textTheme.headlineMedium),
-              Text('Зарядного устройства для вашего автомобиля',
-                  style: context.textTheme.bodyMedium),
-              const SizedBox(height: 16),
-              ValueListenableBuilder(
-                valueListenable: AccountUtils.isConnectorSelection,
-                builder: (context, value, child) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                      'Выбор разъёма', style: context.textTheme.headlineMedium),
+                  Text('Зарядного устройства для вашего автомобиля',
+                      style: context.textTheme.bodyMedium),
+                  const SizedBox(height: 16),
+                  ValueListenableBuilder(
+                    valueListenable: AccountUtils.isConnectorSelection,
+                    builder: (context, value, child) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          ConnectorSelection(
-                            constraints: constraints,
-                            isSelected: value == SelectConnectors.gbt ||
-                                value == SelectConnectors.all,
-                            image: "assets/gbt.png",
-                            title: "GBT",
-                            numbering: "#1",
-                            onTap: () {
-                              AccountUtils.setIsConnectorSelection =
-                                  SelectConnectors.gbt;
-                            },
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ConnectorSelection(
+                                constraints: constraints,
+                                isSelected: value == SelectConnectors.gbt ||
+                                    value == SelectConnectors.all,
+                                image: "assets/gbt.png",
+                                title: "GBT",
+                                numbering: "#1",
+                                onTap: () {
+                                  AccountUtils.setIsConnectorSelection =
+                                      SelectConnectors.gbt;
+                                },
+                              ),
+                              ConnectorSelection(
+                                constraints: constraints,
+                                isSelected: value == SelectConnectors.cc2 ||
+                                    value == SelectConnectors.all,
+                                image: "assets/gbt.png",
+                                title: "GBT",
+                                numbering: "#2",
+                                onTap: () {
+                                  AccountUtils.setIsConnectorSelection =
+                                      SelectConnectors.cc2;
+                                },
+                              ),
+                            ],
                           ),
-                          ConnectorSelection(
-                            constraints: constraints,
-                            isSelected: value == SelectConnectors.cc2 ||
-                                value == SelectConnectors.all,
-                            image: "assets/gbt.png",
-                            title: "GBT",
-                            numbering: "#2",
+                          16.height,
+                          GestureDetector(
                             onTap: () {
                               AccountUtils.setIsConnectorSelection =
-                                  SelectConnectors.cc2;
+                                  SelectConnectors.all;
                             },
+                            child: Container(
+                              height: constraints.maxWidth / 5,
+                              width: constraints.maxWidth / 5,
+                              alignment: Alignment.center,
+                              margin: const EdgeInsets.only(top: 16),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 16, horizontal: 16),
+                              decoration: BoxDecoration(
+                                  color: AppColorsDark.whiteSecondary,
+                                  borderRadius: BorderRadius.circular(25)),
+                              child: Text('Все',
+                                  style: context.textTheme.titleSmall?.copyWith(
+                                      color: AppColorsDark.darkStyleText)),
+                            ),
                           ),
                         ],
-                      ),
-                      16.height,
-                      GestureDetector(
-                        onTap: () {
-                          AccountUtils.setIsConnectorSelection =
-                              SelectConnectors.all;
-                        },
-                        child: Container(
-                          height: constraints.maxWidth / 5,
-                          width: constraints.maxWidth / 5,
-                          alignment: Alignment.center,
-                          margin: const EdgeInsets.only(top: 16),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 16, horizontal: 16),
-                          decoration: BoxDecoration(
-                              color: AppColorsDark.whiteSecondary,
-                              borderRadius: BorderRadius.circular(25)),
-                          child: Text('Все',
-                              style: context.textTheme.titleSmall?.copyWith(
-                                  color: AppColorsDark.darkStyleText)),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-              const Spacer(),
-              Align(
-                alignment: Alignment.center,
-                child: CustomButton(
-                    width: constraints.maxWidth / 1.2,
-                    onTap: () {
-                      context.router
-                          .push(const AccountSetupLocationRoutePage());
+                      );
                     },
-                    text: 'Продолжить'),
-              ),
-            ],
-          );
-        }),
+                  ),
+                  const Spacer(),
+                  BlocConsumer<AccountSetupBloc, AccountSetupState>(
+                    bloc: _bloc,
+                    listener: (context, state) {
+                     state.maybeWhen(
+                         error: (e){
+                           ThrowError.showNotify(context: context, errMessage: e.toString());
+                         },
+                         success: (){
+                           context.router
+                               .push(const AccountSetupLocationRoutePage());
+                         },
+                         orElse: (){});
+                    },
+                    builder: (context,AccountSetupState state) {
+                      final isLoading = state == const AccountSetupState.loading();
+                      return Align(
+                        alignment: Alignment.center,
+                        child: CustomButton(
+                            isLoading:isLoading,
+                            width: constraints.maxWidth / 1.2,
+                            onTap: () =>_submit(),
+                            text: 'Продолжить'),
+                      );
+                    },
+                  ),
+                ],
+              );
+            }),
       ),
     );
   }

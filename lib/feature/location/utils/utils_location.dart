@@ -1,23 +1,9 @@
+import 'package:charge_me/feature/location/model/stations.dart';
 import 'package:flutter/material.dart';
 
-enum BookingStation {
-  connect,
-  booking,
-  charging,
-  finishing,
-  available,
-  queue
-}
+enum BookingStation { connect, booking, charging, finishing, available, queue }
 
 class UtilsLocation {
-  static final ValueNotifier<String?> _typesConnector = ValueNotifier('GB_T');
-
-  static set setConnector(String? value) {
-    _typesConnector.value = value;
-  }
-
-  static ValueNotifier<String?> get typesConnector => _typesConnector;
-
   static final ValueNotifier<int> _typesOfPower = ValueNotifier(150);
 
   static set setOfPower(int value) {
@@ -27,7 +13,7 @@ class UtilsLocation {
   static ValueNotifier<int> get typesOfPower => _typesOfPower;
 
   static final ValueNotifier<BookingStation> _processChargingUp =
-      ValueNotifier(BookingStation.connect);
+  ValueNotifier(BookingStation.connect);
 
   static set setChargingUp(BookingStation value) {
     _processChargingUp.value = value;
@@ -44,22 +30,6 @@ class UtilsLocation {
 
   static ValueNotifier<Widget?> get selectStation => _selectStation;
 
-  static final ValueNotifier<int> _index = ValueNotifier(0);
-
-  static set setIndex(int value) {
-    _index.value = value;
-  }
-
-  static ValueNotifier<int> get index => _index;
-
-  static final ValueNotifier<String?> _status = ValueNotifier(null);
-
-  static set setStatus(String? value) {
-    _status.value = value;
-  }
-
-  static ValueNotifier<String?> get status => _status;
-
   static final ValueNotifier<String?> _message = ValueNotifier(null);
 
   static set setMessage(String? value) {
@@ -70,4 +40,56 @@ class UtilsLocation {
   }
 
   static ValueNotifier<String?> get message => _message;
+
+  static final ValueNotifier<bool> _isBlocked = ValueNotifier(true);
+
+  static set setIsBlocked(bool value) {
+    _isBlocked.value = value;
+  }
+
+  static ValueNotifier<bool> get isBlocked => _isBlocked;
+
+/*  static final ValueNotifier<Connector?> _selectConnector = ValueNotifier(null);
+
+  static set setSelectConnector(Connector? value) {
+    _selectConnector.value = value;
+  }
+
+  static ValueNotifier<Connector?> get selectConnector => _selectConnector;*/
+
+  static final ValueNotifier<int?> _currentCost = ValueNotifier(0);
+
+  static set setCurrentCost(int? value) {
+    _currentCost.value = value;
+  }
+
+  static ValueNotifier<int?> get currentCost => _currentCost;
+
+  static final ValueNotifier<String?> _formatedTime =
+  ValueNotifier('00:00:00');
+
+  static set setFormatedTime(String? value) {
+    _formatedTime.value = value;
+  }
+
+  static ValueNotifier<String?> get formatedTime => _formatedTime;
+
+  static final ValueNotifier<String?> _timeNotFree =
+  ValueNotifier('00:00:00');
+
+  static set setTimeNotFree(String? value) {
+    _timeNotFree.value = value;
+  }
+
+  static ValueNotifier<String?> get timeNotFree => _timeNotFree;
+
+  static final ValueNotifier<String?> _time =
+  ValueNotifier('00:00:00');
+
+  static set setTime(String? value) {
+    _time.value = value;
+  }
+
+  static ValueNotifier<String?> get time => _time;
+
 }

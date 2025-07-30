@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/router/router.gr.dart';
-import 'package:charge_me/share/custom_material_app.dart';
+import 'package:charge_me/feature/_app/custom_material_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -13,7 +13,6 @@ import 'core/logging/log.dart';
 import 'core/router/router.dart';
 import 'core/service_locator.dart';
 
-final router = ServiceLocator.get<AppRouter>();
 
 Future<void> main() async {
   try {
@@ -35,6 +34,8 @@ Future<void> main() async {
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
+/*  MessagingConfig.initFirebaseMessaging();
+  FirebaseMessaging.onBackgroundMessage(MessagingConfig.messageHandler);*/
   //debugRepaintRainbowEnabled = true;
   await ServiceLocator.setup();
   Log.initialize();

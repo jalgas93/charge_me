@@ -7,10 +7,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/logging/log.dart';
 import '../../../core/router/router.gr.dart';
-import '../../../share/widgets/app_bar_container.dart';
-import '../../../share/widgets/custom_button.dart';
-import '../../../share/widgets/item_app_bar.dart';
-import '../../../share/widgets/throw_error.dart';
+import '../../_app/widgets/app_bar_container.dart';
+import '../../_app/widgets/custom_button.dart';
+import '../../_app/widgets/item_app_bar.dart';
+import '../../_app/widgets/throw_error.dart';
 import '../auth_repository.dart';
 import '../widget/lower_part.dart';
 import '../widget/phone_field_widget.dart';
@@ -93,8 +93,7 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   const TitleText(
-                    title: 'Create your',
-                    supplementary: 'account',
+                    title: 'Create your account',
                     description: 'Давайте познакомимся',
                   ),
                   Form(
@@ -157,16 +156,16 @@ class _RegisterFormPageState extends State<RegisterFormPage> {
                           orElse: () {});
                     },
                     builder: (context, AuthState state) {
-                      state.maybeWhen(
-                          loading: () {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          },
-                          orElse: () {});
-                      return CustomButton(
-                          width: constraints.maxWidth / 1.2,
-                          onTap: () => submit(),
-                          text: 'Register');
+                      final isLoading = state == const AuthState.loading();
+                      return state.maybeWhen(loading: () {
+                        return const Center(child: CircularProgressIndicator());
+                      }, orElse: () {
+                        return CustomButton(
+                            isLoading: isLoading,
+                            width: constraints.maxWidth / 1.2,
+                            onTap: () => submit(),
+                            text: 'Register');
+                      });
                     },
                   ),
                 ],

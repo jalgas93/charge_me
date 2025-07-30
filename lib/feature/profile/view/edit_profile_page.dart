@@ -6,9 +6,10 @@ import 'package:charge_me/core/extensions/context_extensions.dart';
 
 import 'package:flutter/material.dart';
 
-import '../../../share/widgets/app_bar_container.dart';
-import '../../../share/widgets/custom_button.dart';
-import '../../../share/widgets/item_app_bar.dart';
+import '../../_app/widgets/app_bar_container.dart';
+import '../../_app/widgets/custom_button.dart';
+import '../../_app/widgets/helper_bottom_sheet.dart';
+import '../../_app/widgets/item_app_bar.dart';
 import '../../auth/widget/text_form_container.dart';
 
 @RoutePage(name: 'EditProfilePageRoute')
@@ -54,11 +55,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
               alignment: Alignment.topCenter,
               child: GestureDetector(
                 onTap: () async {
-/*                  var result =
+                  var result =
                       await HelperBottomSheet.getImage(context: context);
                   if (result != null) {
                     //image = result;
-                  }*/
+                  }
                 },
                 child: CircleAvatar(
                   radius: true ? 60 : 40,

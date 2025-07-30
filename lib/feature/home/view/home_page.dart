@@ -7,9 +7,13 @@ import 'package:charge_me/feature/home/widget/tab_screens/climate.dart';
 import 'package:charge_me/feature/home/widget/tab_screens/engine_status.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../core/provider/theme_notifier.dart';
 import '../../../core/styles/app_colors_dark.dart';
-import '../../../share/widgets/app_bar_container.dart';
-import '../../../share/widgets/item_app_bar.dart';
+import 'dart:math' as math;
+
+import '../../_app/widgets/app_bar_container.dart';
+import '../../_app/widgets/item_app_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -36,6 +40,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    var brightness = MediaQuery.of(context).platformBrightness;
+
+    ThemeMode mode =
+    brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light;
     return Scaffold(
       appBar: AppBarContainer(
         appBar: AppBar(
@@ -71,9 +79,39 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ],
           ),
           actions: [
-            IconButton(onPressed: (){
+            Consumer<ThemeNotifier>(
+              builder:
+                  (BuildContext context, ThemeNotifier value, Widget? child) {
+                return Row(
+                  children: [
+                    Transform.rotate(
+                      angle: 325 * math.pi / 180,
+                      child: IconButton(
+                        icon: mode == value.themeMode
+                            ? Icon(
+                          Icons.nightlight,
+                          color: Theme.of(context).iconTheme.color,
+                        )
+                            : Icon(Icons.sunny,
+                            color: Theme.of(context).iconTheme.color),
+                        onPressed: () {
+                          ThemeNotifier themeNotifier =
+                          Provider.of<ThemeNotifier>(context, listen: false);
+                          if (themeNotifier.themeMode == ThemeMode.light) {
+                            themeNotifier.setTheme(ThemeMode.dark);
+                          } else {
+                            themeNotifier.setTheme(ThemeMode.light);
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          /*  IconButton(onPressed: (){
               context.router.push(const AcceptPrivacyPoliceRoutePage());
-            }, icon: const Icon(Icons.add)),
+            }, icon: const Icon(Icons.add)),*/
             Stack(
               children: [
                 Align(
@@ -106,17 +144,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         padding: const EdgeInsets.only(left: 16,right: 16,top: 16),
         child: LayoutBuilder(
           builder: (context, constraints) {
-            switch('a'){
-              case 'a':
-                print('a');
-                break;
-              case 'b':
-                print('b');
-                break;
-              case 'c':
-                print('c');
-                break;
-            }
             return Column(
               children: [
                 Align(

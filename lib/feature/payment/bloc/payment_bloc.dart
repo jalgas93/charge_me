@@ -15,35 +15,53 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
   final PaymentRepository _repository;
 
   PaymentBloc({required PaymentRepository repository})
-      :_repository = repository,
+      : _repository = repository,
         super(const PaymentState.initial()) {
     on<PaymentEvent>((event, emit) => _payment(event, emit));
   }
 
-  Future<void> _payment(PaymentEvent event,
-      Emitter<PaymentState> emit,) async {
-    await event.map(
-        getBalance: (event) async {
+  Future<void> _payment(
+    PaymentEvent event,
+    Emitter<PaymentState> emit,
+  ) async {
+    await event.map(getBalance: (event) async {
       emit(const PaymentState.loading());
       try {
         final dynamic response = await _repository.getBalance();
         Log.i(response);
-        emit(PaymentState.successBalance(paymentModel: PaymentModel.fromJson(response)));
+        emit(PaymentState.successBalance(
+            paymentModel: PaymentModel.fromJson(response)));
       } catch (e) {
         emit(PaymentState.error(error: e));
       }
-    }, topUpBalance: (event) async {
+    }, check: (event) async {
       emit(const PaymentState.loading());
       try {
-        final dynamic response = await _repository.topUpBalance(
-            command: event.command,
-            txnId: event.txnId,
-            account: event.account,
-            sum: event.sum,
-            txnDate: event.txnDate,
+        final dynamic response = await _repository.check(
+          command: event.command,
+          txnId: event.txnId,
+          account: event.account,
+          sum: event.sum,
         );
         Log.i(response);
-        emit(PaymentState.successTopUpBalance(paymentResponse:PaymentResponse.fromJson(response)));
+        emit(PaymentState.successCheck(
+            paymentResponse: PaymentResponse.fromJson(response)));
+      } catch (e) {
+        emit(PaymentState.error(error: e));
+      }
+    }, pay: (event) async {
+      emit(const PaymentState.loading());
+      try {
+        final dynamic response = await _repository.pay(
+          command: event.command,
+          txnId: event.txnId,
+          account: event.account,
+          sum: event.sum,
+          txnDate: event.txnDate,
+        );
+        Log.i(response);
+        emit(PaymentState.successPay(
+            paymentResponse: PaymentResponse.fromJson(response)));
       } catch (e) {
         emit(PaymentState.error(error: e));
       }

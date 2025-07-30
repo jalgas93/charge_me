@@ -4,8 +4,8 @@ import 'package:charge_me/core/extensions/empty_space.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/styles/app_colors_dark.dart';
-import '../../../share/widgets/app_bar_container.dart';
-import '../../../share/widgets/item_app_bar.dart';
+import '../../_app/widgets/app_bar_container.dart';
+import '../../_app/widgets/item_app_bar.dart';
 import '../widget/item_notification.dart';
 import '../widget/notifications_list.dart';
 

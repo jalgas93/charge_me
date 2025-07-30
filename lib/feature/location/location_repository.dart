@@ -32,7 +32,17 @@ class LocationRepository extends BaseRepository {
     await for (var message in webSocketService.stream) {
       if(message['action']=='Exception'){
         yield message;
-      }else if(message['messageId'] =='QueueMessage'){
+      }else if(message['messageId'] =='queue'){
+        yield message;
+      }
+    }
+  }
+  Stream<dynamic> check({required String message}) async*{
+    webSocketService.channel?.sink.add(message);
+    await for (var message in webSocketService.stream) {
+      if(message['action']=='Exception'){
+        yield message;
+      }else if(message['messageId'] =='check'){
         yield message;
       }
     }

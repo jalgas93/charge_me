@@ -1,10 +1,16 @@
+import 'dart:convert';
+import 'dart:ffi';
+
+import '../../feature/_app/utils/flutter_secure_storage.dart';
 import '../../feature/account/model/user_model/user_model.dart';
-import '../../share/utils/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
 
-class AppUser {
+import '../application.dart';
+import '../utils/constant/shared_preferences_keys.dart';
 
-  final navigatorKey = GlobalKey<NavigatorState>();
+class AppUser {
+  static String? token;
+
 /*   static final accessToken = SecureStorageService.getInstance.getValue("access_token");
    static final refreshToken = SecureStorageService.getInstance.getValue("refresh_token");
 
@@ -24,4 +30,38 @@ class AppUser {
   }
 
   static UserModel? get userModel => _userModel.value;
+
+  static Future<void> setUserSession({
+    required String accessToken,
+    required String refreshToken,
+  }) async {
+    token = accessToken;
+    await SecureStorageService.getInstance
+        .setValue("access_token", accessToken);
+    await SecureStorageService.getInstance
+        .setValue("refresh_token", refreshToken);
+    await Application.sharedPreferences?.setString(
+        SharedPreferencesKeys.userSessionInfo, jsonEncode(userModel?.toJson()));
+  }
+
+  static Future<void> loadDeviceAndUserData() async {
+
+    bool? issetSessionInfo = Application.sharedPreferences
+        ?.containsKey(SharedPreferencesKeys.userSessionInfo);
+    if (issetSessionInfo!) {
+      setUserModel = UserModel.fromJson(jsonDecode(Application.sharedPreferences!.getString(SharedPreferencesKeys.userSessionInfo)!));
+    }
+    token = await SecureStorageService.getInstance.getValue("access_token");
+  }
+
+  static void removeSession() async {
+    await Application.sharedPreferences
+        ?.remove(SharedPreferencesKeys.userSessionInfo);
+    await SecureStorageService.getInstance
+        .clearValue("access_token");
+    await SecureStorageService.getInstance
+        .clearValue("refresh_token");
+    token =null;
+    setUserModel = null;
+  }
 }

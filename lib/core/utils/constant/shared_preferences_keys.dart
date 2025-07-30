@@ -5,5 +5,6 @@ class SharedPreferencesKeys {
   static const String refresh = 'refresh';
   static const String inAppReview = 'inAppReview';
   static const String theme = 'theme';
+  static const String userSessionInfo = 'userSessionInfo';
 
 }

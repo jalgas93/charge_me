@@ -3,7 +3,7 @@ import 'package:charge_me/core/extensions/empty_space.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/styles/app_colors_dark.dart';
-import '../../../../share/widgets/item_app_bar.dart';
+import '../../../_app/widgets/item_app_bar.dart';
 
 class ItemRate extends StatelessWidget {
   const ItemRate({super.key, required this.title, required this.description});

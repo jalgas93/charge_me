@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../logging/log.dart';
+
 class CustomRouteObserver extends RouteObserver<PageRoute<dynamic>> {
   static String currentRoute = '';
 
@@ -7,7 +9,7 @@ class CustomRouteObserver extends RouteObserver<PageRoute<dynamic>> {
 
   void _setCurrentRoute(PageRoute<dynamic> route) {
     final screenName = extractRoute(route.settings);
-    //Log.i('[CustomRouteObserver] CurrentRoute set to: $screenName');
+    Log.i('[CustomRouteObserver] CurrentRoute set to: $screenName');
     if (screenName != null && !_ignored.contains(screenName)) {
       currentRoute = screenName;
     }

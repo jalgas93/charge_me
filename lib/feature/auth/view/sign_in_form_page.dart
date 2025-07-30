@@ -2,14 +2,14 @@ import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
-import 'package:charge_me/share/widgets/throw_error.dart';
 import 'package:drop_shadow_image/drop_shadow_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/router/router.gr.dart';
 import '../../../core/styles/app_colors_dark.dart';
 import '../../../core/utils/permission_until.dart';
-import '../../../share/widgets/custom_button.dart';
+import '../../_app/widgets/custom_button.dart';
+import '../../_app/widgets/throw_error.dart';
 import '../auth_repository.dart';
 import '../bloc/auth_bloc.dart';
 import '../widget/phone_field_widget.dart';
@@ -95,8 +95,7 @@ class _SingInFormPageState extends State<SingInFormPage> {
                     ],
                   ),
                   const TitleText(
-                    title: 'Let’s',
-                    supplementary: 'Sign In',
+                    title: 'Let’s Sign In',
                     description: 'Sing in to continue',
                   ),
                   Form(
@@ -158,16 +157,19 @@ class _SingInFormPageState extends State<SingInFormPage> {
                               orElse: () {});
                         },
                         builder: (context, AuthState state) {
-                          state.maybeWhen(
+                          final isLoading = state == const AuthState.loading();
+                          return  state.maybeWhen(
                               loading: () {
                                 return const Center(
                                     child: CircularProgressIndicator());
                               },
-                              orElse: () {});
-                          return CustomButton(
-                              width: constraints.maxWidth / 1.2,
-                              onTap: () => submit(),
-                              text: 'Login');
+                              orElse: () {
+                               return CustomButton(
+                                    isLoading: isLoading,
+                                    width: constraints.maxWidth / 1.2,
+                                    onTap: () => submit(),
+                                    text: 'Login');
+                              });
                         },
                       ),
                       16.height,

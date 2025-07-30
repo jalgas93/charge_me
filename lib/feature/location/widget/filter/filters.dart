@@ -1,9 +1,9 @@
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/extensions/empty_space.dart';
-import 'package:charge_me/share/widgets/throw_error.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/styles/app_colors_dark.dart';
+import '../../../_app/widgets/throw_error.dart';
 import 'item_connector.dart';
 import 'item_types_of_power.dart';
 
@@ -55,7 +55,7 @@ class Filters extends StatelessWidget {
             ),
           ),
           const Divider(),
-          ItemConnector(list: list),
+         // ItemConnector(list: list),
           const Divider(),
           ItemTypesOfPower(list: list2),
           16.height

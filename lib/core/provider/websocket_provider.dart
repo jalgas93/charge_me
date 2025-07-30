@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 import '../../feature/location/bloc/websocket/websocket_bloc.dart';
-import '../../share/widgets/throw_error.dart';
 
 class ConnectorProviderData {
   final List<Connector>? connector;

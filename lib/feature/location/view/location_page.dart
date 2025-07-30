@@ -1,28 +1,29 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:auto_route/auto_route.dart';
+import 'package:charge_me/core/extensions/empty_space.dart';
+import 'package:charge_me/core/router/router.gr.dart';
 import 'package:charge_me/feature/location/bloc/location_bloc.dart';
 import 'package:charge_me/feature/location/location_repository.dart';
-import 'package:charge_me/feature/location/view/queue_page.dart';
+import 'package:charge_me/feature/location/widget/booking/button_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
+import '../../../core/helpers/app_user.dart';
 import '../../../core/logging/log.dart';
-import '../../../core/provider/websocket_provider.dart';
 import '../../../core/styles/app_colors_dark.dart';
-import '../../../share/utils/charge_bottom_sheet.dart';
-import '../../../share/utils/location_service.dart';
-import '../../../share/widgets/item_app_bar.dart';
-import '../../../share/widgets/throw_error.dart';
+import '../../_app/utils/charge_bottom_sheet.dart';
+import '../../_app/utils/location_service.dart';
+import '../../_app/widgets/item_app_bar.dart';
+import '../../_app/widgets/throw_error.dart';
 import '../../home/model/app_lat_long.dart';
 import '../bloc/websocket/websocket_bloc.dart';
 import '../model/stations.dart';
 import '../utils/utils_location.dart';
-import '../widget/booking/search_form_field.dart';
-import 'booking_page.dart';
-import 'charging_page.dart';
-import 'finish_charging.dart';
-import 'connector_page.dart';
+import '../widget/item_title.dart';
+import '../widget/search_form_field.dart';
+import '../widget/connector/connectors.dart';
 
 class LocationPage extends StatefulWidget {
   const LocationPage({super.key});
@@ -39,8 +40,13 @@ class _LocationPageState extends State<LocationPage> {
   late WebsocketBloc _websocketBloc;
   List<Station>? listStation;
 
-  List<Connector>? connector;
-
+  List<Connector>? connectors;
+  Connector? connector;
+  PayloadStartTransaction? payloadStartTransaction;
+  Transaction? transaction;
+  CheckResponse? checkResponse;
+  int? indexContainer;
+  var text;
 
   @override
   void initState() {
@@ -104,10 +110,11 @@ class _LocationPageState extends State<LocationPage> {
         bloc: _bloc,
         listener: (context, LocationState state) {
           state.mapOrNull(
-              successLocation: (response) {},
-              error: (e) {
-                ThrowError.showNotify(context: context, errMessage: "$e");
-              });
+            successLocation: (response) {},
+            error: (e) {
+              ThrowError.showNotify(context: context, errMessage: "$e");
+            },
+          );
         },
         builder: (context, state) {
           state.maybeWhen(
@@ -145,16 +152,7 @@ class _LocationPageState extends State<LocationPage> {
                         icon: 'assets/filter.png',
                         color: AppColorsDark.black,
                         colorIcon: AppColorsDark.white,
-                        onPressed: () async {
-                          /*           await ChargeBottomSheet.draggableScrollableSheet(
-                              context: context,
-                              children: [
-                                */ /*        Filters(
-                              list: list,
-                              list2: list2,
-                            )*/ /*
-                              ]);*/
-                        },
+                        onPressed: () async {},
                       ),
                       ItemAppBar(
                         icon: 'assets/gps.png',
@@ -197,109 +195,149 @@ class _LocationPageState extends State<LocationPage> {
                 _websocketBloc.add(WebsocketEvent.connect(
                     stationId: station.externalId ?? 'STS_1'));
                 await ChargeBottomSheet
-                    .draggableScrollableSheet(
-                    context: context, children: [
+                    .draggableScrollableSheet(context: context, children: [
                   BlocConsumer<WebsocketBloc, WebsocketState>(
                     bloc: _websocketBloc,
                     listener: (context, WebsocketState state) {
                       state.maybeWhen(
-                    /*      errorWebSocket: (error) {
+                          errorWebSocket: (error) {
                             ThrowError.showNotify(
                                 errMessage: error.toString(), context: context);
-                          },*/
+                          },
                           disconnectWebSocket: () {
                             ThrowError.showMessage(
                                 errMessage: 'Disconnected', context: context);
                           },
-                          connectWebSocket: () async {
-                            Log.i('connectWebSocket');
-                          },
                           connectorSuccess: (data) async {
                             Log.i('connectorSuccess listener $data');
+                            print('userId ${AppUser.userModel?.userId}');
+                            connectors = ConnectorList.fromJson(data).payload;
                           },
                           bookingSuccess: (data) async {
                             Log.i('bookingSuccess listener $data');
-                          },
-                          bookingCancelSuccess: (data) {
-                            Log.i('bookingCancelSuccess listener $data');
+                            context.router.push(BookingRoutePage(
+                              connector: connector,
+                              station: station,
+                              active: checkResponse?.check?.active,
+                            ));
                           },
                           queueSuccess: (data) {
                             Log.i('queueSuccess listener $data');
+                            checkResponse = CheckResponse.fromJson(data);
+                          },
+                          checkSuccess: (data) {
+                            Log.i('checkSuccess listener $data');
+                            checkResponse = CheckResponse.fromJson(data);
                           },
                           chargingSuccess: (data) async {
                             Log.i('chargingSuccess listener $data');
+                            var payloadStartTransaction =
+                                StartTransaction.fromJson(data).payload;
+                            context.router.replace(
+                                ChargingRoutePage(
+                              payloadStartTransaction: payloadStartTransaction!,
+                              station: station,
+                              connector: connector,
+                            ));
                           },
                           finishSuccess: (data) async {
                             Log.i('finishSuccess listener $data ');
+                            var stopTransaction =
+                                StopTransaction.fromJson(data).payload;
+                            context.router.replace(FinishRoutePage(
+                              station: station,
+                              stopTransaction: stopTransaction,
+                              connector: connector,
+                            ));
                           },
                           orElse: () {});
                     },
                     builder: (context, WebsocketState state) {
-                      return state.maybeWhen(
-                          connectorSuccess: (data) {
-                            connector = ConnectorList.fromJson(data).payload;
-                            UtilsLocation.setStatus = connector?[0].status?.toLowerCase();
-                        return Provider<ConnectorProviderData>(
-                          create: (_) => ConnectorProviderData(connector: connector),
-                          child: ConnectorPage(
-                            station: station,
-                          ),
-                        );
-                      }, bookingSuccess: (data) {
-                        return Provider<ConnectorProviderData>(
-                          create: (_) => ConnectorProviderData(connector: connector),
-                          builder: (context,child){
-                            return BookingPage(
-                              station: station,
+                      final isLoading = state == const WebsocketState.loadingWebSocket();
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 16, right: 16),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                ItemTitle(
+                                  title: '${station.location?.city}',
+                                  description: '${station.location?.address}',
+                                  descriptionSupplement:
+                                      'Время работы с 00:00 - 24:00',
+                                  stationId: '${station.externalId}',
+                                  connector: connector,
+                                ),
+                                8.height,
+                                const Divider(),
+                                8.height,
+                                Text(
+                                  'Типы зарядных устройств',
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                ),
+                                8.height,
+                                if (connectors != null)
+                                  SizedBox(
+                                    width: constraints.maxWidth,
+                                    height: constraints.maxWidth / 2.5,
+                                    child: ListView.separated(
+                                      itemCount: connectors!.length,
+                                      physics: const BouncingScrollPhysics(),
+                                      scrollDirection: Axis.horizontal,
+                                      shrinkWrap: true,
+                                      itemBuilder: (context, int index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            connector = connectors?[index];
+                                            text = text == connectors?[index].type
+                                                ? 'CCS2'
+                                                : connectors?[index].type;
+                                            websocketBloc
+                                                .add(WebsocketEvent.check(
+                                              message: jsonEncode({
+                                                "action": "Check",
+                                                "messageId": "check",
+                                                "payload": {
+                                                  "message": "check",
+                                                  "userId":
+                                                      AppUser.userModel?.userId,
+                                                  "connectorId":
+                                                      "${connector?.connectorId}"
+                                                }
+                                              }),
+                                            ));
+                                          },
+                                          child: ConnectorPage(
+                                            connector: connectors![index],
+                                            text: text,
+                                          ),
+                                        );
+                                      },
+                                      separatorBuilder: (context, int index) {
+                                        return const SizedBox(width: 8);
+                                      },
+                                    ),
+                                  ),
+                                ButtonContainer(
+                                  isLoading: isLoading,
+                                  connector: connector,
+                                  station: station,
+                                  queue: checkResponse?.check?.queue,
+                                  active: checkResponse?.check?.active,
+                                ),
+                                16.height
+                              ],
                             );
                           },
-                        );
-                      }, queueSuccess: (data) {
-                        return Provider<ConnectorProviderData>(
-                          create: (_) =>
-                              ConnectorProviderData(connector: connector),
-                          builder: (context, child) {
-                            return QueuePage(
-                              station: station,
-                            );
-                          },
-                        );
-                      }, chargingSuccess: (data) {
-                        var response = StartTransaction.fromJson(data).payload;
-                        return Provider<ConnectorProviderData>(
-                          create: (_) =>
-                              ConnectorProviderData(connector: connector),
-                          builder: (context, child) {
-                            return ChargingPage(
-                              station: station,
-                              payloadStartTransaction: response!,
-                            );
-                          },
-                        );
-                      }, finishSuccess: (data) {
-                        var response = StopTransaction.fromJson(data).payload;
-                        return Provider<ConnectorProviderData>(
-                          create: (_) =>
-                              ConnectorProviderData(connector: connector),
-                          builder: (context, child) {
-                            return ResultPage(
-                              station: station,
-                              stopTransaction: response,
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                            );
-                          },
-                        );
-                          },
-                          orElse: () {
-                        return const SizedBox.shrink();
-                      });
+                        ),
+                      );
                     },
                   )
                 ]).then((value) {
-                  _websocketBloc
-                      .add(const WebsocketEvent.disconnectedWebSocket());
+                  connector ==null;
                 });
               }),
         )

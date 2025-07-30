@@ -47,8 +47,8 @@ class ProfileContainer extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        Text(name, style: context.textTheme.titleSmall?.copyWith(color: AppColorsDark.white)),
-        Text(phone, style: context.textTheme.bodyMedium?.copyWith(color: AppColorsDark.white)),
+        Text(name, style: context.textTheme.titleSmall),
+        Text(phone, style: context.textTheme.bodyMedium),
         const SizedBox(height: 16),
       ],
     );

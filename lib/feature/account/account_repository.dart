@@ -4,7 +4,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../core/base_repository.dart';
 
 class AccountSetupRepository extends BaseRepository {
-
   Future<dynamic> address({
     required double latitude,
     required double longitude,
@@ -41,7 +40,7 @@ class AccountSetupRepository extends BaseRepository {
       "registrationNumber": registrationNumber,
       "batteryCapacity": batteryCapacity,
       "plug": plug,
-      "userId":userId,
+      "userId": userId,
     };
     final response = await client.post(
       'api/v1/car/add',
@@ -51,32 +50,6 @@ class AccountSetupRepository extends BaseRepository {
   }
 
   Future<dynamic> addLocation({
-    required double latitude,
-    required double longitude,
-     String? country,
-     String? county,
-     String? city,
-     String? road,
-     String? town,
-    required int userId,
-  }) async {
-    var data = {
-      "latitude": latitude,
-      "longitude": longitude,
-      "county": county,
-      "country": country,
-      "city": city,
-      "road": road,
-      "town": town,
-      "userId":userId,
-    };
-    final response = await client.post(
-      'api/v1/userLocation/add',
-      data: data,
-    );
-    return response.data;
-  }
-  Future<dynamic> userUpdate({
     required double latitude,
     required double longitude,
     String? country,
@@ -94,13 +67,26 @@ class AccountSetupRepository extends BaseRepository {
       "city": city,
       "road": road,
       "town": town,
-      "userId":userId,
+      "userId": userId,
     };
-    final response = await client.put(
-      'api/v1/users/update',
+    final response = await client.post(
+      'api/v1/userLocation/add',
       data: data,
     );
     return response.data;
   }
 
+  Future<dynamic> userUpdate({
+    String? avatar,
+    String? firstname,
+    String? role,
+    required int userId,
+  }) async {
+    var data = {"avatar": avatar, "firstname": firstname, "role": role};
+    final response = await client.put(
+      'api/v1/users/update/$userId',
+      data: data,
+    );
+    return response.data;
+  }
 }

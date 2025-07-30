@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 
-import '../../../share/utils/constant/config_app.dart';
-import '../../../share/utils/flutter_secure_storage.dart';
+import '../../../feature/_app/utils/flutter_secure_storage.dart';
+import '../../utils/constant/config_app.dart';
 import '../interceptors/custom_dio_interceptor.dart';
 import '../interceptors/api_client_intercepter.dart';
 import '../response/api_response.dart';
@@ -16,8 +16,8 @@ class ApiClient {
 
   factory ApiClient.instance() {
     final baseOptions = BaseOptions(
-      connectTimeout: const Duration(minutes: 3),
-      receiveTimeout: const Duration(minutes: 3),
+      connectTimeout: const Duration(minutes: 1),
+      receiveTimeout: const Duration(minutes: 1),
     );
     final dio = Dio(baseOptions);
     dio.interceptors.add(ApiClientInterceptor(client: dio));
@@ -57,7 +57,7 @@ class ApiClient {
     return ApiResponse.fromJson(response.data);
   }
 
-  Future<dynamic> post(
+  Future<ApiResponse> post(
     String url, {
     dynamic data = const {},
     Map<String, dynamic>? queryParameters,
@@ -69,7 +69,7 @@ class ApiClient {
       queryParameters: queryParameters,
       options: options,
     );
-    return response;
+    return ApiResponse.fromJson(response.data);
   }
 
   Future<ApiResponse> put(

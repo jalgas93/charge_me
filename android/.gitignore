@@ -12,5 +12,12 @@ key.properties
 **/*.keystore
 **/*.jks
 *.env
+*.g.dart
+lib/generated/intl
+lib/core/routing/router.gr.dart
+/android/lib/core/routing/router.gr.dart
+pubspec.lock
+*.router.gr.dart
+*.freezed.dart
+assets/key/
 #intl
-lib/generated/

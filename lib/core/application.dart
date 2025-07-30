@@ -1,7 +1,7 @@
+import 'package:charge_me/core/utils/constant/shared_preferences_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../share/utils/constant/shared_preferences_keys.dart';
 
 
 typedef LanguageChangeHandler = Function(String language);

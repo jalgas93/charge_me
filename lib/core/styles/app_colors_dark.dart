@@ -51,7 +51,7 @@ class AppColorsDark {
   static const Color whiteSecondary = Color(0xffF5F4F8);
   static Color transparent = Colors.transparent;
 
-  static const Color bodyText = Color(0xFFBDBDBD);
+  static const Color bodyText = Color(0xFFE0E0E0);
   static const Color divider = Color(0xFFF5F5F5);
 
 

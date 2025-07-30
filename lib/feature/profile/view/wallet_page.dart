@@ -1,12 +1,12 @@
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/router/router.gr.dart';
-import 'package:charge_me/share/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/styles/app_colors_dark.dart';
-import '../../../share/widgets/app_bar_container.dart';
-import '../../../share/widgets/item_app_bar.dart';
+import '../../_app/widgets/app_bar_container.dart';
+import '../../_app/widgets/custom_button.dart';
+import '../../_app/widgets/item_app_bar.dart';
 
 @RoutePage(name: "WalletRoutePage")
 class WalletPage extends StatefulWidget {

@@ -1,15 +1,17 @@
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:charge_me/core/helpers/app_user.dart';
 import 'package:charge_me/core/router/router.gr.dart';
 import 'package:charge_me/feature/account/model/yandex_address/response_result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/styles/app_colors_dark.dart';
-import '../../../share/widgets/app_bar_container.dart';
-import '../../../share/widgets/custom_button.dart';
-import '../../../share/widgets/item_app_bar.dart';
-import '../../../share/widgets/skip_container.dart';
+import '../../_app/widgets/app_bar_container.dart';
+import '../../_app/widgets/custom_button.dart';
+import '../../_app/widgets/item_app_bar.dart';
+import '../../_app/widgets/skip_container.dart';
+import '../../_app/widgets/throw_error.dart';
 import '../account_repository.dart';
 import '../bloc/account_setup_bloc.dart';
 import '../widget/second_container_map.dart';
@@ -27,7 +29,7 @@ class AccountSetupLocationPage extends StatefulWidget {
 class _AccountSetupLocationPageState extends State<AccountSetupLocationPage> {
   late AccountSetupBloc _bloc;
   late AccountSetupRepository _repository;
-  String address = "";
+  String? address;
   double? latitude;
   double? longitude;
 
@@ -45,14 +47,19 @@ class _AccountSetupLocationPageState extends State<AccountSetupLocationPage> {
   }
 
   void submit() async {
-    if (true) {
-      if(true){
+    if (address != null && latitude != null && longitude != null) {
+      if (AppUser.userModel!.userId != null) {
         _bloc.add(AccountSetupEvent.addLocation(
-            latitude: latitude!, longitude: longitude!,
+            latitude: latitude!,
+            longitude: longitude!,
             road: address,
-            userId: 4
-        ));
+            userId: AppUser.userModel!.userId!));
+      } else {
+        ThrowError.showNotify(context: context, errMessage: 'User id null');
       }
+    } else {
+      ThrowError.showNotify(
+          context: context, errMessage: 'Укажите ваше местоположения');
     }
   }
 
@@ -117,6 +124,9 @@ class _AccountSetupLocationPageState extends State<AccountSetupLocationPage> {
                 bloc: _bloc,
                 listener: (context, AccountSetupState state) {
                   state.maybeWhen(
+                    error: (e){
+                      ThrowError.showNotify(context: context, errMessage: e.toString());
+                    },
                       successAddLocation: () {
                         context.router.push(const AccountSetupUserRoutePage());
                       },

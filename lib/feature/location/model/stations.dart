@@ -57,7 +57,7 @@ class Connector with _$Connector {
     @JsonKey(name: 'status') String? status,
     @JsonKey(name: 'energy_consumed') num? energyConsumed,
     @JsonKey(name: 'cost_per_kwh') num? costPerKwh,
-    @JsonKey(name: 'cost_booking_minutes') num? costBookingMinutes,
+    @JsonKey(name: 'cost_booking_minutes') int? costBookingMinutes,
     @JsonKey(name: 'blocked_by') String? blockedBy,
     @JsonKey(name: 'max_power') num? maxPower,
     @JsonKey(name: 'queues') List<Queue>? queues,
@@ -141,6 +141,9 @@ class Transaction with _$Transaction {
     @JsonKey(name: 'cost') num? cost,
     @JsonKey(name: 'cost_per_kwh') num? costPerKwh,
     @JsonKey(name: 'status') String? status,
+    @JsonKey(name: 'booking_cost') num? bookingCost,
+    @JsonKey(name: 'booking_time') String? bookingTime,
+    @JsonKey(name: 'duration_time') String? duration,
     @JsonKey(name: 'update_at') DateTime? updateAt,
   }) = _Transaction;
 
@@ -172,4 +175,29 @@ class Active with _$Active {
 
   factory Active.fromJson(Map<String, dynamic> json) =>
       _$ActiveFromJson(json);
+}
+
+@freezed
+class CheckResponse with _$CheckResponse {
+  factory CheckResponse({
+    @JsonKey(name: 'action') String? action,
+    @JsonKey(name: 'messageId') String? messageId,
+    @JsonKey(name: 'payload') Check? check,
+
+  }) = _CheckResponse;
+
+  factory CheckResponse.fromJson(Map<String, dynamic> json) =>
+      _$CheckResponseFromJson(json);
+}
+
+
+@freezed
+class Check with _$Check {
+  factory Check({
+    @JsonKey(name: 'queue') Queue? queue,
+    @JsonKey(name: 'active') Active? active,
+  }) = _Check;
+
+  factory Check.fromJson(Map<String, dynamic> json) =>
+      _$CheckFromJson(json);
 }
