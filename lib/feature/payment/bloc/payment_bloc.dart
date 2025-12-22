@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:charge_me/core/helpers/app_user.dart';
 import 'package:charge_me/feature/payment/model/payment_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -24,47 +25,62 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     PaymentEvent event,
     Emitter<PaymentState> emit,
   ) async {
-    await event.map(getBalance: (event) async {
-      emit(const PaymentState.loading());
-      try {
-        final dynamic response = await _repository.getBalance();
-        Log.i(response);
-        emit(PaymentState.successBalance(
-            paymentModel: PaymentModel.fromJson(response)));
-      } catch (e) {
-        emit(PaymentState.error(error: e));
-      }
-    }, check: (event) async {
-      emit(const PaymentState.loading());
-      try {
-        final dynamic response = await _repository.check(
-          command: event.command,
-          txnId: event.txnId,
-          account: event.account,
-          sum: event.sum,
-        );
-        Log.i(response);
-        emit(PaymentState.successCheck(
-            paymentResponse: PaymentResponse.fromJson(response)));
-      } catch (e) {
-        emit(PaymentState.error(error: e));
-      }
-    }, pay: (event) async {
-      emit(const PaymentState.loading());
-      try {
-        final dynamic response = await _repository.pay(
-          command: event.command,
-          txnId: event.txnId,
-          account: event.account,
-          sum: event.sum,
-          txnDate: event.txnDate,
-        );
-        Log.i(response);
-        emit(PaymentState.successPay(
-            paymentResponse: PaymentResponse.fromJson(response)));
-      } catch (e) {
-        emit(PaymentState.error(error: e));
-      }
-    });
+    await event.map(
+      createAccount: (event) async {
+        emit(const PaymentState.loading());
+        try {
+          final dynamic response = await _repository.createAccount();
+          Log.i(response);
+          emit(PaymentState.successCreateAccount(
+              paymentModel: PaymentModel.fromJson(response)));
+        } catch (e) {
+          emit(PaymentState.error(error: e));
+        }
+      },
+      getAccount: (event) async {
+        emit(const PaymentState.loading());
+        try {
+          final dynamic response = await _repository.getAccount(
+              accountId: AppUser.userModel?.userId);
+          Log.i(response);
+          emit(PaymentState.successGetAccount(
+              paymentModel: PaymentModel.fromJson(response)));
+        } catch (e) {
+          emit(PaymentState.error(error: e));
+        }
+      },
+      check: (event) async {
+        emit(const PaymentState.loading());
+        try {
+          final dynamic response = await _repository.check(
+            command: event.command,
+            txnId: event.txnId,
+            account: event.account,
+            sum: event.sum,
+          );
+          emit(PaymentState.successCheck(
+              responseCheck: ResponseCheck.fromJson(response)));
+        } catch (e) {
+          emit(PaymentState.error(error: e));
+        }
+      },
+      pay: (event) async {
+        emit(const PaymentState.loading());
+        try {
+          final dynamic response = await _repository.pay(
+            command: event.command,
+            txnId: event.txnId,
+            account: event.account,
+            sum: event.sum,
+            txnDate: event.txnDate,
+          );
+          Log.i(response);
+          emit(PaymentState.successPay(
+              paymentResponse: PaymentResponse.fromJson(response)));
+        } catch (e) {
+          emit(PaymentState.error(error: e));
+        }
+      },
+    );
   }
 }

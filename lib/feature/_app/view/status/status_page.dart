@@ -1,8 +1,8 @@
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
-import 'package:charge_me/core/extensions/empty_space.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../../../core/router/router.gr.dart';
 import '../../widgets/custom_button.dart';
@@ -25,17 +25,22 @@ class _StatusPageState extends State<StatusPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            16.height,
-            Image.asset('assets/success.png'),
+            const Spacer(),
+            FractionallySizedBox(
+              widthFactor: 0.6,
+              child: Lottie.asset(
+                'assets/lottie/success.json',
+                repeat: false,
+              ),
+            ),
             Text('Success', style: context.textTheme.titleLarge),
             Text('Lorem ipsum dolor sit amet, consectetur.',
                 style: context.textTheme.bodyMedium),
-            Spacer(),
+            const Spacer(),
             CustomButton(
                 width: context.screenSize.width,
                 onTap: () async {
-                  context.router.pushAndPopUntil(
-                      const DashboardPageRoute(),
+                  context.router.pushAndPopUntil(const DashboardPageRoute(),
                       predicate: (Route<dynamic> route) => false);
                 },
                 text: 'На главный экран')

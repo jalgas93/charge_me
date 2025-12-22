@@ -107,7 +107,7 @@ class SplashPageState extends State<SplashPage> {
               listener: (BuildContext context, AppState state) {
                 state.maybeWhen(
                     success: ()async {
-                      final token = AppUser.token;
+                      final token = AppUser.access;
                       if (context.mounted) {
                         if (token != null) {
                           context.router.push(const DashboardPageRoute());

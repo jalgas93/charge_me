@@ -2,12 +2,15 @@ import 'package:auto_route/auto_route.dart';
 import 'package:charge_me/core/application.dart';
 import 'package:charge_me/core/extensions/context_extensions.dart';
 import 'package:charge_me/core/helpers/app_user.dart';
+import 'package:charge_me/feature/payment/bloc/payment_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/router/router.gr.dart';
 import '../../../core/styles/app_colors_dark.dart';
 import '../../_app/widgets/app_bar_container.dart';
 import '../../_app/widgets/item_app_bar.dart';
+import '../../payment/payment_repository.dart';
 import '../widget/item_container.dart';
 import '../widget/profile_container.dart';
 
@@ -19,11 +22,21 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  late PaymentBloc _bloc;
 
   @override
   void initState() {
+    _bloc = PaymentBloc(repository: PaymentRepository());
+    _bloc.add(const PaymentEvent.getAccount());
     super.initState();
   }
+
+  @override
+  void dispose() {
+    _bloc.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     print('language ${Application.language}');
@@ -59,13 +72,24 @@ class _ProfilePageState extends State<ProfilePage> {
                   context.router.push(const EditProfilePageRoute());
                 },
               ),
-              ItemContainer(
-                title: 'Ваш баланс:',
-                colorIcon: AppColorsDark.indigo1,
-                image: 'assets/card.png',
-                description: '247 700 000 сум',
-                onTap: () {
-                  context.router.push(const PaymentPageRoute());
+              BlocBuilder(
+                bloc:_bloc,
+                builder: (BuildContext context,PaymentState state) {
+                  return state.maybeWhen(
+                      successGetAccount: (data){
+                        return ItemContainer(
+                          title: 'Ваш баланс:',
+                          colorIcon: AppColorsDark.indigo1,
+                          image: 'assets/card.png',
+                          description: '${data.balance}',
+                          onTap: () {
+                            context.router.push(const PaymentPageRoute());
+                          },
+                        );
+                      },
+                      orElse: (){
+                    return const SizedBox.shrink();
+                  });
                 },
               ),
               ItemContainer(

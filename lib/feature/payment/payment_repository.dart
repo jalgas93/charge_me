@@ -3,14 +3,18 @@ import 'dart:async';
 import '../../core/base_repository.dart';
 
 class PaymentRepository extends BaseRepository {
-  Future<dynamic> getBalance() async {
+  Future<dynamic> getAccount({required accountId}) async {
+    final response = await client.get('payment_app.cgi/account/$accountId');
+    return response.data;
+  }
+
+  Future<dynamic> createAccount() async {
 /*    var data = {
       "account_id": accountId,
       "balance": num,
       "last_updated": lastUpdated
     };*/
-    final response =
-        await client.post('payment_app.cgi/create');
+    final response = await client.post('payment_app.cgi/create');
     return response.data;
   }
 
@@ -35,7 +39,7 @@ class PaymentRepository extends BaseRepository {
     required String txnId,
     required int account,
     required num sum,
-    required int txnDate,
+    required String txnDate,
   }) async {
     var data = {
       "command": command,

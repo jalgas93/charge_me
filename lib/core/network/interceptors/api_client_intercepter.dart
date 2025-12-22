@@ -1,3 +1,4 @@
+import 'package:charge_me/core/helpers/app_user.dart';
 import 'package:dio/dio.dart';
 
 import '../../../feature/_app/utils/flutter_secure_storage.dart';
@@ -15,8 +16,7 @@ class ApiClientInterceptor extends Interceptor {
   @override
   Future<void> onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    var accessToken =
-        await SecureStorageService.getInstance.getValue("access_token");
+    var accessToken = AppUser.access;
     options.baseUrl = ConfigApp.localHost;
     options.responseType = ResponseType.json;
     if (accessToken != null) {
@@ -43,7 +43,7 @@ class ApiClientInterceptor extends Interceptor {
   void onError(DioError err, ErrorInterceptorHandler handler) async {
     if (err.response != null && [401, 403].contains(err.response?.statusCode)) {
       final newAccessToken = await refreshToken(client);
-      SecureStorageService.getInstance.setValue("access_token", newAccessToken);
+      AppUser.setUserSession(accessToken: newAccessToken);
       try {
         handler.resolve(await _retry(err.requestOptions, client));
       } on DioError catch (e) {
@@ -56,8 +56,7 @@ class ApiClientInterceptor extends Interceptor {
 }
 
 Future<String> refreshToken(Dio client) async {
-  final refreshToken =
-      await SecureStorageService.getInstance.getValue("refresh_token");
+  final refreshToken = AppUser.refresh;
   var data = {"refreshToken": refreshToken};
   var response = await client.post('api/v1/auth/refresh',
       data: data,
@@ -65,13 +64,12 @@ Future<String> refreshToken(Dio client) async {
         headers: {'Content-Type': 'application/json'},
       ));
 
-  return response.data['data']['accessToken'];
+  return response.data['accessToken'];
 }
 
 Future<Response<dynamic>> _retry(
     RequestOptions requestOptions, Dio client) async {
-  final accessToken =
-      await SecureStorageService.getInstance.getValue("access_token");
+  final accessToken = AppUser.access;
   final options = Options(
     method: requestOptions.method,
     headers: {

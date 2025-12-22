@@ -28,3 +28,14 @@ class PaymentResponse with _$PaymentResponse {
   factory PaymentResponse.fromJson(Map<String, dynamic> json) =>
       _$PaymentResponseFromJson(json);
 }
+@freezed
+class ResponseCheck with _$ResponseCheck {
+  factory ResponseCheck({
+    @JsonKey(name: 'txn_id') String? txnId,
+    @JsonKey(name: 'result') String? result,
+    @JsonKey(name: 'comment') String? comment,
+  }) = _ResponseCheck;
+
+  factory ResponseCheck.fromJson(Map<String, dynamic> json) =>
+      _$ResponseCheckFromJson(json);
+}

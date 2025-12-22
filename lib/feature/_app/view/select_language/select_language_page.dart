@@ -107,7 +107,7 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
           CustomButton(
             width: context.screenSize.width / 1.2,
             onTap: () {
-              final token = AppUser.token;
+              final token = AppUser.access;
                 if (token != null) {
                   context.router.push(const DashboardPageRoute());
                 } else {

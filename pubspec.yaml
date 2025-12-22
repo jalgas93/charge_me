@@ -107,6 +107,7 @@ dependencies:
   map_launcher: ^3.5.0
   flutter_svg: ^2.0.16
   another_flushbar: ^1.12.30
+  lottie: ^3.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -148,6 +149,7 @@ flutter:
     - assets/icon/
     - assets/images/
     - assets/vendors/
+    - assets/lottie/
 
 flutter_launcher_icons:
   android: "launcher_icon"

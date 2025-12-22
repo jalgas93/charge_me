@@ -9,7 +9,8 @@ import '../application.dart';
 import '../utils/constant/shared_preferences_keys.dart';
 
 class AppUser {
-  static String? token;
+  static String? access;
+  static String? refresh;
 
 /*   static final accessToken = SecureStorageService.getInstance.getValue("access_token");
    static final refreshToken = SecureStorageService.getInstance.getValue("refresh_token");
@@ -33,13 +34,16 @@ class AppUser {
 
   static Future<void> setUserSession({
     required String accessToken,
-    required String refreshToken,
+    String? refreshToken,
   }) async {
-    token = accessToken;
+    access = accessToken;
+    refresh = refreshToken;
     await SecureStorageService.getInstance
         .setValue("access_token", accessToken);
-    await SecureStorageService.getInstance
-        .setValue("refresh_token", refreshToken);
+    if(refreshToken!=null){
+      await SecureStorageService.getInstance
+          .setValue("refresh_token", refreshToken);
+    }
     await Application.sharedPreferences?.setString(
         SharedPreferencesKeys.userSessionInfo, jsonEncode(userModel?.toJson()));
   }
@@ -51,7 +55,8 @@ class AppUser {
     if (issetSessionInfo!) {
       setUserModel = UserModel.fromJson(jsonDecode(Application.sharedPreferences!.getString(SharedPreferencesKeys.userSessionInfo)!));
     }
-    token = await SecureStorageService.getInstance.getValue("access_token");
+    access = await SecureStorageService.getInstance.getValue("access_token");
+    refresh = await SecureStorageService.getInstance.getValue("refresh_token");
   }
 
   static void removeSession() async {
@@ -61,7 +66,8 @@ class AppUser {
         .clearValue("access_token");
     await SecureStorageService.getInstance
         .clearValue("refresh_token");
-    token =null;
+    access = null;
+    refresh = null;
     setUserModel = null;
   }
 }

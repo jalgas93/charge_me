@@ -8,8 +8,10 @@ class PaymentState with _$PaymentState {
 
   const factory PaymentState.error({required dynamic error}) = _Error;
 
-  const factory PaymentState.successBalance({required PaymentModel paymentModel}) =
-  _SuccessBalance;
-  const factory PaymentState.successCheck({required PaymentResponse paymentResponse}) =_SuccessCheck;
+  const factory PaymentState.successCreateAccount({required PaymentModel paymentModel}) =
+  _SuccessCreateAccount;
+  const factory PaymentState.successGetAccount({required PaymentModel paymentModel}) =
+  _SuccessGetAccount;
+  const factory PaymentState.successCheck({required ResponseCheck responseCheck}) =_SuccessCheck;
   const factory PaymentState.successPay({required PaymentResponse paymentResponse}) =_SuccessPay;
 }

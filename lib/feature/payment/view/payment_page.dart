@@ -7,6 +7,7 @@ import 'package:charge_me/feature/payment/bloc/payment_bloc.dart';
 import 'package:charge_me/feature/payment/payment_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import '../../../core/helpers/app_user.dart';
 import '../../../core/router/router.gr.dart';
@@ -185,7 +186,6 @@ class _PaymentPageState extends State<PaymentPage> {
                       listener: (context, state) {
                         state.maybeWhen(
                             successCheck: (data) async {
-                              var sum = data.sum;
                               await ChargeBottomSheet.draggableScrollableSheet(
                                   context: context,
                                   children: [
@@ -218,12 +218,14 @@ class _PaymentPageState extends State<PaymentPage> {
                                           CustomButton(
                                             isLoading: false,
                                               onTap: () async {
+                                                DateTime now = DateTime.now();
+                                                String formattedDate = DateFormat('yyyyMMddHHmmss').format(now);
                                                 _bloc.add(PaymentEvent.pay(
                                                   command: "pay",
                                                   txnId: _extId,
                                                   account: AppUser.userModel?.userId ?? 0,
                                                   sum: _controllerAmount.text.asNumber,
-                                                  txnDate: DateTime.now().millisecondsSinceEpoch,
+                                                  txnDate: formattedDate,
                                                 ));
                                               },
                                               text: "Пополнить")
@@ -237,7 +239,6 @@ class _PaymentPageState extends State<PaymentPage> {
                                   const StatusPageRoute(),
                                   predicate: (Route<dynamic> route) => false);
                             },
-                            successBalance: (data) async {},
                             orElse: (){});
                       },
                       builder: (context,PaymentState state) {
